@@ -16,7 +16,6 @@
 <script type="text/javascript" src="{% static "js/jquery.jeditable.checkbox.js" %}"></script>
 <script type="text/javascript" src="{% static "js/typeahead.bundle.min.js" %}"></script>
 <script src="{% static "js/RecordRTC.min.js" %}"></script>
-<link rel="stylesheet" href="{% static "css/jquery-ui/jquery-ui.min.css" %}">
     {% if not gloss.published %}{# Don't allow recording of webcam videos to published Glosses. #}
 {% include "dictionary/record_video.html" %}
     {% endif %}
