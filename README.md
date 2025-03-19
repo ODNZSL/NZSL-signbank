@@ -201,9 +201,9 @@ If you are using docker, you have two choices:
 - Manually perform the install step as below (see `Dockerfile` also).
 
 > Install files to signbank/static/js and signbank/static/css:
-> 
+>
 > npm ci
-> 
+>
 > npm run collectjs && npm run collectcss
 
 
