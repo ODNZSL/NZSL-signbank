@@ -194,24 +194,13 @@ To run the application locally you will need:
 
 1. Run `cp example.env .env`
 
-Note that the local static JS and CSS files have to be installed into place 
-for the app to work properly.
-If you are using docker, you have two choices:
-- Comment out the `volumes` directive in `docker-compose.yml`, OR
-- Manually perform the install step as below (see `Dockerfile` also).
+2. Run `npm ci`
 
-> Install files to signbank/static/js and signbank/static/css:
->
-> npm ci
->
-> npm run collectjs && npm run collectcss
+3. Run `npm run collectjs && npm run collectcss`
 
+4. Run `docker-compose up`
 
-To start the application using docker-compose, simply run:
-
-`docker-compose up`
-
-And the service will start bound to port 8000 on your host, with a companion Postgres database
+The service will start bound to port 8000 on your host, with a companion Postgres database
 running in its own container, and an SMTP mailcatcher that will receive outbound mail from the application bound to port 1025 on your host.
 
 #### Local data
