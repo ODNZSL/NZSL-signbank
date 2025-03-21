@@ -212,17 +212,18 @@ six = "*"
 
 [[package]]
 name = "django-notifications-hq"
-version = "1.8.3"
+version = "1.7.0"
 description = "GitHub notifications alike app for Django."
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "django-notifications-hq-1.8.3.tar.gz", hash = "sha256:0f4b216bb382b7c7c4eef273eb211e59c1c6a0ea38cba6077415ac031d330725"},
+    {file = "django-notifications-hq-1.7.0.tar.gz", hash = "sha256:1ff90fbddb0a9dba3fdc57758e799b755c8844f673cd92e9ffaa64cedd33d5f5"},
+    {file = "django_notifications_hq-1.7.0-py2.py3-none-any.whl", hash = "sha256:5540a99681c0e73399726d662ab74f23c45ba385036431ecd75ffc962f02c793"},
 ]
 
 [package.dependencies]
-django = ">=3.2"
+django = ">=2.2"
 django-model-utils = ">=3.1.0"
 jsonfield = ">=2.1.0"
 pytz = "*"
@@ -617,4 +618,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "3f6b55166dd53b7f2bb5e6dbbddb4d84aed04bed6eee9d0abd766e5eed3993a6"
+content-hash = "0f09b9e4428da8b139042bfbc8addab8a0a66430141b3e52c1aaadab09ed43df"
