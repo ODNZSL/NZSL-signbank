@@ -135,18 +135,18 @@ Django = ">=2.2"
 
 [[package]]
 name = "django-contrib-comments"
-version = "2.2.0"
+version = "2.0.0"
 description = "The code formerly known as django.contrib.comments."
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "django-contrib-comments-2.2.0.tar.gz", hash = "sha256:48de00f15677e016a216aeff205d6e00e4391c9a5702136c64119c472b7356da"},
-    {file = "django_contrib_comments-2.2.0-py3-none-any.whl", hash = "sha256:2ca79060bbc8fc5b636981ef6e50f35ab83649af75fc1be47bf770636be3271c"},
+    {file = "django-contrib-comments-2.0.0.tar.gz", hash = "sha256:26350b2c353816570a74b7fb19c558ce00288625ac32886a5274f4f931c098f9"},
+    {file = "django_contrib_comments-2.0.0-py3-none-any.whl", hash = "sha256:d15ce050c6b1589ec3086c4f5db3e4dec8adf54bb0d9d6b7efc1372669773752"},
 ]
 
 [package.dependencies]
-Django = ">=2.2"
+Django = ">=1.11"
 
 [[package]]
 name = "django-debug-toolbar"
@@ -617,4 +617,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "3ef7335bfc86c930b862465d27ddcb9370e5ee54ae0e5ce649b5f2a15588486a"
+content-hash = "3f6b55166dd53b7f2bb5e6dbbddb4d84aed04bed6eee9d0abd766e5eed3993a6"
