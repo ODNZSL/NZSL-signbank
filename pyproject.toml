@@ -28,7 +28,7 @@ django-storages = "1.12.1"
 psycopg2 = "2.8.6"
 certifi = "2024.7.4"
 sentry-sdk = "2.8.0"
-gunicorn = "22.0.0"
+gunicorn = "23.0.0"
 whitenoise = "6.2.0"
 
 [build-system]
