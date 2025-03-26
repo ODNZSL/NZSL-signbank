@@ -19,6 +19,24 @@ typing-extensions = {version = ">=4", markers = "python_version < \"3.11\""}
 tests = ["mypy (>=0.800)", "pytest", "pytest-asyncio"]
 
 [[package]]
+name = "bleach"
+version = "6.2.0"
+description = "An easy safelist-based HTML-sanitizing tool."
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "bleach-6.2.0-py3-none-any.whl", hash = "sha256:117d9c6097a7c3d22fd578fcd8d35ff1e125df6736f554da4e432fdd63f31e5e"},
+    {file = "bleach-6.2.0.tar.gz", hash = "sha256:123e894118b8a599fd80d3ec1a6d4cc7ce4e5882b1317a7e1ba69b56e95f991f"},
+]
+
+[package.dependencies]
+webencodings = "*"
+
+[package.extras]
+css = ["tinycss2 (>=1.1.0,<1.5)"]
+
+[[package]]
 name = "boto3"
 version = "1.22.8"
 description = "The AWS SDK for Python"
@@ -99,20 +117,20 @@ files = [
 
 [[package]]
 name = "django"
-version = "3.2.25"
-description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
+version = "4.2.20"
+description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "Django-3.2.25-py3-none-any.whl", hash = "sha256:a52ea7fcf280b16f7b739cec38fa6d3f8953a5456986944c3ca97e79882b4e38"},
-    {file = "Django-3.2.25.tar.gz", hash = "sha256:7ca38a78654aee72378594d63e51636c04b8e28574f5505dff630895b5472777"},
+    {file = "Django-4.2.20-py3-none-any.whl", hash = "sha256:213381b6e4405f5c8703fffc29cd719efdf189dec60c67c04f76272b3dc845b9"},
+    {file = "Django-4.2.20.tar.gz", hash = "sha256:92bac5b4432a64532abb73b2ac27203f485e40225d2640a7fbef2b62b876e789"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.3.2,<4"
-pytz = "*"
-sqlparse = ">=0.2.2"
+asgiref = ">=3.6.0,<4"
+sqlparse = ">=0.3.1"
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
 argon2 = ["argon2-cffi (>=19.1.0)"]
@@ -135,19 +153,18 @@ Django = ">=2.2"
 
 [[package]]
 name = "django-contrib-comments"
-version = "1.9.2"
+version = "2.2.0"
 description = "The code formerly known as django.contrib.comments."
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "django-contrib-comments-1.9.2.tar.gz", hash = "sha256:d1232bade3094de07dcc205fc833204384e71ba9d30caadcb5bb2882ce8e8d31"},
-    {file = "django_contrib_comments-1.9.2-py2.py3-none-any.whl", hash = "sha256:b83320a86081a76bc0570e6cc0f924c0ced40b46ae9f5dd783ab2c745b449529"},
+    {file = "django-contrib-comments-2.2.0.tar.gz", hash = "sha256:48de00f15677e016a216aeff205d6e00e4391c9a5702136c64119c472b7356da"},
+    {file = "django_contrib_comments-2.2.0-py3-none-any.whl", hash = "sha256:2ca79060bbc8fc5b636981ef6e50f35ab83649af75fc1be47bf770636be3271c"},
 ]
 
 [package.dependencies]
-Django = ">=1.11"
-six = "*"
+Django = ">=2.2"
 
 [[package]]
 name = "django-debug-toolbar"
@@ -213,14 +230,14 @@ six = "*"
 
 [[package]]
 name = "django-notifications-hq"
-version = "1.6.0"
+version = "1.7.0"
 description = "GitHub notifications alike app for Django."
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "django-notifications-hq-1.6.0.tar.gz", hash = "sha256:debeb71b7076b08487b40bf07664d1cc43b9977c4480bbc969b30236dda7a461"},
-    {file = "django_notifications_hq-1.6.0-py2.py3-none-any.whl", hash = "sha256:dfc6f8bd4034ceae91143bc3802ddfb6e276eaec90e63dd23e2584c052561576"},
+    {file = "django-notifications-hq-1.7.0.tar.gz", hash = "sha256:1ff90fbddb0a9dba3fdc57758e799b755c8844f673cd92e9ffaa64cedd33d5f5"},
+    {file = "django_notifications_hq-1.7.0-py2.py3-none-any.whl", hash = "sha256:5540a99681c0e73399726d662ab74f23c45ba385036431ecd75ffc962f02c793"},
 ]
 
 [package.dependencies]
@@ -263,14 +280,14 @@ Django = ">=2.2"
 
 [[package]]
 name = "django-reversion"
-version = "4.0.0"
+version = "4.0.2"
 description = "An extension to the Django web framework that provides version control for model instances."
 optional = false
 python-versions = ">=3.6"
 groups = ["main"]
 files = [
-    {file = "django-reversion-4.0.0.tar.gz", hash = "sha256:ad6d714b4b9b824e22b88d47201cc0f74b5c4294c8d4e1f8d7ac7c3631ef3188"},
-    {file = "django_reversion-4.0.0-py3-none-any.whl", hash = "sha256:f059c654e38c0dd8dccd7f0990aa2f6d9ad22dab55c5e095f9596aeda8079dcd"},
+    {file = "django-reversion-4.0.2.tar.gz", hash = "sha256:5d33ba944dbf19c7030c9e70e3731248ae34368cf2afede10e0d08fbf89e6f8c"},
+    {file = "django_reversion-4.0.2-py3-none-any.whl", hash = "sha256:095ec684626a07b48a1a32640e30cae93eb2acd3c452a9111f77ac934c2efb91"},
 ]
 
 [package.dependencies]
@@ -301,17 +318,21 @@ sftp = ["paramiko"]
 
 [[package]]
 name = "django-summernote"
-version = "0.8.11.6"
+version = "0.8.20.0"
 description = "Summernote plugin for Django"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "django-summernote-0.8.11.6.tar.gz", hash = "sha256:c23dae35c287f0d3d1ff801654ace77c3c6836453162e87c7330710d74d2eb88"},
+    {file = "django-summernote-0.8.20.0.tar.gz", hash = "sha256:52e9b12438ed9eac0d77729f758f2aae06e468b5cbce133e24100d58ae4e43a8"},
 ]
 
 [package.dependencies]
+bleach = "*"
 django = "*"
+
+[package.extras]
+dev = ["django-dummy-plug", "pytest", "pytest-django"]
 
 [[package]]
 name = "django-tagging"
@@ -561,6 +582,19 @@ files = [
 ]
 
 [[package]]
+name = "tzdata"
+version = "2025.2"
+description = "Provider of IANA time zone data"
+optional = false
+python-versions = ">=2"
+groups = ["main"]
+markers = "sys_platform == \"win32\""
+files = [
+    {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
+    {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
+]
+
+[[package]]
 name = "unicodecsv"
 version = "0.14.1"
 description = "Python2's stdlib csv module is nice, but it doesn't support unicode. This module is a drop-in replacement which *does*."
@@ -589,6 +623,18 @@ secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "ipaddress ; py
 socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
+name = "webencodings"
+version = "0.5.1"
+description = "Character encoding aliases for legacy web content"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "webencodings-0.5.1-py2.py3-none-any.whl", hash = "sha256:a0af1213f3c2226497a97e2b3aa01a7e4bee4f403f95be16fc9acd2947514a78"},
+    {file = "webencodings-0.5.1.tar.gz", hash = "sha256:b36a1c245f2d304965eb4e0a82848379241dc04b865afcc4aab16748587e1923"},
+]
+
+[[package]]
 name = "whitenoise"
 version = "6.2.0"
 description = "Radically simplified static file serving for WSGI applications"
@@ -606,4 +652,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "5660aee9b5e69352f9d63db42c4d257c8eb6747106ff5c6044056e89bcf6d75b"
+content-hash = "b98c75435b28758ed37ac852d69e04570db79f1210237e992aa96e639ed833aa"
