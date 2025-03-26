@@ -422,7 +422,7 @@ def change_glossvideo_publicity(request):
 
         video.set_public(is_public)
 
-        if request.is_ajax():
+        if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
             return HttpResponse(status=200)
 
     referer = request.META.get("HTTP_REFERER")
