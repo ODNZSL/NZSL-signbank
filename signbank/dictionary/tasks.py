@@ -2,7 +2,7 @@ import boto3
 import os
 from tempfile import TemporaryDirectory
 from typing import TypedDict, List
-from urllib.request import urlretrieve
+from urllib.request import urlretrieve, build_opener, install_opener
 
 from django.conf import settings
 from django.db import connection
@@ -82,6 +82,11 @@ def retrieve_videos_for_glosses(video_details: List[VideoDetail]):
 
     s3 = boto3.client("s3")
     s3_storage_used = settings.GLOSS_VIDEO_FILE_STORAGE == "storages.backends.s3boto3.S3Boto3Storage"
+
+    # Set headers for urlretrieve()
+    opener = build_opener()
+    opener.addheaders = settings.NZSL_SHARE_HEADERS
+    install_opener(opener)
 
     for video in video_details:
         retrieval_url = f"{settings.NZSL_SHARE_HOSTNAME}{video['url']}"
