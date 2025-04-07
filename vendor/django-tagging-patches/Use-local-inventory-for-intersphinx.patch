@@ -1,0 +1,22 @@
+From: Carsten Schoenert <c.schoenert@t-online.de>
+Date: Mon, 6 Sep 2021 22:49:28 +0200
+Subject: Use local inventory for intersphinx
+
+Forwarded: not-needed
+---
+ docs/conf.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/docs/conf.py b/docs/conf.py
+index ea96daa..5ad1662 100644
+--- a/docs/conf.py
++++ b/docs/conf.py
+@@ -37,7 +37,7 @@ extensions = [
+ ]
+ 
+ intersphinx_mapping = {
+-    'django': ('https://django.readthedocs.io/en/latest/', None),
++    "django": ("/usr/share/doc/python-django-doc/html", None),
+ }
+ 
+ # Add any paths that contain templates here, relative to this directory.
