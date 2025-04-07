@@ -85,7 +85,7 @@ def retrieve_videos_for_glosses(video_details: List[VideoDetail]):
 
     # Set headers for urlretrieve()
     opener = build_opener()
-    opener.addheaders = settings.NZSL_SHARE_HEADERS
+    opener.addheaders = [('Accept', '*/*')]
     install_opener(opener)
 
     for video in video_details:
