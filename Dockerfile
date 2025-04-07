@@ -14,8 +14,6 @@ FROM python:3.9
 
 ENV DJANGO_SETTINGS_MODULE=signbank.settings.development
 
-COPY vendor/ /app/vendor/
-
 RUN pip install "poetry==2.1.1"
 
 CMD bin/develop.py migrate --noinput && \
@@ -48,6 +46,8 @@ RUN echo "APT::Install-Recommends \"0\";" >> /etc/apt/apt.conf.d/02recommends &&
 # Install requirements
 WORKDIR /app
 ADD pyproject.toml poetry.lock /app/
+COPY vendor/ /app/vendor/
+
 RUN poetry config installer.max-workers 10 && \
     poetry config virtualenvs.create false &&  \
     poetry install -v --no-root
