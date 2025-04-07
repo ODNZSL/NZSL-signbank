@@ -261,9 +261,6 @@ else:
 
 NZSL_SHARE_HOSTNAME = os.getenv('NZSL_SHARE_HOSTNAME')
 
-# Prevents 403 Forbidden when retrieving videos via Share --redirect--> S3
-NZSL_SHARE_HEADERS = [('Accept', '*/*'), ('User-agent', 'curl/7.74.0')]
-
 mimetypes.add_type("video/mp4", ".mov", True)
 mimetypes.add_type("video/webm", ".webm", True)
 
