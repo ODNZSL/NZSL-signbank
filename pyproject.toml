@@ -11,7 +11,6 @@ repository = "https://github.com/ODNZSL/NZSL-signbank"
 [tool.poetry.dependencies]
 python = "^3.9"
 django = "~4.2.13"
-#django-tagging = "0.5.0"
 django-tagging = { path = "./vendor/django-tagging/", develop = false }
 django-reversion = "4.0.2"
 django-bootstrap3 = "21.2"
