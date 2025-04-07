@@ -14,6 +14,8 @@ FROM python:3.9
 
 ENV DJANGO_SETTINGS_MODULE=signbank.settings.development
 
+COPY vendor/ /app/vendor/
+
 RUN pip install "poetry==2.1.1"
 
 CMD bin/develop.py migrate --noinput && \
