@@ -2,6 +2,7 @@ language: python
 python:
     - 3.7
     - 3.8
+    - 3.9
 services:
     - postgresql
     - mysql
@@ -15,6 +16,9 @@ env:
     - DJANGO=3.0 DATABASE_ENGINE=sqlite
     - DJANGO=3.0 DATABASE_ENGINE=postgres
     - DJANGO=3.0 DATABASE_ENGINE=mysql
+    - DJANGO=4.0 DATABASE_ENGINE=sqlite
+    - DJANGO=4.0 DATABASE_ENGINE=postgres
+    - DJANGO=4.0 DATABASE_ENGINE=mysql
 
 install:
     - pip install -U setuptools zc.buildout

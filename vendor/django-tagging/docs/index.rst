@@ -768,7 +768,7 @@ list items of a particular model class which have a given tag::
    from shop.apps.products.models import Widget
 
    urlpatterns = patterns('',
-       url(r'^widgets/tag/(?P<tag>[^/]+(?u))/$',
+       url(r'(?u)^widgets/tag/(?P<tag>[^/]+)/$',
            TaggedObjectList.as_view(model=Widget, paginate_by=10, allow_empty=True),
            name='widget_tag_detail'),
    )

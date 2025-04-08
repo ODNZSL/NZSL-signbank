@@ -46,11 +46,6 @@ RUN echo "APT::Install-Recommends \"0\";" >> /etc/apt/apt.conf.d/02recommends &&
 # Install requirements
 WORKDIR /app
 ADD pyproject.toml poetry.lock /app/
-
-COPY vendor/ /app/vendor/
-RUN cd /app/vendor/django-tagging-patches && ./patch.sh
-
-
 RUN poetry config installer.max-workers 10 && \
     poetry config virtualenvs.create false &&  \
     poetry install -v --no-root

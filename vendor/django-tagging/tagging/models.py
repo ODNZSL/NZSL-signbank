@@ -5,8 +5,15 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import connection
 from django.db import models
-from django.utils.encoding import smart_text
+from django.db.models.query_utils import Q
+from django.utils.encoding import smart_str
 from django.utils.translation import gettext_lazy as _
+
+# FullResultSet exception is new to Django 4.2
+try:
+    from django.core.exceptions import FullResultSet
+except ImportError:
+    pass
 
 from tagging import settings
 from tagging.utils import LOGARITHMIC
@@ -155,8 +162,9 @@ class TagManager(models.Manager):
             filters = {}
 
         queryset = model._default_manager.filter()
-        for f in filters.items():
-            queryset.query.add_filter(f)
+        for k, v in filters.items():
+            # Add support for both Django 4 and inferior versions
+            queryset.query.add_q(Q((k, v)))
         usage = self.usage_for_queryset(queryset, counts, min_count)
 
         return usage
@@ -175,13 +183,21 @@ class TagManager(models.Manager):
         Passing a value for ``min_count`` implies ``counts=True``.
         """
         compiler = queryset.query.get_compiler(using=queryset.db)
-        where, params = compiler.compile(queryset.query.where)
+        params = []
+
+        try:
+            where, params = compiler.compile(queryset.query.where)
+
+            if where:
+                extra_criteria = 'AND %s' % where
+            else:
+                extra_criteria = ''
+
+        except FullResultSet:
+            extra_criteria = ''
+
         extra_joins = ' '.join(compiler.get_from_clause()[0][1:])
 
-        if where:
-            extra_criteria = 'AND %s' % where
-        else:
-            extra_criteria = ''
         return self._get_usage(queryset.model, counts, min_count,
                                extra_joins, extra_criteria, params)
 
@@ -519,4 +535,4 @@ class TaggedItem(models.Model):
         verbose_name_plural = _('tagged items')
 
     def __str__(self):
-        return '%s [%s]' % (smart_text(self.object), smart_text(self.tag))
+        return '%s [%s]' % (smart_str(self.object), smart_str(self.tag))
