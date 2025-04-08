@@ -1,0 +1,29 @@
+From: =?utf-8?q?Bartolom=C3=A9_S=C3=A1nchez_Salado?=
+ <bartolome.salado@kiwi.com>
+Date: Sun, 12 Dec 2021 18:13:23 +0100
+Subject: Use smart_str instead of deprecated smart_text Django function
+
+Forwarded: https://github.com/Fantomas42/django-tagging/pull/23/commits/ee42fd962c5abc7ed18f729ded42ee1f56397678
+---
+ tagging/models.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tagging/models.py b/tagging/models.py
+index 02550ee..d16a61e 100644
+--- a/tagging/models.py
++++ b/tagging/models.py
+@@ -5,7 +5,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
+ from django.contrib.contenttypes.models import ContentType
+ from django.db import connection
+ from django.db import models
+-from django.utils.encoding import smart_text
++from django.utils.encoding import smart_str
+ from django.utils.translation import gettext_lazy as _
+ 
+ from tagging import settings
+@@ -519,4 +519,4 @@ class TaggedItem(models.Model):
+         verbose_name_plural = _('tagged items')
+ 
+     def __str__(self):
+-        return '%s [%s]' % (smart_text(self.object), smart_text(self.tag))
++        return '%s [%s]' % (smart_str(self.object), smart_str(self.tag))

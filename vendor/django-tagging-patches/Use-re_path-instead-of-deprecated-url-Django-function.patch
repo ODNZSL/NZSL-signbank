@@ -1,0 +1,37 @@
+From: =?utf-8?q?Bartolom=C3=A9_S=C3=A1nchez_Salado?=
+ <bartolome.salado@kiwi.com>
+Date: Sun, 12 Dec 2021 18:14:35 +0100
+Subject: Use re_path instead of deprecated url Django function
+
+Forwarded: https://github.com/Fantomas42/django-tagging/commit/9c47683ec67ad2fbf82f1dce6384b156f64f55bc.patch
+---
+ tagging/tests/urls.py | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/tagging/tests/urls.py b/tagging/tests/urls.py
+index aa127d5..7db3e7e 100644
+--- a/tagging/tests/urls.py
++++ b/tagging/tests/urls.py
+@@ -1,5 +1,5 @@
+ """Test urls for tagging."""
+-from django.conf.urls import url
++from django.urls import re_path
+ 
+ from tagging.tests.models import Article
+ from tagging.views import TaggedObjectList
+@@ -11,10 +11,10 @@ class StaticTaggedObjectList(TaggedObjectList):
+ 
+ 
+ urlpatterns = [
+-    url(r'^static/$', StaticTaggedObjectList.as_view()),
+-    url(r'^static/related/$', StaticTaggedObjectList.as_view(
++    re_path(r'^static/$', StaticTaggedObjectList.as_view()),
++    re_path(r'^static/related/$', StaticTaggedObjectList.as_view(
+         related_tags=True)),
+-    url(r'^no-tag/$', TaggedObjectList.as_view(model=Article)),
+-    url(r'^no-query-no-model/$', TaggedObjectList.as_view()),
+-    url(r'^(?P<tag>[^/]+(?u))/$', TaggedObjectList.as_view(model=Article)),
++    re_path(r'^no-tag/$', TaggedObjectList.as_view(model=Article)),
++    re_path(r'^no-query-no-model/$', TaggedObjectList.as_view()),
++    re_path(r'^(?P<tag>[^/]+(?u))/$', TaggedObjectList.as_view(model=Article)),
+ ]

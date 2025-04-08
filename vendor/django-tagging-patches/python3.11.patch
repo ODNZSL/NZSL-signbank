@@ -1,0 +1,24 @@
+Description: Fix FTBFS with python3.11.
+Author: Bas Couwenberg <sebastic@debian.org>
+Bug-Debian: https://bugs.debian.org/1028671
+
+--- a/docs/index.rst
++++ b/docs/index.rst
+@@ -768,7 +768,7 @@ list items of a particular model class w
+    from shop.apps.products.models import Widget
+ 
+    urlpatterns = patterns('',
+-       url(r'^widgets/tag/(?P<tag>[^/]+(?u))/$',
++       url(r'(?u)^widgets/tag/(?P<tag>[^/]+)/$',
+            TaggedObjectList.as_view(model=Widget, paginate_by=10, allow_empty=True),
+            name='widget_tag_detail'),
+    )
+--- a/tagging/tests/urls.py
++++ b/tagging/tests/urls.py
+@@ -16,5 +16,5 @@ urlpatterns = [
+         related_tags=True)),
+     re_path(r'^no-tag/$', TaggedObjectList.as_view(model=Article)),
+     re_path(r'^no-query-no-model/$', TaggedObjectList.as_view()),
+-    re_path(r'^(?P<tag>[^/]+(?u))/$', TaggedObjectList.as_view(model=Article)),
++    re_path(r'(?u)^(?P<tag>[^/]+)/$', TaggedObjectList.as_view(model=Article)),
+ ]

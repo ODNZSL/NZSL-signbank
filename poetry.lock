@@ -341,10 +341,12 @@ description = "Generic tagging application for Django"
 optional = false
 python-versions = "*"
 groups = ["main"]
-files = [
-    {file = "django-tagging-0.5.0.tar.gz", hash = "sha256:28d68fa4831705e51ad7d1e845ed6dd9e354f9b6f8a5f63b655a430646ef4e8d"},
-    {file = "django_tagging-0.5.0-py3-none-any.whl", hash = "sha256:5932ddcac9aec67cf605eeee06e9c498a022d145fa38d00c82088510d221f315"},
-]
+files = []
+develop = false
+
+[package.source]
+type = "directory"
+url = "vendor/django-tagging"
 
 [[package]]
 name = "gunicorn"
@@ -652,4 +654,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "b98c75435b28758ed37ac852d69e04570db79f1210237e992aa96e639ed833aa"
+content-hash = "65d0edb7dd7c6968b270b1cf58de7f9ec0563d0ae86b11a94f85b7c47f79c7da"
