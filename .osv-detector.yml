@@ -1,9 +1,2 @@
 ignore:
-  - GHSA-248v-346w-9cwc
-  - GHSA-6c3j-c64m-qhgq
   - GHSA-9mvj-f7w8-pvh2
-  - GHSA-g92j-qhmh-64v2
-  - GHSA-gxr4-xjj5-5px2
-  - GHSA-jpcq-cgw6-v4j6
-  - GHSA-rmxg-73gg-4p98
-  - GHSA-rrqc-c2jx-6jgv

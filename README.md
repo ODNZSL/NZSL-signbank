@@ -194,11 +194,13 @@ To run the application locally you will need:
 
 1. Run `cp example.env .env`
 
-To start the application using docker-compose, simply run:
+2. Run `npm ci`
 
-`docker-compose up`
+3. Run `npm run collectjs && npm run collectcss`
 
-And the service will start bound to port 8000 on your host, with a companion Postgres database
+4. Run `docker-compose up`
+
+The service will start bound to port 8000 on your host, with a companion Postgres database
 running in its own container, and an SMTP mailcatcher that will receive outbound mail from the application bound to port 1025 on your host.
 
 #### Local data
