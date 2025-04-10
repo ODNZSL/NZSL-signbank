@@ -137,7 +137,12 @@ $.editable.addInputType('multicheckbox', {
             return submitdata;
         };
 
-        $.each(settings.data || [], function(value, label) {
+        // Output multicheckbox in label alphabetical order
+        const data_inverted = Object.fromEntries(Object.entries(settings.data).map(([k, v]) => [v, k]));
+        var dkeys = Object.keys(data_inverted);
+        dkeys.sort();
+        dkeys.forEach(function(label) {
+            var value = data_inverted[label];
             if (value === "selected") {
                 return;
             }
