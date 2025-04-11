@@ -138,14 +138,14 @@ $.editable.addInputType('multicheckbox', {
         };
 
         // Output multicheckbox in alphabetical order of labels
-        const data_inverted = Object.fromEntries(Object.entries(settings.data).map(([k, v]) => [v, k]));
-        Object.keys(data_inverted).sort().forEach(function(label) {
-            var value = data_inverted[label];
-            if (value === "selected") {
-                return;
-            }
-            $el.append($("<label><input type='checkbox' value='" + value + "' /></label><br />"));
-        });
+        Object.entries(settings.data)
+            .sort(([, a], [, b]) => a.localeCompare?.(b))
+            .forEach(([value, label]) => {
+                if (value === "selected") {
+                    return;
+                }
+                $el.append($("<label><input type='checkbox' value='" + value + "' /></label><br />"));
+            });
 
         return $el.find("input[type='checkbox']");
     },
