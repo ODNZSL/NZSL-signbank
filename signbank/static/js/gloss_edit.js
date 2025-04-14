@@ -138,7 +138,7 @@ $.editable.addInputType('multicheckbox', {
         };
 
         // Output multicheckbox in alphabetical order of labels
-        Object.entries(settings.data)
+        Object.entries(settings.data ?? [])
             .sort(([, a], [, b]) => a.localeCompare?.(b))
             .forEach(([value, label]) => {
                 if (value === "selected") {
