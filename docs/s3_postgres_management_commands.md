@@ -4,7 +4,7 @@
 
 There are 3 Management Commands to help with this.
 
-`get_video_s3_acls.md`
+`get_video_s3_acls`
 
 `find_fixable_s3_orphans`
 
@@ -209,7 +209,7 @@ Gloss ID,Gloss,Gloss public,Suggested Video key
 ### repair_fixable_s3_orphans
 
 This command attempts to unify NZSL Signbank records with S3 orphans, by digesting a CSV input of the same format as
-output by `find-fixable-orphans.py`
+output by `find-fixable-orphans`
 
 It does this by generating `GlossVideo` Django objects where necessary, and associating them
 with the correct `Gloss` Django objects.
@@ -313,7 +313,7 @@ grep "Delete S3 Object" uat.csv | cut -d',' -f2 | grep -P '[0-7][0-9]{3,3}' | gr
 The file `orphans-uat.csv` was generated using command `find_fixable_s3_orphans` then *human reviewed and edited*.
 
 ```
-./repair-fixable-orphans.py --env uat orphans-uat.csv
+bin/develop.py repair-fixable-orphans --env uat orphans-uat.csv
 ```
 
 <br />
