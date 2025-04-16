@@ -32,7 +32,7 @@ The commands require, usually in the environment:
 - An AWS profile - eg. `AWS_PROFILE` environment variable set to a pre-configured profile.
 - A Postgres context - eg. `DATABASE_URL` environment variable with target and credentials.
 
-The commands have common arguments:
+The commands have some common arguments:
 
 - `--help` or `-h` - emit a Help message showing the available arguments.
 - `--env` - specifies the target environment, eg. `dev`, `uat`, `production`. This is used to contruct the name of the
@@ -50,7 +50,9 @@ This command has extra arguments:
 - `--dumps3` Just get the AWS S3 contents, output it, then exit. Mainly for debugging.
 
 This command produces a full report on Postgres vs S3.
+
 It outputs as CSV, with headers.
+
 The columns are as follows:
 
 ```
@@ -73,20 +75,22 @@ Sbank Gloss created at
 
 - `Delete S3 Object`
 
-The S3 object is "orphaned", that is, it has no corresponding NZSL Signbank postgres database record. Some of these are
-fixable, see the `find-fixable-s3-orphans.py` command. But any that are not should be deleted as they are taking up
-space
-without being visible to the NZSL Signbank application.
+The S3 object is "orphaned", that is, it has no corresponding NZSL Signbank postgres database record.
+
+Some of these are fixable, see the `find-fixable-s3-orphans.py` command. But any that are not should be deleted as they are taking up
+space without being visible to the NZSL Signbank application.
 
 - `Update ACL`
 
 Make sure that the S3 object's ACL matches the expected value in the column next to it, and fix it if not.
+
 This uses AWS *Canned ACLs*, which in our case means the two values `private` and `public-read`
 
 - `Review`
 
-Usually means there is a Signbank NZSL database entry with no corresponding S3 object. These are out of scope for these
-commands, and are expected to be fixed by other means (ie. functionality within the NZSL Signbank app).
+Usually means there is a Signbank NZSL database entry with no corresponding S3 object.
+
+These are out of scope for these commands, and are expected to be fixed by other means (ie. functionality within the NZSL Signbank app).
 
 <br />
 
