@@ -137,13 +137,15 @@ $.editable.addInputType('multicheckbox', {
             return submitdata;
         };
 
-        $.each(settings.data || [], function(value, label) {
-            if (value === "selected") {
-                return;
-            }
-
-            $el.append($("<label><input type='checkbox' value='" + value + "' /></label><br />"));
-        });
+        // Output multicheckbox in alphabetical order of labels
+        Object.entries(settings.data ?? [])
+            .sort(([, a], [, b]) => a.localeCompare?.(b))
+            .forEach(([value, label]) => {
+                if (value === "selected") {
+                    return;
+                }
+                $el.append($("<label><input type='checkbox' value='" + value + "' /></label><br />"));
+            });
 
         return $el.find("input[type='checkbox']");
     },
