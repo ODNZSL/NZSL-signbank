@@ -20,10 +20,11 @@ _assist_ with effecting some types of repair where discrepancies exist.
 Only some actions are performed by these commands, other operations have to be manually performed via the AWS `cli` or
 other means, using the output from these commands as input data.
 
-The commands use the `Boto3` python library to talk to AWS S3.
-They use an external client to talk to Postgres.
+- The commands use the `Boto3` python library to talk to AWS S3.
 
-They output diagnostic and progress information on STDERR.
+- They use an external client to talk to Postgres.
+
+- They output diagnostic and progress information on STDERR. 
 All data output is on STDOUT and may be safely redirected.
 
 The commands require, usually in the environment:
