@@ -1,8 +1,17 @@
-# Diagnosing and manipulating S3/Postgres video relationships
+# Management commands for diagnosing and manipulating S3/Postgres video relationships
 
 <br />
 
 There are 3 Management Commands to help with this.
+
+`get_video_s3_acls.md`
+
+`find_fixable_s3_orphans`
+
+`repair_fixable_s3_orphans`
+
+<br />
+
 
 These commands are used to report on relationships between Signbank's Postgres database and Amazon's S3 file storage,
 and then
@@ -71,12 +80,12 @@ without being visible to the NZSL Signbank application.
 - `Update ACL`
 
 Make sure that the S3 object's ACL matches the expected value in the column next to it, and fix it if not.
-This uses AWS *Canned ACLs*, which in our case means the two values `private` and `public-read`.
+This uses AWS *Canned ACLs*, which in our case means the two values `private` and `public-read`
 
 - `Review`
 
 Usually means there is a Signbank NZSL database entry with no corresponding S3 object. These are out of scope for these
-commands, and are expected to be fixed by other means (eg. functionality within the NZSL Signbank app).
+commands, and are expected to be fixed by other means (ie. functionality within the NZSL Signbank app).
 
 <br />
 
@@ -132,8 +141,6 @@ Update ACL,8273-organic.8273_video.mp4,2024-11-11 03:52:33+00:00,private,private
 
 This command accesses the database and S3 in a similar way to `get_video_s3_acls`
 
-(Dev note: It contains a lot of duplicated code with that command, which should be libratised at some point.)
-
 It finds S3 objects that have no corresponding NZSL Signbank database record. These are 'orphaned' S3 objects.
 
 It then parses the name string of the object and attempts to find an NZSL Signbank record that matches it.
@@ -141,7 +148,7 @@ It then parses the name string of the object and attempts to find an NZSL Signba
 This is not guaranteed to be correct, so the output needs human review.
 
 It outputs what it finds as CSV with header, in a format that can be digested by the 3rd command
-`repair_fixable_s3_orphans`.
+`repair_fixable_s3_orphans`
 
 The output columns are as follows:
 
@@ -202,14 +209,17 @@ Gloss ID,Gloss,Gloss public,Suggested Video key
 ### repair_fixable_s3_orphans
 
 This command attempts to unify NZSL Signbank records with S3 orphans, by digesting a CSV input of the same format as
-output by
-`find-fixable-orphans.py`. It does this by generating `GlossVideo` Django objects where necessary, and associating them
+output by `find-fixable-orphans.py`
+
+It does this by generating `GlossVideo` Django objects where necessary, and associating them
 with the correct `Gloss` Django objects.
 
 This operation _changes_ the database contents and so must be used with
 caution.
 
 The CSV file is supplied as a non-optional positional argument.
+
+The CSV file is expected to have undergone human revision before it is used.
 
 **Important**
 
@@ -273,7 +283,7 @@ Ignoring: GlossVideo already exists: 8319-ecosystem.8319_usageexample_1.mov
 
 *The following code snippets were used in practice, but are offered here as examples.*
 
-*They are dangerous, and must be understood before use.*
+*They are potentially dangerous, and must be understood before use.*
 
 
 
@@ -300,7 +310,7 @@ grep "Delete S3 Object" uat.csv | cut -d',' -f2 | grep -P '[0-7][0-9]{3,3}' | gr
 
 ## De-orphaning
 
-The file `orphans-uat.csv` was generated using command `find_fixable_s3_orphans`, then *human reviewed and edited*.
+The file `orphans-uat.csv` was generated using command `find_fixable_s3_orphans` then *human reviewed and edited*.
 
 ```
 ./repair-fixable-orphans.py --env uat orphans-uat.csv
