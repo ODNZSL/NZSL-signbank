@@ -9,7 +9,7 @@ homepage = "https://signbank.nzsl.nz/"
 repository = "https://github.com/ODNZSL/NZSL-signbank"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.12"
 django = "~4.2.22"
 django-tagging = { path = "./vendor/django-tagging/", develop = false }
 django-reversion = "4.0.2"
@@ -25,11 +25,12 @@ django-notifications-hq = "1.7.0"
 dj-database-url = "0.5.0"
 boto3 = "1.22.8"
 django-storages = "1.12.1"
-psycopg2 = "2.8.6"
+psycopg = "*"
 certifi = "2024.7.4"
 sentry-sdk = "2.8.0"
 gunicorn = "23.0.0"
 whitenoise = "6.2.0"
+setuptools = "*"
 
 [build-system]
 requires = ["poetry-core"]
