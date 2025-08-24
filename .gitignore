@@ -21,3 +21,4 @@ debug.log
 
 media
 .env
+.envrc
