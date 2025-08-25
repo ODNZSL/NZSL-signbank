@@ -10,7 +10,7 @@ RUN npm ci &&\
     npm run collectjs &&\
     npm run collectcss
 
-FROM python:3.9
+FROM python:3.12
 
 ENV DJANGO_SETTINGS_MODULE=signbank.settings.development
 
