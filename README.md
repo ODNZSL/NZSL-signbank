@@ -311,7 +311,7 @@ and proper version pinning, but otherwise doesn't have much value.
   meaning they will be created the next time the [`createinitialrevisions`](https://django-reversion.readthedocs.io/en/latest/commands.html#createinitialrevisions)
   command is run, which happens when the container starts and result in a crash if
   a large amount of content has been recently imported; if this happens you should
-  be able to run `./manage.py createinitialrevisions` manually using `heroku run`
+  be able to run `./develop.py createinitialrevisions` manually using `heroku run ./develop.py createinitialrevisions -a nzsl-signbank-production`
   after which the app should be able to successfully restart
 
 ### Differences between NZSL Signbank and FinSL Signbank
