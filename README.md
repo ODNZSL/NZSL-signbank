@@ -312,7 +312,7 @@ and proper version pinning, but otherwise doesn't have much value.
   command is run, which happens when the container starts and result in a crash if
   a large amount of content has been recently imported; if this happens you should
   be able to run `./manage.py createinitialrevisions` manually using `heroku run`
-  after which the app sholud be able to successfully restart
+  after which the app should be able to successfully restart
 
 ### Differences between NZSL Signbank and FinSL Signbank
 
