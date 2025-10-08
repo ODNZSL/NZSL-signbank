@@ -307,6 +307,15 @@ and proper version pinning, but otherwise doesn't have much value.
   changes until it is reloaded. If an issue along the lines of a data update not
   showing up in the UI is reported, a good first step is to restart the
   application. On Heroku, this is easily done via `heroku restart`.
+- It is possible to import content without having their initial revision
+  created, meaning they will be created the next time the
+  [`createinitialrevisions`](https://django-reversion.readthedocs.io/en/latest/commands.html#createinitialrevisions)
+  command is run, which happens when the container starts and result in a crash
+  if a large amount of content has been recently imported; if this happens you
+  should be able to run `./develop.py createinitialrevisions` manually using
+  `heroku run ./develop.py createinitialrevisions -a nzsl-signbank-production`
+  after which the app should be able to successfully restart
+  (`heroku restart -a nzsl-signbank-production`).
 
 ### Differences between NZSL Signbank and FinSL Signbank
 
