@@ -69,7 +69,7 @@ def filter_fakekey(instring):
 # Get the video files info from NZSL Signbank
 def get_nzsl_raw_keys_dict():
     print(
-        f"Getting raw list of video file info from NZSL Signbank ...",
+        f"Getting raw list of video file info from NZSL Signbank postgres database ...",
         file=sys.stderr,
     )
     this_nzsl_raw_keys_dict = {}
@@ -211,7 +211,7 @@ def find_orphans():
     )
     print("Finding fixable orphans", file=sys.stderr)
 
-    out = csv.writer(sys.stdout, delimiter=CSV_DELIMITER, quoting=csv.QUOTE_NONE)
+    out = csv.writer(sys.stdout, delimiter=CSV_DELIMITER, quoting=csv.QUOTE_ALL, escapechar="//")
     out.writerow(GLOBAL_COLUMN_HEADINGS)
 
     # Traverse all the NZSL Signbank glosses that are missing S3 objects

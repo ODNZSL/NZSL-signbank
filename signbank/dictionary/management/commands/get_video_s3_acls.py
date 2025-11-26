@@ -55,7 +55,7 @@ def filter_fakekey(instring):
 # Get the video files info from NZSL Signbank
 def get_nzsl_raw_keys_dict():
     print(
-        f"Getting raw list of video file info from NZSL Signbank ...",
+        f"Getting raw list of video file info from NZSL Signbank postgres database ...",
         file=sys.stderr,
     )
     this_nzsl_raw_keys_dict = {}
@@ -156,30 +156,41 @@ def create_all_keys_dict(this_nzsl_raw_keys_dict, this_s3_bucket_raw_keys_list):
     )
     this_all_keys_dict = {}
 
-    # Find S3 keys that are present in NZSL, or absent
-    # TODO This could be changed to use pop(), so that on each pass we are left
-    # with a smaller subset of the rows, which we can search faster. If the
-    # database becomes very large in future this could save a lot of processing.
+    # Find S3 keys that are present or absent in NZSL.
+    # For speed we use pop(), so that each pass leaves a smaller subset of the rows.
+    # This destroys the NZSL database keys list but we never use it again.
+    dict_rows_ok = 0
+    dict_rows_no_nzsl = 0
     for video_key in this_s3_bucket_raw_keys_list:
-        dict_row = this_nzsl_raw_keys_dict.get(video_key, None)
+        dict_row = this_nzsl_raw_keys_dict.pop(video_key, None)
         if dict_row:
             this_all_keys_dict[video_key] = [
                 True,  # NZSL PRESENT
                 True,  # S3 PRESENT
             ] + dict_row
+            dict_rows_ok += 1
         else:
             this_all_keys_dict[video_key] = [
                 False,  # NZSL Absent
                 True,  # S3 PRESENT
             ] + [""] * 6
+            dict_rows_no_nzsl += 1
 
-    # Find NZSL keys that are absent from S3 (present handled above)
+    print(
+        f"{dict_rows_ok} OK, both NZSL and S3\n"
+        f"{dict_rows_no_nzsl} S3 but no NZSL\n"
+        f"{len(this_nzsl_raw_keys_dict)} NZSL but no S3",
+        file=sys.stderr,
+    )
+
+    # NZSL keys that are absent from S3
     for video_key, dict_row in this_nzsl_raw_keys_dict.items():
-        if video_key not in this_s3_bucket_raw_keys_list:
-            this_all_keys_dict[video_key] = [
-                True,  # NZSL PRESENT
-                False,  # S3 Absent
-            ] + dict_row
+        this_all_keys_dict[video_key] = [
+            True,  # NZSL PRESENT
+            False,  # S3 Absent
+        ] + dict_row
+
+    # Find keys that are absent from both, oh, wait ...
 
     return this_all_keys_dict
 
@@ -281,11 +292,19 @@ def build_csv_row(
 def process_keys(this_all_keys_dict):
     print(f"Getting detailed S3 data for keys ({AWS_S3_BUCKET}) ...", file=sys.stderr)
 
-    out = csv.writer(sys.stdout, delimiter=CSV_DELIMITER, quoting=csv.QUOTE_NONE)
+    out = csv.writer(sys.stdout, delimiter=CSV_DELIMITER, quoting=csv.QUOTE_ALL, escapechar="\\")
     out.writerow(build_csv_header())
 
     for video_key, dict_row in this_all_keys_dict.items():
-        out.writerow(build_csv_row(video_key, *dict_row))
+        out_row = build_csv_row(video_key, *dict_row)
+        try:
+            out.writerow(out_row)
+        except csv.Error as e:
+            print(e, file=sys.stderr)
+            pprint(out_row, stream=sys.stderr)
+            out_row[0] = f"Error: csv.Error '{e}'"
+            print(", ".join(out_row))
+            continue
 
 
 class Command(BaseCommand):
