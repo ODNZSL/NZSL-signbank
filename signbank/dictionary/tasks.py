@@ -1,5 +1,4 @@
 import boto3
-import os
 from tempfile import TemporaryDirectory
 from typing import TypedDict, List
 from urllib.request import urlretrieve, build_opener, install_opener
@@ -99,8 +98,6 @@ def retrieve_videos_for_glosses(video_details: List[VideoDetail]):
         videos_to_create = []
         for video in video_batch:
             retrieval_url = f"{settings.NZSL_SHARE_HOSTNAME}{video['url']}"
-
-            print(video["file_name"])
             if s3_storage_used:
                 try:
                     file, _ = urlretrieve(
