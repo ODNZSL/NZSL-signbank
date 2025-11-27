@@ -88,8 +88,8 @@ def retrieve_videos_for_glosses(video_details: List[VideoDetail]):
 
     # Batch up the list in case it is long
     video_batches = [
-        video_details[i: i + settings.NZSL_SHARE_BATCH_LENGTH]
-        for i in range(0, len(video_details), settings.NZSL_SHARE_BATCH_LENGTH)
+        video_details[i: i + settings.NZSL_SHARE_BATCH_SIZE]
+        for i in range(0, len(video_details), settings.NZSL_SHARE_BATCH_SIZE)
     ]
     for video_batch in video_batches:
         videos_to_create = []
