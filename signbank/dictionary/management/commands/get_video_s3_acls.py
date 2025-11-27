@@ -105,7 +105,7 @@ def build_csv_row(
 
 
 # From the keys present in NZSL, get all their S3 information
-def process_keys(this_all_keys_dict, aws_s3_bucket):
+def process_keys(aws_s3_bucket, this_all_keys_dict):
     print(f"Getting detailed S3 data for keys ({aws_s3_bucket}) ...", file=sys.stderr)
 
     out = csv.writer(
@@ -172,8 +172,8 @@ class Command(BaseCommand):
             exit()
 
         process_keys(
+            AWS_S3_BUCKET,
             create_all_keys_dict(
                 get_nzsl_raw_keys_dict(), get_s3_bucket_raw_keys_list(AWS_S3_BUCKET)
             ),
-            AWS_S3_BUCKET,
         )
