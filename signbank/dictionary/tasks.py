@@ -10,6 +10,9 @@ from django.db import connection
 from .models import FieldChoice, Gloss
 from ..video.models import GlossVideo
 
+# Bite size to split video_details up into
+VIDEO_BATCH_LENGTH = 10
+
 
 class VideoDetail(TypedDict):
     url: str
@@ -76,7 +79,6 @@ def retrieve_videos_for_glosses(video_details: List[VideoDetail]):
         "finalexample1": finalexample_1_video_type,
         "finalexample2": finalexample_2_video_type
     }
-    videos_to_create = []
 
     temp_dir = TemporaryDirectory(dir=settings.MEDIA_ROOT)
 
@@ -88,41 +90,53 @@ def retrieve_videos_for_glosses(video_details: List[VideoDetail]):
     opener.addheaders = [('Accept', '*/*')]
     install_opener(opener)
 
-    for video in video_details:
-        retrieval_url = f"{settings.NZSL_SHARE_HOSTNAME}{video['url']}"
+    # Batch up the list in case it is long
+    video_batches = [
+        video_details[i: i + VIDEO_BATCH_LENGTH]
+        for i in range(0, len(video_details), VIDEO_BATCH_LENGTH)
+    ]
+    for video_batch in video_batches:
+        videos_to_create = []
+        for video in video_batch:
+            retrieval_url = f"{settings.NZSL_SHARE_HOSTNAME}{video['url']}"
 
-        if s3_storage_used:
-            file, _ = urlretrieve(
-                retrieval_url,
-                video["file_name"]
+            print(video["file_name"])
+            if s3_storage_used:
+                try:
+                    file, _ = urlretrieve(
+                        retrieval_url,
+                        video["file_name"]
+                    )
+                except FileNotFoundError as e:
+                    print(e)
+                    continue
+                s3.upload_file(
+                    file, settings.AWS_STORAGE_BUCKET_NAME, video["file_name"]
+                )
+            else:
+                file_name = f"{temp_dir.name}/{video['file_name']}"
+                file, _ = urlretrieve(
+                    retrieval_url,
+                    file_name
+                )
+
+            gloss = Gloss.objects.get(pk=video["gloss_pk"])
+
+            gloss_video = GlossVideo(
+                gloss=gloss,
+                dataset=gloss.dataset,
+                videofile=file,
+                title=file,
+                version=video["version"],
+                is_public=False,
+                video_type=video_type_map.get(video["video_type"], None)
             )
-            s3.upload_file(
-                file, settings.AWS_STORAGE_BUCKET_NAME, video["file_name"]
-            )
-        else:
-            file_name = f"{temp_dir.name}/{video['file_name']}"
-            file, _ = urlretrieve(
-                retrieval_url,
-                file_name
-            )
 
-        gloss = Gloss.objects.get(pk=video["gloss_pk"])
+            if not s3_storage_used:
+                gloss_video = move_glossvideo_to_valid_filepath(gloss_video)
+            videos_to_create.append(gloss_video)
 
-        gloss_video = GlossVideo(
-            gloss=gloss,
-            dataset=gloss.dataset,
-            videofile=file,
-            title=file,
-            version=video["version"],
-            is_public=False,
-            video_type=video_type_map.get(video["video_type"], None)
-        )
-
-        if not s3_storage_used:
-            gloss_video = move_glossvideo_to_valid_filepath(gloss_video)
-        videos_to_create.append(gloss_video)
-
-    GlossVideo.objects.bulk_create(videos_to_create)
+        GlossVideo.objects.bulk_create(videos_to_create, ignore_conflicts=True)
 
     temp_dir.cleanup()
     connection.close()
