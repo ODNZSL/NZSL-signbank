@@ -11,12 +11,6 @@
 #  https://docs.aws.amazon.com/cli/latest/reference/s3api/get-object-acl.html
 
 from django.core.management.base import BaseCommand
-import os
-import sys
-import subprocess
-from uuid import uuid4
-import boto3
-import csv
 from signbank.dictionary.models import Gloss
 from signbank.dictionary.management.commands.apis import *
 
@@ -27,7 +21,9 @@ def find_orphans(aws_s3_bucket):
     )
     print("Finding fixable S3 orphans", file=sys.stderr)
 
-    out = csv.writer(sys.stdout, delimiter=CSV_DELIMITER, quoting=csv.QUOTE_ALL, escapechar="/")
+    out = csv.writer(
+        sys.stdout, delimiter=CSV_DELIMITER, quoting=csv.QUOTE_ALL, escapechar="/"
+    )
     out.writerow(GLOBAL_COLUMN_HEADINGS)
 
     # Traverse all the NZSL Signbank glosses that are missing S3 objects

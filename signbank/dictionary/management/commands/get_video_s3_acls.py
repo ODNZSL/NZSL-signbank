@@ -7,13 +7,6 @@
 #  https://docs.aws.amazon.com/cli/latest/reference/s3api/get-object-acl.html
 
 from django.core.management.base import BaseCommand
-import os
-import sys
-import subprocess
-from uuid import uuid4
-from pprint import pprint
-import boto3
-import csv
 from signbank.dictionary.management.commands.apis import *
 
 
@@ -115,7 +108,9 @@ def build_csv_row(
 def process_keys(this_all_keys_dict, aws_s3_bucket):
     print(f"Getting detailed S3 data for keys ({aws_s3_bucket}) ...", file=sys.stderr)
 
-    out = csv.writer(sys.stdout, delimiter=CSV_DELIMITER, quoting=csv.QUOTE_ALL, escapechar="\\")
+    out = csv.writer(
+        sys.stdout, delimiter=CSV_DELIMITER, quoting=csv.QUOTE_ALL, escapechar="\\"
+    )
     out.writerow(build_csv_header())
 
     for video_key, dict_row in this_all_keys_dict.items():
@@ -180,5 +175,5 @@ class Command(BaseCommand):
             create_all_keys_dict(
                 get_nzsl_raw_keys_dict(), get_s3_bucket_raw_keys_list(AWS_S3_BUCKET)
             ),
-            AWS_S3_BUCKET
+            AWS_S3_BUCKET,
         )

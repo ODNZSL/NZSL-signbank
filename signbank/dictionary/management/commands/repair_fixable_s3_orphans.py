@@ -12,10 +12,6 @@
 #  https://docs.aws.amazon.com/cli/latest/reference/s3api/get-object-acl.html
 
 from django.core.management.base import BaseCommand
-import os
-import sys
-import subprocess
-import csv
 from signbank.dictionary.models import (
     FieldChoice,
     Gloss,
@@ -46,7 +42,9 @@ def process_csv():
 
     csv_rows = read_csv(CSV_INPUT_FILENAME)
 
-    out = csv.writer(sys.stdout, delimiter=CSV_DELIMITER, quoting=csv.QUOTE_ALL, escapechar="/")
+    out = csv.writer(
+        sys.stdout, delimiter=CSV_DELIMITER, quoting=csv.QUOTE_ALL, escapechar="/"
+    )
 
     for csv_row in csv_rows:
         gloss_id = csv_row[GLOSS_ID_COLUMN]
