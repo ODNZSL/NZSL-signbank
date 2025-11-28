@@ -255,7 +255,11 @@ else:
     GLOSS_VIDEO_FILE_STORAGE = 'signbank.video.models.GlossVideoStorage'
 
 NZSL_SHARE_HOSTNAME = os.getenv('NZSL_SHARE_HOSTNAME')
+<<<<<<< HEAD
 NZSL_SHARE_BATCH_SIZE = 10
+=======
+
+>>>>>>> parent of 1b41b4c (NZSL Share batch length moved to settings)
 
 mimetypes.add_type("video/mp4", ".mov", True)
 mimetypes.add_type("video/webm", ".webm", True)

@@ -9,6 +9,9 @@ from django.db import connection
 from .models import FieldChoice, Gloss
 from ..video.models import GlossVideo
 
+# Bite size to split video_details up into
+VIDEO_BATCH_LENGTH = 10
+
 
 class VideoDetail(TypedDict):
     url: str
