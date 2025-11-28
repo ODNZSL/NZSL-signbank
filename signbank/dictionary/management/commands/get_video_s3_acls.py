@@ -155,7 +155,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        PGCLI = options["pgcli"]
         AWS_S3_BUCKET = f"nzsl-signbank-media-{options['env']}"
 
         print(f"Env:         {options['env']}", file=sys.stderr)
