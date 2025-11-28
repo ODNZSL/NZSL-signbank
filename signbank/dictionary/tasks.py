@@ -1,4 +1,5 @@
 import boto3
+import os
 from tempfile import TemporaryDirectory
 from typing import TypedDict, List
 from urllib.request import urlretrieve, build_opener, install_opener
