@@ -131,9 +131,9 @@ function clearForm(myFormElement) {
 <table class='table table-condensed'>
     <thead>
         <tr>
-            <th>{% blocktrans %}Source Gloss{% endblocktrans %} <a href="?search={{request.GET.search}}{% for key,values in request.GET.lists %}{% if not key  == 'search' and not key == 'order' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}{% if order == 'source' or request.GET.order == 'source' %}&order=-source{% else %}&order=source{% endif %}">
+            <th>{% blocktrans %}Source Gloss{% endblocktrans %} <a href="?search={{request.GET.search|urlencode}}{% for key,values in request.GET.lists %}{% if not key  == 'search' and not key == 'order' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}{% if order == 'source' or request.GET.order == 'source' %}&order=-source{% else %}&order=source{% endif %}">
                 <span class="{% if request.GET.order == "-source" %}glyphicon glyphicon-sort-by-alphabet{% else %}glyphicon glyphicon-sort-by-alphabet-alt{% endif %}" aria-hidden="true"></span></a></th>
-            <th>{% blocktrans %}Target Gloss{% endblocktrans %} <a href="?search={{request.GET.search}}{% for key,values in request.GET.lists %}{% if not key  == 'search' and not key == 'order' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}{% if order == 'target' or request.GET.order == 'target' %}&order=-target{% else %}&order=target{% endif %}">
+            <th>{% blocktrans %}Target Gloss{% endblocktrans %} <a href="?search={{request.GET.search|urlencode}}{% for key,values in request.GET.lists %}{% if not key  == 'search' and not key == 'order' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}{% if order == 'target' or request.GET.order == 'target' %}&order=-target{% else %}&order=target{% endif %}">
                 <span class="{% if request.GET.order == "-target" %}glyphicon glyphicon-sort-by-alphabet{% else %}glyphicon glyphicon-sort-by-alphabet-alt{% endif %}" aria-hidden="true"></span></a></th>
             <th>{% blocktrans %}Relation type{% endblocktrans %}</th>
         </tr>
