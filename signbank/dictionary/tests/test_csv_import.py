@@ -319,7 +319,7 @@ class ShareCSVImportTestCase(TestCase):
         tagged_glosses = TaggedItem.objects.get_intersection_by_model(
             gloss_qs, [not_public_tag, share_tag]
         )
-        self.assertQuerysetEqual(tagged_glosses, gloss_qs)
+        self.assertQuerySetEqual(tagged_glosses, gloss_qs)
 
         # There should be no gloss videos at this point because we have mocked the task to
         # create them
