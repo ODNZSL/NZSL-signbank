@@ -10,12 +10,12 @@ import reversion
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import OperationalError, models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from tagging.models import Tag
-from tagging.registry import AlreadyRegistered, register as tagging_register
+
+from signbank.tagging.models import Tag
 
 
 class Dataset(models.Model):
@@ -839,7 +839,8 @@ class GlossRelation(models.Model):
 
     def tag(self):
         """The type of the Relation, a Tag."""
-        return list(Tag.objects.get_for_object(self))
+        from signbank.tagging.adapter import tags_for_object
+        return list(tags_for_object(self))
     tag.short_description = 'Relation type'
 
     class Meta:
@@ -960,10 +961,3 @@ class ValidationRecord(models.Model):
 
 
 
-# Register Models for django-tagging to add wrappers around django-tagging API.
-models_to_register_for_tagging = (Gloss, GlossRelation,)
-for model in models_to_register_for_tagging:
-    try:
-        tagging_register(model)
-    except AlreadyRegistered:
-        pass

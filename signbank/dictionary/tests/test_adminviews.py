@@ -15,7 +15,8 @@ from django.urls import reverse
 from django.utils.timezone import get_current_timezone
 from django_comments.models import Comment
 from guardian.shortcuts import assign_perm
-from tagging.models import Tag
+from signbank.tagging.adapter import add_tag
+from signbank.tagging.models import Tag
 
 from signbank.dictionary.models import (
     Dataset,
@@ -170,7 +171,7 @@ class GlossListViewTestCase(TestCase):
         testgloss_1 = Gloss.objects.create(
             idgloss="testgloss:1", dataset=dataset, created_by=self.user, updated_by=self.user
         )
-        Tag.objects.add_tag(testgloss_1, settings.TAG_VALIDATION_CHECK_RESULTS)
+        add_tag(testgloss_1, settings.TAG_VALIDATION_CHECK_RESULTS)
         vr1_g1 = ValidationRecord.objects.create(
             gloss=testgloss_1,
             sign_seen=ValidationRecord.SignSeenChoices.YES.value,
@@ -230,7 +231,7 @@ class GlossListViewTestCase(TestCase):
         testgloss_2 = Gloss.objects.create(
             idgloss="testgloss:2", dataset=dataset, created_by=self.user, updated_by=self.user
         )
-        Tag.objects.add_tag(testgloss_2, settings.TAG_VALIDATION_CHECK_RESULTS)
+        add_tag(testgloss_2, settings.TAG_VALIDATION_CHECK_RESULTS)
         vr1_g2 = ValidationRecord.objects.create(
             gloss=testgloss_2,
             sign_seen=ValidationRecord.SignSeenChoices.YES.value,

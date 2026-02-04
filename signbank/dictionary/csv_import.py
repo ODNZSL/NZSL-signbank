@@ -23,7 +23,8 @@ from django.utils.timezone import get_current_timezone
 from django.utils.translation import gettext as _
 from django_comments.models import Comment
 from guardian.shortcuts import get_objects_for_user, get_perms
-from tagging.models import Tag, TaggedItem
+from signbank.tagging.adapter import add_tag, filter_queryset_with_all_tags
+from signbank.tagging.models import Tag, TaggedItem
 
 from .forms import CSVFileOnlyUpload, CSVUploadForm
 from .models import (Dataset, FieldChoice, Gloss, GlossTranslations, Language,

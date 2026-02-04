@@ -28,7 +28,8 @@ from django_comments.models import Comment
 from guardian.shortcuts import (get_objects_for_user, get_perms,
                                 get_users_with_perms)
 from reversion.models import Version
-from tagging.models import Tag, TaggedItem
+from signbank.tagging.adapter import filter_queryset_with_all_tags, tags_for_object
+from signbank.tagging.models import Tag, TaggedItem
 
 from ..comments import CommentTagForm
 from ..video.forms import GlossVideoForGlossForm
@@ -278,9 +279,9 @@ class GlossListView(ListView):
 
         # The queryset may or may not already be filtered for the ready for validation tag.
         # We have to make sure it is filtered by the tag, so we are filtering again
-        ready_for_validation_qs = TaggedItem.objects.get_by_model(
+        ready_for_validation_qs = filter_queryset_with_all_tags(
             self.get_queryset(),
-            settings.TAG_READY_FOR_VALIDATION
+            [settings.TAG_READY_FOR_VALIDATION]
         )
 
         # three types of GlossVideos are imported for validation: illustrations, usage examples
@@ -361,9 +362,9 @@ class GlossListView(ListView):
 
         # The queryset may or may not already be filtered for the validation:check-results tag.
         # We have to make sure it is filtered by the tag, so we are filtering again
-        check_results_qs = TaggedItem.objects.get_by_model(
+        check_results_qs = filter_queryset_with_all_tags(
             self.get_queryset(),
-            settings.TAG_VALIDATION_CHECK_RESULTS
+            [settings.TAG_VALIDATION_CHECK_RESULTS]
         )
 
         sign_seen_yes_validation_records = ValidationRecord.objects.filter(
@@ -548,12 +549,17 @@ class GlossListView(ListView):
         if 'tags' in get and get['tags'] != '':
             vals = get.getlist('tags')
 
-            tags = []
+            # Get tag names from IDs
+            tag_names = []
             for t in vals:
-                tags.extend(Tag.objects.filter(pk=t))
+                try:
+                    tag = Tag.objects.get(pk=t)
+                    tag_names.append(tag.name)
+                except Tag.DoesNotExist:
+                    continue
 
             # search is an implicit AND so intersection
-            tqs = TaggedItem.objects.get_intersection_by_model(Gloss, tags)
+            tqs = filter_queryset_with_all_tags(Gloss, tag_names)
 
             # intersection
             qs = qs & tqs
@@ -565,16 +571,12 @@ class GlossListView(ListView):
         if 'nottags' in get and get['nottags'] != '':
             vals = get.getlist('nottags')
 
-            # print "NOT TAGS: ", vals
-
-            tags = []
-            for t in vals:
-                tags.extend(Tag.objects.filter(name=t))
+            # Get tag names
+            tag_names = [t for t in vals]
 
             # search is an implicit AND so intersection
-            tqs = TaggedItem.objects.get_intersection_by_model(Gloss, tags)
+            tqs = filter_queryset_with_all_tags(Gloss, tag_names)
 
-            # print "NOT", tags, len(tqs)
             # exclude all of tqs from qs
             qs = [q for q in qs if q not in tqs]
 
@@ -1176,12 +1178,17 @@ class GlossRelationListView(ListView):
 
         if 'tags' in get and get['tags'] != '':
             vals = get.getlist('tags', [])
-            tags = []
+            # Get tag names from IDs
+            tag_names = []
             for t in vals:
-                tags.extend(Tag.objects.filter(pk=t))
+                try:
+                    tag = Tag.objects.get(pk=t)
+                    tag_names.append(tag.name)
+                except Tag.DoesNotExist:
+                    continue
 
             # search is an implicit AND so intersection
-            tqs = TaggedItem.objects.get_intersection_by_model(GlossRelation, tags)
+            tqs = filter_queryset_with_all_tags(GlossRelation, tag_names)
 
             # intersection
             qs = qs & tqs

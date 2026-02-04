@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import OperationalError, ProgrammingError
 from django.utils.translation import gettext_lazy as _
-from tagging.models import Tag
+from signbank.tagging.models import Tag
 
 from .models import (AllowedTags, Dataset, FieldChoice, Gloss, Lemma, GlossRelation,
                      GlossURL, Language, MorphologyDefinition, Relation,
