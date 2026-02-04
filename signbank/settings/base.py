@@ -168,7 +168,7 @@ INSTALLED_APPS = (
     'signbank.video',
     'reversion',
     'taggit',
-    'signbank.tagging.apps.TaggingConfig',
+    'signbank.tagging',
     'django_comments',
     'guardian',
     'notifications',
