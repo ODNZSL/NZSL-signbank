@@ -17,7 +17,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import OperationalError, ProgrammingError
 from django.contrib.auth.models import User
 
-from tagging.models import Tag, TaggedItem
+from signbank.tagging.adapter import add_tag, remove_tag, filter_queryset_with_all_tags
+from signbank.tagging.models import Tag, TaggedItem
 from guardian.shortcuts import get_objects_for_user
 from django_comments.models import Comment
 from django_comments.signals import comment_was_posted
@@ -54,7 +55,8 @@ def edit_comment(request, id):
             comment.save()
             if form.cleaned_data["tag"]:
                 tag = form.cleaned_data["tag"]
-                Tag.objects.add_tag(comment, tag)
+                tag_name = tag.name if hasattr(tag, 'name') else str(tag)
+                add_tag(comment, tag_name)
         if 'HTTP_REFERER' in request.META:
             return redirect(request.META['HTTP_REFERER'])
         else:
@@ -125,9 +127,9 @@ class CommentListView(ListView):
         if 'user_name' in get and get['user_name'] != '':
             qs = qs.filter(user_name__icontains=get['user_name'])
         if 'tag' in get and get['tag'] != '':
-            tags = Tag.objects.filter(name=get['tag'])
-            tagged = TaggedItem.objects.get_intersection_by_model(Comment, tags)
-            qs = qs.filter(id__in=tagged)
+            tag_names = [get['tag']]
+            tagged = filter_queryset_with_all_tags(Comment.objects.all(), tag_names)
+            qs = qs.filter(id__in=tagged.values_list('id', flat=True))
 
         qs = qs.filter(is_removed=False)
 
@@ -175,7 +177,9 @@ def add_tags_to_comments(sender, request, comment, **kwargs):
         form = CommentTagForm(request.POST)
         if form.is_valid():
             if form.cleaned_data["tag"]:
-                Tag.objects.add_tag(comment, form.cleaned_data["tag"].name)
+                tag = form.cleaned_data["tag"]
+                tag_name = tag.name if hasattr(tag, 'name') else str(tag)
+                add_tag(comment, tag_name)
 
 
 class CommentTagInlineForm(ModelForm):

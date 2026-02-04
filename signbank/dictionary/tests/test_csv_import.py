@@ -15,7 +15,8 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django_comments import get_model as comments_get_model
 from guardian.shortcuts import assign_perm
-from tagging.models import Tag, TaggedItem
+from signbank.tagging.adapter import add_tag, filter_queryset_with_all_tags
+from signbank.tagging.models import Tag, TaggedItem
 
 from signbank.dictionary.models import (
     SignLanguage, Dataset, FieldChoice, Gloss, Language,
@@ -316,8 +317,8 @@ class ShareCSVImportTestCase(TestCase):
         self.assertEqual(share_validation_aggregation.agrees, 0)
         self.assertEqual(share_validation_aggregation.disagrees, 1)
 
-        tagged_glosses = TaggedItem.objects.get_intersection_by_model(
-            gloss_qs, [not_public_tag, share_tag]
+        tagged_glosses = filter_queryset_with_all_tags(
+            gloss_qs, [not_public_tag.name, share_tag.name]
         )
         self.assertQuerysetEqual(tagged_glosses, gloss_qs)
 
@@ -392,7 +393,7 @@ class QualtricsCSVImportTestCase(TestCase):
             video_type=validation_video_type,
             title="Main"
         )
-        Tag.objects.add_tag(self.gloss_1, settings.TAG_READY_FOR_VALIDATION)
+        add_tag(self.gloss_1, settings.TAG_READY_FOR_VALIDATION)
         self.gloss_2 = Gloss.objects.create(idgloss="testgloss:2", dataset=self.dataset)
         testfile_2 = SimpleUploadedFile(
             "testvid.mp4", b'data \x00\x01', content_type="video/mp4")
@@ -404,7 +405,7 @@ class QualtricsCSVImportTestCase(TestCase):
             video_type=validation_video_type,
             title="Main"
         )
-        Tag.objects.add_tag(self.gloss_2, settings.TAG_READY_FOR_VALIDATION)
+        add_tag(self.gloss_2, settings.TAG_READY_FOR_VALIDATION)
 
         # Assign view permissions to dataset for user
         assign_perm('view_dataset', self.user, self.dataset)
@@ -649,11 +650,11 @@ class QualtricsCSVImportTestCase(TestCase):
             comment="comment",
         ).exists())
 
-        check_results_tagged_glosses = TaggedItem.objects.get_by_model(Gloss, [check_results_tag])
+        check_results_tagged_glosses = filter_queryset_with_all_tags(Gloss.objects.all(), [check_results_tag.name])
         self.assertIn(self.gloss_1, check_results_tagged_glosses)
         self.assertIn(self.gloss_2, check_results_tagged_glosses)
-        ready_for_validation_tagged_glosses = TaggedItem.objects.get_by_model(
-            Gloss, [ready_for_validation_tag]
+        ready_for_validation_tagged_glosses = filter_queryset_with_all_tags(
+            Gloss.objects.all(), [ready_for_validation_tag.name]
         )
         self.assertEqual(ready_for_validation_tagged_glosses.count(), 0)
 

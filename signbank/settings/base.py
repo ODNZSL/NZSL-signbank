@@ -167,7 +167,8 @@ INSTALLED_APPS = (
     'signbank.contentpages',
     'signbank.video',
     'reversion',
-    'tagging',
+    'taggit',
+    'signbank.tagging',
     'django_comments',
     'guardian',
     'notifications',
@@ -194,10 +195,11 @@ LOGIN_REDIRECT_URL = '/'
 # For django-tagging: force tags to be lowercase.
 FORCE_LOWERCASE_TAGS = True
 
-# Use our own migrations for flatpages
+# Use our own migrations for flatpages and tagging
 MIGRATION_MODULES = {
     'flatpages': 'signbank.contentpages.migrations',
-    'contentpages': None
+    'tagging': 'signbank.tagging.migrations',
+    'contentpages': None,
 }
 
 

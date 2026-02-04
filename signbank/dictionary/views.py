@@ -20,7 +20,8 @@ from django.db.models import Q, F, Count, Case, Value, When, BooleanField
 from urllib.parse import quote
 from wsgiref.util import FileWrapper
 
-from tagging.models import Tag
+from signbank.tagging.adapter import add_tag
+from signbank.tagging.models import Tag
 from guardian.shortcuts import get_perms, get_objects_for_user, get_users_with_perms
 from notifications.signals import notify
 
@@ -52,8 +53,9 @@ def create_gloss(request):
             new_gloss.updated_by = request.user
             new_gloss.save()
             if form.cleaned_data["tag"]:
-                tag = Tag.objects.filter(name=form.cleaned_data["tag"].name).first()
-                add_tags_to_gloss(new_gloss, tag)
+                tag = form.cleaned_data["tag"]
+                tag_name = tag.name if hasattr(tag, 'name') else str(tag)
+                add_tag(new_gloss, tag_name)
             if glossvideoform.cleaned_data['videofile']:
                 glossvideo = glossvideoform.save(commit=False)
                 glossvideo.gloss = new_gloss
