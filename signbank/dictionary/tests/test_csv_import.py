@@ -650,11 +650,11 @@ class QualtricsCSVImportTestCase(TestCase):
             comment="comment",
         ).exists())
 
-        check_results_tagged_glosses = filter_queryset_with_all_tags(Gloss, [check_results_tag.name])
+        check_results_tagged_glosses = filter_queryset_with_all_tags(Gloss.objects.all(), [check_results_tag.name])
         self.assertIn(self.gloss_1, check_results_tagged_glosses)
         self.assertIn(self.gloss_2, check_results_tagged_glosses)
         ready_for_validation_tagged_glosses = filter_queryset_with_all_tags(
-            Gloss, [ready_for_validation_tag.name]
+            Gloss.objects.all(), [ready_for_validation_tag.name]
         )
         self.assertEqual(ready_for_validation_tagged_glosses.count(), 0)
 

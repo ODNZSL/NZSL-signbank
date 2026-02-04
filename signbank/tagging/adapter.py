@@ -99,23 +99,18 @@ def remove_tag(obj, tag_name):
     ).delete()
 
 
-def filter_queryset_with_all_tags(queryset_or_model, tag_names):
+def filter_queryset_with_all_tags(queryset, tag_names):
     """
     Filter a queryset to objects that have ALL of the specified tags (intersection).
     
     Args:
-        queryset_or_model: QuerySet or Model class
+        queryset: QuerySet to filter
         tag_names: List of tag names (strings) or Tag objects
         
     Returns:
         Filtered QuerySet
     """
-    if isinstance(queryset_or_model, models.Model):
-        queryset = queryset_or_model._default_manager.all()
-        model = queryset_or_model
-    else:
-        queryset = queryset_or_model
-        model = queryset.model
+    model = queryset.model
     
     if not tag_names:
         return model._default_manager.none()
@@ -151,23 +146,18 @@ def filter_queryset_with_all_tags(queryset_or_model, tag_names):
         return model._default_manager.none()
 
 
-def filter_queryset_with_any_tags(queryset_or_model, tag_names):
+def filter_queryset_with_any_tags(queryset, tag_names):
     """
     Filter a queryset to objects that have ANY of the specified tags (union).
     
     Args:
-        queryset_or_model: QuerySet or Model class
+        queryset: QuerySet to filter
         tag_names: List of tag names (strings) or Tag objects
         
     Returns:
         Filtered QuerySet
     """
-    if isinstance(queryset_or_model, models.Model):
-        queryset = queryset_or_model._default_manager.all()
-        model = queryset_or_model
-    else:
-        queryset = queryset_or_model
-        model = queryset.model
+    model = queryset.model
     
     if not tag_names:
         return model._default_manager.none()
@@ -206,10 +196,12 @@ def tags_usage_for_model(model_or_queryset, with_counts=False):
     Returns:
         List of Tag objects (with .count attribute if with_counts=True)
     """
-    if isinstance(model_or_queryset, models.Model):
+    if isinstance(model_or_queryset, type) and issubclass(model_or_queryset, models.Model):
+        # It's a model class
         queryset = model_or_queryset._default_manager.all()
         model = model_or_queryset
     else:
+        # It's a queryset
         queryset = model_or_queryset
         model = queryset.model
     

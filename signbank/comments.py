@@ -128,7 +128,7 @@ class CommentListView(ListView):
             qs = qs.filter(user_name__icontains=get['user_name'])
         if 'tag' in get and get['tag'] != '':
             tag_names = [get['tag']]
-            tagged = filter_queryset_with_all_tags(Comment, tag_names)
+            tagged = filter_queryset_with_all_tags(Comment.objects.all(), tag_names)
             qs = qs.filter(id__in=tagged.values_list('id', flat=True))
 
         qs = qs.filter(is_removed=False)

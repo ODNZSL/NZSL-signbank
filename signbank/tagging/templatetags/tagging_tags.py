@@ -59,7 +59,7 @@ class TaggedObjectsNode(template.Node):
                     _('tagged_objects tag was given an invalid model: %s') % self.model)
             tag = self.tag.resolve(context)
             tag_name = tag.name if hasattr(tag, 'name') else str(tag)
-            context[self.context_var] = filter_queryset_with_all_tags(model, [tag_name])
+            context[self.context_var] = filter_queryset_with_all_tags(model.objects.all(), [tag_name])
         except (template.VariableDoesNotExist, LookupError, ValueError):
             context[self.context_var] = []
         return ''

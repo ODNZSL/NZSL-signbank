@@ -559,7 +559,7 @@ class GlossListView(ListView):
                     continue
 
             # search is an implicit AND so intersection
-            tqs = filter_queryset_with_all_tags(Gloss, tag_names)
+            tqs = filter_queryset_with_all_tags(Gloss.objects.all(), tag_names)
 
             # intersection
             qs = qs & tqs
@@ -575,7 +575,7 @@ class GlossListView(ListView):
             tag_names = [t for t in vals]
 
             # search is an implicit AND so intersection
-            tqs = filter_queryset_with_all_tags(Gloss, tag_names)
+            tqs = filter_queryset_with_all_tags(Gloss.objects.all(), tag_names)
 
             # exclude all of tqs from qs
             qs = [q for q in qs if q not in tqs]
@@ -1188,7 +1188,7 @@ class GlossRelationListView(ListView):
                     continue
 
             # search is an implicit AND so intersection
-            tqs = filter_queryset_with_all_tags(GlossRelation, tag_names)
+            tqs = filter_queryset_with_all_tags(GlossRelation.objects.all(), tag_names)
 
             # intersection
             qs = qs & tqs
