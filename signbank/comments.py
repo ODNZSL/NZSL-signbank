@@ -1,34 +1,35 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import re
 
 from django import forms
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic.list import ListView
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.utils import OperationalError, ProgrammingError
+from django.dispatch import receiver
 from django.forms import ModelForm
 from django.forms.models import model_to_dict
 from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _lazy
-from django.contrib.sites.shortcuts import get_current_site
-from django.dispatch import receiver
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.utils import OperationalError, ProgrammingError
-from django.contrib.auth.models import User
-
-from signbank.tagging.adapter import add_tag, remove_tag, filter_queryset_with_all_tags
-from signbank.tagging.models import Tag, TaggedItem
-from guardian.shortcuts import get_objects_for_user
-from django_comments.models import Comment
-from django_comments.signals import comment_was_posted
-from django_comments.forms import CommentForm
+from django.views.generic.list import ListView
 from django_comments import get_model as django_comments_get_model
 from django_comments.admin import CommentsAdmin
+from django_comments.forms import CommentForm
+from django_comments.models import Comment
+from django_comments.signals import comment_was_posted
+from guardian.shortcuts import get_objects_for_user
 from notifications.signals import notify
 
-from .dictionary.models import AllowedTags
+from signbank.tagging.adapter import add_tag, filter_queryset_with_all_tags, remove_tag
+from signbank.tagging.models import Tag, TaggedItem
+
 from .dictionary.admin import TagAdminInline, TagListFilter
+from .dictionary.models import AllowedTags
 
 
 class CommentTagForm(forms.Form):

@@ -8,19 +8,25 @@ import uuid
 from unittest import mock
 
 from django.conf import settings
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import Permission, User
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
 from django_comments import get_model as comments_get_model
 from guardian.shortcuts import assign_perm
-from signbank.tagging.adapter import add_tag, filter_queryset_with_all_tags
-from signbank.tagging.models import Tag, TaggedItem
 
 from signbank.dictionary.models import (
-    SignLanguage, Dataset, FieldChoice, Gloss, Language,
-    ManualValidationAggregation, ValidationRecord)
+    Dataset,
+    FieldChoice,
+    Gloss,
+    Language,
+    ManualValidationAggregation,
+    SignLanguage,
+    ValidationRecord,
+)
+from signbank.tagging.adapter import add_tag, filter_queryset_with_all_tags
+from signbank.tagging.models import Tag
 from signbank.video.models import GlossVideo
 
 
@@ -135,7 +141,7 @@ class ShareCSVImportTestCase(TestCase):
         file_name = "test.csv"
         csv_content = [copy.deepcopy(self._csv_content), copy.deepcopy(self._csv_content)]
         csv_content[1]["id"] = "12345"
-        
+
         with open(file_name, "w") as file:
             writer = csv.writer(file)
             writer.writerow(csv_content[0].keys())

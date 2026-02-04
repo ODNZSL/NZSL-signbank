@@ -2,27 +2,50 @@
 from __future__ import unicode_literals
 
 import re
+
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db.models.fields import BooleanField
-from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
-                         HttpResponseForbidden, HttpResponseNotAllowed,
-                         HttpResponseRedirect, HttpResponseServerError)
+from django.http import (
+    Http404,
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+    HttpResponseNotAllowed,
+    HttpResponseRedirect,
+    HttpResponseServerError,
+)
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils.translation import gettext as _
 from guardian.shortcuts import get_perms
+
 from signbank.tagging.adapter import add_tag, remove_tag, tags_for_object
 
-from .forms import (GlossRelationForm, MorphologyForm,
-                    RelationForm, RelationToForeignSignForm, TagDeleteForm,
-                    TagsAddForm, TagUpdateForm)
-from .models import (Dialect, FieldChoice, Gloss, Lemma, GlossRelation,
-                     GlossTranslations, GlossURL, Language,
-                     MorphologyDefinition, Relation, RelationToForeignSign,
-                     build_choice_list)
 from ..video.models import GlossVideo
+from .forms import (
+    GlossRelationForm,
+    MorphologyForm,
+    RelationForm,
+    RelationToForeignSignForm,
+    TagDeleteForm,
+    TagsAddForm,
+    TagUpdateForm,
+)
+from .models import (
+    Dialect,
+    FieldChoice,
+    Gloss,
+    GlossRelation,
+    GlossTranslations,
+    GlossURL,
+    Language,
+    Lemma,
+    MorphologyDefinition,
+    Relation,
+    RelationToForeignSign,
+    build_choice_list,
+)
 
 
 @permission_required('dictionary.change_gloss')

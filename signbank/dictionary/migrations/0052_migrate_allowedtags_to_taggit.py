@@ -2,7 +2,6 @@
 
 from django.db import migrations, models
 
-
 # Module-level storage for migration data (used to pass data between operations)
 _migration_data = {}
 
@@ -14,36 +13,36 @@ def read_allowedtags_data(apps, schema_editor):
     """
     from django.conf import settings
     force_lowercase = getattr(settings, 'FORCE_LOWERCASE_TAGS', False)
-    
+
     # Get models using historical apps registry
     LegacyTag = apps.get_model('tagging', 'Tag')
     AllowedTags = apps.get_model('dictionary', 'AllowedTags')
     TaggitTag = apps.get_model('taggit', 'Tag')
-    
+
     # Store mappings: allowedtags_id -> list of taggit_tag_names
     mappings = {}
-    
+
     # Process each AllowedTags instance
     for allowed_tags in AllowedTags.objects.all():
         # Get legacy tags via the old M2M relationship
         legacy_tags = LegacyTag.objects.filter(
             allowedtags=allowed_tags
         )
-        
+
         # Map to taggit tag names
         taggit_tag_names = []
         for legacy_tag in legacy_tags:
             tag_name = legacy_tag.name
             if force_lowercase:
                 tag_name = tag_name.lower()
-            
+
             # Verify tag exists in taggit
             if TaggitTag.objects.filter(name=tag_name).exists():
                 taggit_tag_names.append(tag_name)
-        
+
         if taggit_tag_names:
             mappings[allowed_tags.id] = taggit_tag_names
-    
+
     # Store in module-level variable
     _migration_data['mappings'] = mappings
 
@@ -55,16 +54,16 @@ def populate_allowedtags_data(apps, schema_editor):
     """
     AllowedTags = apps.get_model('dictionary', 'AllowedTags')
     TaggitTag = apps.get_model('taggit', 'Tag')
-    
+
     mappings = _migration_data.get('mappings', {})
-    
+
     # Populate new M2M
     for allowedtags_id, tag_names in mappings.items():
         try:
             allowed_tags = AllowedTags.objects.get(id=allowedtags_id)
         except AllowedTags.DoesNotExist:
             continue
-        
+
         for tag_name in tag_names:
             try:
                 taggit_tag = TaggitTag.objects.get(name=tag_name)

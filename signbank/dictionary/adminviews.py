@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.aggregates import StringAgg
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, F, OuterRef, Prefetch, Q, Sum, Value
+from django.db.models import Count, F, OuterRef, Prefetch, Q, Value
 from django.db.models.fields import CharField, NullBooleanField
 from django.db.models.functions import Concat
 from django.http import HttpResponse, JsonResponse
@@ -25,21 +25,39 @@ from django.utils.translation import gettext as _
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django_comments.models import Comment
-from guardian.shortcuts import (get_objects_for_user, get_perms,
-                                get_users_with_perms)
+from guardian.shortcuts import get_objects_for_user, get_perms, get_users_with_perms
 from reversion.models import Version
-from signbank.tagging.adapter import filter_queryset_with_all_tags, tags_for_object
+
+from signbank.tagging.adapter import filter_queryset_with_all_tags
 from signbank.tagging.models import Tag, TaggedItem
 
 from ..comments import CommentTagForm
 from ..video.forms import GlossVideoForGlossForm
 from ..video.models import GlossVideo, GlossVideoToken
-from .forms import (GlossRelationForm, GlossRelationSearchForm,
-                    GlossSearchForm, MorphologyForm, RelationForm, TagsAddForm)
-from .models import (Dataset, FieldChoice, Gloss, GlossRelation,
-                     GlossTranslations, GlossURL, Lemma, ManualValidationAggregation, MorphologyDefinition,
-                     Relation, RelationToForeignSign, ShareValidationAggregation, Translation,
-                     ValidationRecord)
+from .forms import (
+    GlossRelationForm,
+    GlossRelationSearchForm,
+    GlossSearchForm,
+    MorphologyForm,
+    RelationForm,
+    TagsAddForm,
+)
+from .models import (
+    Dataset,
+    FieldChoice,
+    Gloss,
+    GlossRelation,
+    GlossTranslations,
+    GlossURL,
+    Lemma,
+    ManualValidationAggregation,
+    MorphologyDefinition,
+    Relation,
+    RelationToForeignSign,
+    ShareValidationAggregation,
+    Translation,
+    ValidationRecord,
+)
 
 
 class GlossListView(ListView):
