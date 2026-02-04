@@ -96,7 +96,7 @@ class GlossListViewTestCase(TestCase):
         testgloss = Gloss.objects.create(
             idgloss="testgloss", dataset=dataset, created_by=self.user, updated_by=self.user
         )
-        Tag.objects.add_tag(testgloss, settings.TAG_READY_FOR_VALIDATION)
+        add_tag(testgloss, settings.TAG_READY_FOR_VALIDATION)
 
         language_en = Language.objects.create(
             name="English", language_code_2char="EN", language_code_3char="ENG"
