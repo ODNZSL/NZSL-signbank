@@ -20,7 +20,7 @@ from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils.translation import gettext as _
 from guardian.shortcuts import get_perms
 
-from signbank.tagging.adapter import add_tag, remove_tag, tags_for_object
+from signbank.tagging import adapter
 
 from ..video.models import GlossVideo
 from .forms import (
@@ -619,7 +619,7 @@ def add_tag(request, glossid):
             if form.cleaned_data['delete']:
                 tag = form.cleaned_data['tag']
                 # Remove tag using adapter
-                remove_tag(gloss, tag)
+                adapter.remove_tag(gloss, tag)
                 response = HttpResponse(
                     'deleted', content_type='text/plain')
                 return response
@@ -629,7 +629,7 @@ def add_tag(request, glossid):
             tag = form.cleaned_data['tag']
 
             # Add tag using adapter (handles spaces/quotes internally)
-            add_tag(gloss, tag)
+            adapter.add_tag(gloss, tag)
             # response is new HTML for the tag list and form
             response = render(request, 'dictionary/glosstags.html',
                               {'gloss': gloss, 'tagsaddform': TagsAddForm()})
@@ -652,7 +652,7 @@ def add_tag(request, glossid):
 def add_tags_to_gloss(gloss, tag):
     # tag can be a Tag object or a string name
     tag_name = tag.name if hasattr(tag, 'name') else str(tag)
-    add_tag(gloss, tag_name)
+    adapter.add_tag(gloss, tag_name)
 
 
 def gloss_relation(request):
@@ -667,9 +667,9 @@ def gloss_relation(request):
                 messages.error(request, msg)
                 raise PermissionDenied(msg)
             # Remove all tags from the relation using adapter
-            relation_tags = tags_for_object(glossrelation)
+            relation_tags = adapter.tags_for_object(glossrelation)
             for tag in relation_tags:
-                remove_tag(glossrelation, tag.name)
+                adapter.remove_tag(glossrelation, tag.name)
             glossrelation.delete()
 
             if "HTTP_REFERER" in request.META:
@@ -688,7 +688,7 @@ def gloss_relation(request):
             if form.cleaned_data["tag"]:
                 tag = form.cleaned_data["tag"]
                 tag_name = tag.name if hasattr(tag, 'name') else str(tag)
-                add_tag(glossrelation, tag_name)
+                adapter.add_tag(glossrelation, tag_name)
             if "HTTP_REFERER" in request.META:
                 return redirect(request.META["HTTP_REFERER"])
             return redirect("/")
