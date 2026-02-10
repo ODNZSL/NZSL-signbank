@@ -1,6 +1,7 @@
 # Generated migration to copy tags from legacy tagging tables to django-taggit
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.db import connection, migrations
 
 # Import taggit models directly to get real models
@@ -37,6 +38,7 @@ def migrate_tags_to_taggit(apps, schema_editor):
 
     tag_mapping = {}  # old_tag_id -> new_tag_object
 
+    # Migrate all tags from LegacyTag (this includes tags used in TaggedItem and AllowedTags)
     for legacy_tag in LegacyTag.objects.all():
         tag_name = legacy_tag.name
         if tag_name:
@@ -51,6 +53,10 @@ def migrate_tags_to_taggit(apps, schema_editor):
         # Get or create taggit tag - using real TaggitTag model so save() auto-generates slug
         taggit_tag, created = TaggitTag.objects.get_or_create(name=tag_name)
         tag_mapping[legacy_tag.id] = taggit_tag
+    
+    # Note: All tags used in AllowedTags are already migrated above since we migrate
+    # all LegacyTag objects. Migration 0052 handles migrating the AllowedTags M2M
+    # relationships themselves.
 
     # Copy tagged items
     tagged_items_to_create = []
@@ -59,17 +65,25 @@ def migrate_tags_to_taggit(apps, schema_editor):
             continue  # Skip if tag wasn't migrated
 
         taggit_tag = tag_mapping[legacy_item.tag_id]
+         # Convert historical ContentType to current ContentType instance
+        # Historical ContentType instances can't be used with real models
+        legacy_content_type = legacy_item.content_type
+        content_type = ContentType.objects.get(
+            app_label=legacy_content_type.app_label,
+            model=legacy_content_type.model
+        )
+
 
         # Check if this tagged item already exists
         if not TaggitTaggedItem.objects.filter(
             tag=taggit_tag,
-            content_type=legacy_item.content_type,
+            content_type=content_type,
             object_id=legacy_item.object_id
         ).exists():
             tagged_items_to_create.append(
                 TaggitTaggedItem(
                     tag=taggit_tag,
-                    content_type=legacy_item.content_type,
+                    content_type=content_type,
                     object_id=legacy_item.object_id
                 )
             )
