@@ -42,10 +42,6 @@ jobs:
     - run: cp example.env .env
     - name: Build the docker compose stack
       run: docker compose up -d
-    - name: Check running containers
-      run: docker ps -a
-    - name: Check logs
-      run: docker compose logs backend
     - name: Deploy app to UAT
       env:
         HEROKU_API_KEY: ${{secrets.HEROKU_UAT_API_KEY}}
@@ -70,10 +66,6 @@ jobs:
     - run: cp example.env .env
     - name: Build the docker compose stack
       run: docker compose up -d
-    - name: Check running containers
-      run: docker ps -a
-    - name: Check logs
-      run: docker compose logs backend
     - name: Deploy app to Production
       if: github.ref == 'refs/heads/production'
       env:
