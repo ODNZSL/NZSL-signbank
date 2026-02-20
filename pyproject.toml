@@ -10,18 +10,18 @@ repository = "https://github.com/ODNZSL/NZSL-signbank"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-django = "~4.2.26"
+django = "~5.2"
 django-tagging = { path = "./vendor/django-tagging/", develop = false }
-django-reversion = "4.0.2"
+django-reversion = "6.1.0"
 django-bootstrap3 = "21.2"
 django-summernote = "0.8.20.0"
 django-modeltranslation = "0.18.2"
 django-registration = "3.1.2"
 django-contrib-comments = "2.2.0"
 django-queryset-csv = "1.1.0"
-django-debug-toolbar = "3.2.2"
+django-debug-toolbar = "6.1.0"
 django-guardian = "2.2.0"
-django-notifications-hq = "1.7.0"
+django-notifications-hq = { git = "https://github.com/django-notifications/django-notifications.git", tag="1.9.0" }
 dj-database-url = "0.5.0"
 boto3 = "1.39.4"
 django-storages = "1.12.1"

@@ -126,9 +126,9 @@ class UpdateGlossTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         glossvid.refresh_from_db()
         self.assertEqual(glossvid.title, new_title)
-        if os.path.isfile(glossvid.videofile.path):
+        if os.path.isfile(glossvid.videofile.name):
             # Remove the file.
-            os.remove(glossvid.videofile.path)
+            os.remove(glossvid.videofile.name)
 
         # Test updating title for nonexisting glossvideo.
         response = self.client.post(reverse('dictionary:update_gloss', args=[self.testgloss.pk]),

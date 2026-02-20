@@ -57,8 +57,6 @@ LANGUAGE_CODE = 'en-nz'
 SITE_ID = 1
 #: A boolean that specifies whether Django's translation system should be enabled.
 USE_I18N = True
-#: A boolean that specifies if localized formatting of data will be enabled by default or not.
-USE_L10N = True
 #: A boolean that specifies if datetimes will be timezone-aware by default or not.
 USE_TZ = True
 #: A list of all available languages.
@@ -255,7 +253,7 @@ else:
     GLOSS_VIDEO_FILE_STORAGE = 'signbank.video.models.GlossVideoStorage'
 
 NZSL_SHARE_HOSTNAME = os.getenv('NZSL_SHARE_HOSTNAME')
-
+NZSL_SHARE_BATCH_SIZE = 10
 
 mimetypes.add_type("video/mp4", ".mov", True)
 mimetypes.add_type("video/webm", ".webm", True)

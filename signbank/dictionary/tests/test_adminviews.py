@@ -496,9 +496,9 @@ class TestValidationResultsView(TestCase):
             {"agrees": 0, "disagrees": 0, "totals": 0}
         )
         empty_share_qs = ShareValidationAggregation.objects.none()
-        self.assertQuerysetEqual(response.context["share_validations"], empty_share_qs)
+        self.assertQuerySetEqual(response.context["share_validations"], empty_share_qs)
         empty_manual_qs = ManualValidationAggregation.objects.none()
-        self.assertQuerysetEqual(response.context["manual_validations"], empty_manual_qs)
+        self.assertQuerySetEqual(response.context["manual_validations"], empty_manual_qs)
         self.assertDictEqual(
             response.context["manual_validations_totals"],
             {"sign_seen_yes": 0, "sign_seen_no": 0, "sign_seen_not_sure": 0, "totals": 0}
