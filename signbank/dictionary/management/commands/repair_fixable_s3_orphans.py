@@ -12,55 +12,18 @@
 #  https://docs.aws.amazon.com/cli/latest/reference/s3api/get-object-acl.html
 
 from django.core.management.base import BaseCommand
-import os
-import sys
-import subprocess
-import csv
 from signbank.dictionary.models import (
     FieldChoice,
     Gloss,
 )
 from signbank.video.models import GlossVideo
 from django.core.exceptions import ObjectDoesNotExist
+from signbank.dictionary.management.commands.apis import *
 
-
-# Keep synced with other scripts
-GLOSS_ID_COLUMN = "Gloss ID"
-GLOSS_COLUMN = "Gloss"
-GLOSS_PUBLIC_COLUMN = "Gloss public"
-GLOSS_VIDEO_COLUMN = "Suggested Video key"
-GLOBAL_COLUMN_HEADINGS = [
-    GLOSS_ID_COLUMN,
-    GLOSS_COLUMN,
-    GLOSS_PUBLIC_COLUMN,
-    GLOSS_VIDEO_COLUMN,
-]
 
 # Other globals
-CSV_DELIMITER = ","
-FAKEKEY_PREFIX = "this_is_not_a_key_"
-DATABASE_URL = os.getenv("DATABASE_URL", "")
-PGCLI = "/usr/bin/psql"
-AWS_S3_BUCKET = ""
 DO_COMMIT = False
 CSV_INPUT_FILENAME = "-"
-
-
-def pg_cli(args_list):
-    try:
-        return subprocess.run(
-            [PGCLI, "-c"] + args_list + [f"{DATABASE_URL}"],
-            env=os.environ,
-            capture_output=True,
-            check=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as e:
-        print(f"Error: subprocess.run returned code {e.returncode}", file=sys.stderr)
-        print(e.cmd, file=sys.stderr)
-        print(e.stdout, file=sys.stderr)
-        print(e.stderr, file=sys.stderr)
-        exit()
 
 
 # Returns a list of dictionaries, one for each CSV row
@@ -79,7 +42,9 @@ def process_csv():
 
     csv_rows = read_csv(CSV_INPUT_FILENAME)
 
-    out = csv.writer(sys.stdout, delimiter=CSV_DELIMITER, quoting=csv.QUOTE_NONE)
+    out = csv.writer(
+        sys.stdout, delimiter=CSV_DELIMITER, quoting=csv.QUOTE_ALL, escapechar="/"
+    )
 
     for csv_row in csv_rows:
         gloss_id = csv_row[GLOSS_ID_COLUMN]
@@ -140,18 +105,6 @@ class Command(BaseCommand):
 
         # Optional arguments
         parser.add_argument(
-            "--env",
-            default="uat",
-            required=False,
-            help="Environment to run against, eg 'production, 'uat', etc (default: '%(default)s')",
-        )
-        parser.add_argument(
-            "--pgcli",
-            default="/usr/bin/psql",
-            required=False,
-            help=f"Postgres client path (default: %(default)s)",
-        )
-        parser.add_argument(
             "--commit",
             default=DO_COMMIT,
             required=False,
@@ -160,16 +113,10 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        global PGCLI, AWS_S3_BUCKET, CSV_INPUT_FILENAME, DO_COMMIT
-        PGCLI = options["pgcli"]
-        AWS_S3_BUCKET = f"nzsl-signbank-media-{options['env']}"
+        global CSV_INPUT_FILENAME, DO_COMMIT
         CSV_INPUT_FILENAME = options["csv_filename"]
         DO_COMMIT = options["commit"]
 
-        print(f"Env:         {options['env']}", file=sys.stderr)
-        print(f"S3 bucket:   {AWS_S3_BUCKET}", file=sys.stderr)
-        print(f"PGCLI:       {PGCLI}", file=sys.stderr)
-        print(f"AWS profile: {os.environ.get('AWS_PROFILE', '')}", file=sys.stderr)
         print(f"Input file:  {options['csv_filename']}", file=sys.stderr)
         print(f"Mode:        {'Commit' if DO_COMMIT else 'Dry-run'}", file=sys.stderr)
 
