@@ -38,6 +38,9 @@ html-void-self-closing = "always"
 indent-width = 2
 line-length = 80
 profile = "django"
+#excludes = [
+#    "**/"
+#]
 
 [build-system]
 requires = ["poetry-core"]
