@@ -18,8 +18,8 @@
         sOutput = nApprox.toFixed(3) + " " + aMultiples[nMultiple] + " (" + nBytes + " bytes)";
       }
       // end of optional code
-      document.getElementById("fileNum").innerHTML = nFiles;
-      document.getElementById("fileSize").innerHTML = sOutput;
+      document.getElementById("fileNum").textContent = nFiles;
+      document.getElementById("fileSize").textContent = sOutput;
     }
   </script>
 {% endblock %}
