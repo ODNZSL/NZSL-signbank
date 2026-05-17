@@ -2,16 +2,32 @@
 {% load i18n %}
 {% load comments %}
 {% load tagging_tags %}
-{% block bootstrap3_title %}{{gloss}} [{{gloss.dataset.public_name}}] | {% endblock %}
-{% block metadesc %}<meta name="description" content="{{metadesc}}">{% endblock %}
-{% block ogimage %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ogimage}}">{% endblock %}
-{% block ogdesc %}<meta property="og:description" content="{{metadesc}}">{% endblock %}
+{% block bootstrap3_title %}{{ gloss }} [{{ gloss.dataset.public_name }}] |
+{% endblock %}
+{% block metadesc %}<meta
+    name="description"
+    content="{{metadesc}}"
+  />{% endblock %}
+{% block ogimage %}<meta
+    property="og:image"
+    content="{{ request.scheme }}://{{ request.get_host }}{{ogimage}}"
+  />{% endblock %}
+{% block ogdesc %}<meta
+    property="og:description"
+    content="{{metadesc}}"
+  />{% endblock %}
 {% block metatitles %}
-    <meta property="og:title" content="{{gloss}} [{{gloss.dataset.public_name}}] | {% blocktrans context 'meta' %}NZSL Signbank{% endblocktrans %}">
-    <meta name="twitter:title" content="{{gloss}} [{{gloss.dataset.public_name}}] | {% blocktrans context 'meta' %}NZSL Signbank{% endblocktrans %}">
+  <meta
+    property="og:title"
+    content="{{gloss}} [{{gloss.dataset.public_name}}] | {% blocktrans context 'meta' %}NZSL Signbank{% endblocktrans %}"
+  />
+  <meta
+    name="twitter:title"
+    content="{{gloss}} [{{gloss.dataset.public_name}}] | {% blocktrans context 'meta' %}NZSL Signbank{% endblocktrans %}"
+  />
 {% endblock %}
 {% block structureddata %}
-    {% if first_video %}
+  {% if first_video %}
     <script type="application/ld+json">
     // VideoObject, Structured data for Google
     {
@@ -27,179 +43,243 @@
       "uploadDate": "{{first_video.get_videofile_modified_date|date:"c"}}"
     }
     </script>
-    {% endif %}
+  {% endif %}
 {% endblock %}
 {% block content %}
-<div class="container">
-<article>
-<div class="row">
-    <div class="col-md-10 col-md-offset-1">
-        <div class="col-md-12">
+  <div class="container">
+    <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <div class="col-md-12">
             <header>
-                <h2>
-                    <a href="{{gloss.get_public_absolute_url}}">{{gloss}}</a>
-                    <span class="dataset-{{gloss.dataset.id}}-color label label-default"
-                    style="float:right;">{{gloss.dataset.public_name}}</span>
-                </h2>
+              <h2>
+                <a href="{{gloss.get_public_absolute_url}}">{{ gloss }}</a>
+                <span
+                  class="dataset-{{gloss.dataset.id}}-color label label-default"
+                  style="float: right"
+                >{{ gloss.dataset.public_name }}</span>
+              </h2>
             </header>
-        </div>
-        <div class="col-md-6">
+          </div>
+          <div class="col-md-6">
             <section>
-                <header>
-                    <h4>{% blocktrans %}Translation equivalents{% endblocktrans %}</h4>
-                </header>
-                {% for translation_language, translations in translation_languages_and_translations %}
-                    <p><strong>{{ translation_language.name }}:</strong></p>
-                    {% if translations.translations or translations.translations_secondary or translations.translations_minor %}
-                        {% if translations.translations %}
-                            <p id='keywords_{{ translation_language.language_code_2char }}'>
-                                {% blocktrans %}Major: {% endblocktrans %} {{ translations.translations }}</p>
-                        {% endif %}
-                        {% if translations.translations_secondary %}
-                        <p id='keywords_secondary{{ translation_language.language_code_2char }}'>
-                            {% blocktrans %}Secondary: {% endblocktrans %} {{ translations.translations_secondary }}</p>
-                        {% endif %}
-                        {% if translations.translations_minor %}
-                        <p id='keywords_minor_gloss{{ translation_language.language_code_2char }}'>
-                            {% blocktrans %}Minor: {% endblocktrans %} {{ translations.translations_minor }}</p>
-                        {% endif %}
-                    {% else %}<em>{% blocktrans %}No translations.{% endblocktrans %}</em>
-                    {% endif %}
-                {% endfor %}
+              <header>
+                <h4>
+                  {% blocktrans %}Translation equivalents{% endblocktrans %}
+                </h4>
+              </header>
+              {% for translation_language, translations in translation_languages_and_translations %}
+                <p><strong>{{ translation_language.name }}:</strong></p>
+                {% if translations.translations or translations.translations_secondary or translations.translations_minor %}
+                  {% if translations.translations %}
+                    <p id="keywords_{{ translation_language.language_code_2char }}">
+                      {% blocktrans %}Major:
+                      {% endblocktrans %} {{ translations.translations }}
+                    </p>
+                  {% endif %}
+                  {% if translations.translations_secondary %}
+                    <p id="keywords_secondary{{ translation_language.language_code_2char }}">
+                      {% blocktrans %}Secondary:
+                      {% endblocktrans %}
+                      {{ translations.translations_secondary }}
+                    </p>
+                  {% endif %}
+                  {% if translations.translations_minor %}
+                    <p id="keywords_minor_gloss{{ translation_language.language_code_2char }}">
+                      {% blocktrans %}Minor:
+                      {% endblocktrans %} {{ translations.translations_minor }}
+                    </p>
+                  {% endif %}
+                {% else %}<em>{% blocktrans %}No
+                      translations.{% endblocktrans %}</em>
+                {% endif %}
+              {% endfor %}
             </section>
-        </div>
-        <div class="col-md-6">
+          </div>
+          <div class="col-md-6">
             <section>
-            <header>
+              <header>
                 <h4>{% blocktrans %}Notes{% endblocktrans %}</h4>
-            </header>
-            <p>{% if gloss.notes %}{{gloss.notes}}
-                {% else %}<em>{% blocktrans %}No notes.{% endblocktrans %}</em>{% endif %}</p>
+              </header>
+              <p>
+                {% if gloss.notes %}{{ gloss.notes }}
+                {% else %}<em>{% blocktrans %}No
+                      notes.{% endblocktrans %}</em>{% endif %}
+              </p>
             </section>
 
             <section>
-                <header><h4>{%blocktrans %}Examples{%endblocktrans %}</h4></header>
-                <ol>
-                    {% if gloss.videoexample1 or gloss.videoexample1_translation %}
-                    <li>
-                        {% if gloss.videoexample1 %}{{gloss.videoexample1}}{% endif %}
-                        {% if gloss.videoexample1_translation %}<br><em>{{gloss.videoexample1_translation}}</em>{% endif %}
-                    </li>
-                    {% endif %}
-                    {% if gloss.videoexample2 or gloss.videoexample2_translation %}
-                    <li>
-                        {% if gloss.videoexample2 %}{{gloss.videoexample2}}{% endif %}
-                        {% if gloss.videoexample2_translation %}<br><em>{{gloss.videoexample2_translation}}</em>{% endif %}
-                    </li>
-                    {% endif %}
-                    {% if gloss.videoexample3 or gloss.videoexample3_translation %}
-                    <li>
-                        {% if gloss.videoexample3 %}{{gloss.videoexample3}}{% endif %}
-                        {% if gloss.videoexample3_translation %}<br><em>{{gloss.videoexample3_translation}}</em>{% endif %}
-                    </li>
-                    {% endif %}
-                    {% if gloss.videoexample4 or gloss.videoexample4_translation %}
-                    <li>
-                        {% if gloss.videoexample4 %}{{gloss.videoexample4}}{% endif %}
-                        {% if gloss.videoexample4_translation %}<br><em>{{gloss.videoexample4_translation}}</em>{% endif %}
-                    </li>
-                    {% endif %}
-                </ol>
+              <header>
+                <h4>{% blocktrans %}Examples{% endblocktrans %}</h4>
+              </header>
+              <ol>
+                {% if gloss.videoexample1 or gloss.videoexample1_translation %}
+                  <li>
+                    {% if gloss.videoexample1 %}{{ gloss.videoexample1 }}{% endif %}
+                    {% if gloss.videoexample1_translation %}<br /><em
+                      >{{ gloss.videoexample1_translation }}</em>{% endif %}
+                  </li>
+                {% endif %}
+                {% if gloss.videoexample2 or gloss.videoexample2_translation %}
+                  <li>
+                    {% if gloss.videoexample2 %}{{ gloss.videoexample2 }}{% endif %}
+                    {% if gloss.videoexample2_translation %}<br /><em
+                      >{{ gloss.videoexample2_translation }}</em>{% endif %}
+                  </li>
+                {% endif %}
+                {% if gloss.videoexample3 or gloss.videoexample3_translation %}
+                  <li>
+                    {% if gloss.videoexample3 %}{{ gloss.videoexample3 }}{% endif %}
+                    {% if gloss.videoexample3_translation %}<br /><em
+                      >{{ gloss.videoexample3_translation }}</em>{% endif %}
+                  </li>
+                {% endif %}
+                {% if gloss.videoexample4 or gloss.videoexample4_translation %}
+                  <li>
+                    {% if gloss.videoexample4 %}{{ gloss.videoexample4 }}{% endif %}
+                    {% if gloss.videoexample4_translation %}<br /><em
+                      >{{ gloss.videoexample4_translation }}</em>{% endif %}
+                  </li>
+                {% endif %}
+              </ol>
             </section>
+          </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        {% for glossvideo in gloss.glossvideo_set.all %}
-        <div class="col-md-6">
-            <hr>
-            <section>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          {% for glossvideo in gloss.glossvideo_set.all %}
+            <div class="col-md-6">
+              <hr />
+              <section>
                 <header>
-                    <h4>{{glossvideo.title}} - {{glossvideo.video_type}}</h4>
+                  <h4>{{ glossvideo.title }} - {{ glossvideo.video_type }}</h4>
                 </header>
                 <div class="embed-responsive embed-responsive-16by9">
-                    {% if glossvideo.is_video %}
-                        <div class="embed-responsive embed-responsive-16by9">
-                            <video id="glossvideo-{{glossvideo.pk}}" class="embed-responsive-item" preload="metadata" controls muted
-                                    {% if glossvideo.posterfile %} poster="{{glossvideo.posterfile.url}}"{% endif %}>
-                                <source src="{{glossvideo.get_absolute_url}}" type="{{glossvideo.content_type}}">
-                                {% blocktrans %}Your browser does not support the video tag.{% endblocktrans %}
-                            </video>
-                        </div>
-                    {% elif glossvideo.is_image %}
-                        <img src="{{glossvideo.get_absolute_url}}" alt="{{glossvideo.title}} - {{glossvideo.video_type}}" class="img-responsive center-block" />
-                    {% endif %}
+                  {% if glossvideo.is_video %}
+                    <div class="embed-responsive embed-responsive-16by9">
+                      <video
+                        id="glossvideo-{{glossvideo.pk}}"
+                        class="embed-responsive-item"
+                        preload="metadata"
+                        controls
+                        muted
+                        {% if glossvideo.posterfile %}
+                          poster="{{glossvideo.posterfile.url}}"
+                        {% endif %}
+                      >
+                        <source
+                          src="{{glossvideo.get_absolute_url}}"
+                          type="{{glossvideo.content_type}}"
+                        />
+                        {% blocktrans %}Your browser does not support the video
+                          tag.{% endblocktrans %}
+                      </video>
+                    </div>
+                  {% elif glossvideo.is_image %}
+                    <img
+                      src="{{glossvideo.get_absolute_url}}"
+                      alt="{{glossvideo.title}} - {{glossvideo.video_type}}"
+                      class="img-responsive center-block"
+                    />
+                  {% endif %}
                 </div>
-            </section>
+              </section>
+            </div>
+            {# Fix horizontal alignment for grid. We have max 2 items per row. #}
+            {% if forloop.counter|divisibleby:"2" %}<div class="clearfix">
+              </div>{% endif %}
+          {% endfor %}
         </div>
-        {# Fix horizontal alignment for grid. We have max 2 items per row. #}
-        {% if forloop.counter|divisibleby:"2" %}<div class="clearfix"></div>{% endif %}
-        {% endfor %}
-    </div>
-</div>
-<div class="row">
-    <hr>
-    <div class="col-md-10 col-md-offset-1">
-        <section>
+      </div>
+      <div class="row">
+        <hr />
+        <div class="col-md-10 col-md-offset-1">
+          <section>
             <header>
-                <div class="col-md-12">
-                    <h4>{% blocktrans %}Relations to glosses{% endblocktrans %}</h4>
-                </div>
+              <div class="col-md-12">
+                <h4>{% blocktrans %}Relations to glosses{% endblocktrans %}</h4>
+              </div>
             </header>
             <div class="col-md-6">
-                <section>
-                    <div id="gloss-relations" class="panel panel-default">
-                        <div class="panel-heading">
-                            <header>
-                                <h5 style="margin:0;">{% blocktrans %}Relations from this gloss{% endblocktrans %}</h5>
-                            </header>
-                        </div>
-                        <ul class="list-group">
-                            {% for gr in glossrelations %}
-                            {% tags_for_object gr as tag_list %}
-                            <li class="list-group-item list-group-item-relation">
-                                <a href="{% url 'dictionary:public_gloss_view' gr.target.id %}">
-                                    <span class="glyphicon glyphicon-circle-arrow-right"></span> {{gr}}</a>
-                                {% for tag in tag_list %}
-                                <span class="badge" style="float:inherit;">{{tag}}</span>
-                                {% endfor %}
-                            </li>
-                            {% empty %}
-                            <li class="list-group-item">{% blocktrans %}No relations.{% endblocktrans %}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </section>
+              <section>
+                <div id="gloss-relations" class="panel panel-default">
+                  <div class="panel-heading">
+                    <header>
+                      <h5 style="margin: 0">
+                        {% blocktrans %}Relations from this
+                          gloss{% endblocktrans %}
+                      </h5>
+                    </header>
+                  </div>
+                  <ul class="list-group">
+                    {% for gr in glossrelations %}
+                      {% tags_for_object gr as tag_list %}
+                      <li class="list-group-item list-group-item-relation">
+                        <a
+                          href="{% url 'dictionary:public_gloss_view' gr.target.id %}"
+                        >
+                          <span
+                            class="glyphicon glyphicon-circle-arrow-right"
+                          ></span>
+                          {{ gr }}</a>
+                        {% for tag in tag_list %}
+                          <span
+                            class="badge"
+                            style="float: inherit"
+                          >{{ tag }}</span>
+                        {% endfor %}
+                      </li>
+                    {% empty %}
+                      <li class="list-group-item">
+                        {% blocktrans %}No relations.{% endblocktrans %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </section>
             </div>
             <div class="col-md-6">
-                <section>
-                    <div id="gloss-relations-reverse" class="panel panel-default">
-                        <div class="panel-heading">
-                            <header>
-                                <h5 style="margin:0;">{% blocktrans %}Relations to this gloss{% endblocktrans %}</h5>
-                            </header>
-                        </div>
-                        <ul class="list-group">
-                            {% for gr in glossrelations_reverse %}
-                            {% tags_for_object gr as tag_list %}
-                            <li class="list-group-item">
-                                <a href="{% url 'dictionary:public_gloss_view' gr.source.id %}">
-                                    <span class="glyphicon glyphicon-circle-arrow-left"></span> {{gr.source}}</a>
-                                {% for tag in tag_list %}
-                                <span class="badge" style="float:inherit;">{{tag}}</span>
-                                {% endfor %}
-                            </li>
-                            {% empty %}
-                            <li class="list-group-item">{% blocktrans %}No reverse relations.{% endblocktrans %}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </section>
+              <section>
+                <div id="gloss-relations-reverse" class="panel panel-default">
+                  <div class="panel-heading">
+                    <header>
+                      <h5 style="margin: 0">
+                        {% blocktrans %}Relations to this
+                          gloss{% endblocktrans %}
+                      </h5>
+                    </header>
+                  </div>
+                  <ul class="list-group">
+                    {% for gr in glossrelations_reverse %}
+                      {% tags_for_object gr as tag_list %}
+                      <li class="list-group-item">
+                        <a
+                          href="{% url 'dictionary:public_gloss_view' gr.source.id %}"
+                        >
+                          <span
+                            class="glyphicon glyphicon-circle-arrow-left"
+                          ></span>
+                          {{ gr.source }}</a>
+                        {% for tag in tag_list %}
+                          <span
+                            class="badge"
+                            style="float: inherit"
+                          >{{ tag }}</span>
+                        {% endfor %}
+                      </li>
+                    {% empty %}
+                      <li class="list-group-item">
+                        {% blocktrans %}No reverse relations.{% endblocktrans %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </section>
             </div>
-        </section>
-    </div>
-</div>
-</article>
-</div>
+          </section>
+        </div>
+      </div>
+    </article>
+  </div>
 {% endblock %}

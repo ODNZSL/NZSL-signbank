@@ -9,400 +9,577 @@
 {# The purpose of this file is to make gloss_detail easier to handle #}
 
 {% if perms.dictionary.view_advanced_properties %}
-<div id="advanced-properties">
-
+  <div id="advanced-properties">
     <div class="panel panel-default">
-        <div class='panel-heading'>
-            <div class='panel-title'>
-                {# Translators: #}
-                <a data-toggle='collapse' data-parent='#definition' href='#phonology'>
-                    {% blocktrans %}Phonology{% endblocktrans %}</a>
-            </div>
+      <div class="panel-heading">
+        <div class="panel-title">
+          {# Translators: #}
+          <a data-toggle="collapse" data-parent="#definition" href="#phonology">
+            {% blocktrans %}Phonology{% endblocktrans %}</a>
         </div>
-        <div id='phonology' class='panel-collapse collapse'>
-            <table class='table table-condensed'>
-                {% for value,name,label,kind in phonology_fields %}
-                <tr>
-                    <th>{{label}}</th>
-                    <td class="edit edit_{{kind}}" id='{{name}}'>{% if kind == "check" and value is None%}No{% elif kind == "check" and value != 'No' %}Yes{% else %}{% value value %}{% endif %}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
+      </div>
+      <div id="phonology" class="panel-collapse collapse">
+        <table class="table table-condensed">
+          {% for value,name,label,kind in phonology_fields %}
+            <tr>
+              <th>{{ label }}</th>
+              <td class="edit edit_{{kind}}" id="{{name}}">
+                {% if kind == "check" and value is None %}No{% elif kind == "check" and value != 'No' %}Yes{% else %}{% value value %}{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
     </div>
 
     <div class="panel panel-default">
-        <div class='panel-heading'>
-            <div class='panel-title'>
-                {# Translators: #}
-                <a data-toggle='collapse' data-parent='#morphologydefinition' href='#morphology'>
-                    {% blocktrans %}Morphology{% endblocktrans %}</a>
-            </div>
+      <div class="panel-heading">
+        <div class="panel-title">
+          {# Translators: #}
+          <a
+            data-toggle="collapse"
+            data-parent="#morphologydefinition"
+            href="#morphology"
+          >
+            {% blocktrans %}Morphology{% endblocktrans %}</a>
         </div>
-        <div id='morphology' class='collapse'>
-            <table class='table table-condensed'>
-                <tr>
-                    <th style='width:2em'></th>
-                    {# Translators: #}
-                    <th style='width:12em'>{% blocktrans %}Type{% endblocktrans %}</th>
-                    {# Translators: #}
-                    <th style='width:12em'>{% blocktrans %}Morpheme{% endblocktrans %}</th>
-                </tr>
-                {% for morphdef in gloss.parent_glosses.all %}
-                <tr>
-                    <td>
-                        <span class='glyphicon glyphicon-trash morphology-definition-delete' data-toggle='modal'
-                              data-target='#delete_morphology-definition_modal_{{morphdef.id}}'></span>
+      </div>
+      <div id="morphology" class="collapse">
+        <table class="table table-condensed">
+          <tr>
+            <th style="width: 2em"></th>
+            {# Translators: #}
+            <th style="width: 12em">{% blocktrans %}Type{% endblocktrans %}</th>
+            {# Translators: #}
+            <th style="width: 12em">
+              {% blocktrans %}Morpheme{% endblocktrans %}
+            </th>
+          </tr>
+          {% for morphdef in gloss.parent_glosses.all %}
+            <tr>
+              <td>
+                <span
+                  class="glyphicon glyphicon-trash morphology-definition-delete"
+                  data-toggle="modal"
+                  data-target="#delete_morphology-definition_modal_{{morphdef.id}}"
+                ></span>
 
-                        <div class="modal fade" id="delete_morphology-definition_modal_{{morphdef.id}}"
-                             role="dialog" aria-labelledby="#modalTitle" aria-hidden="true">
-                            <div class="modal-dialog modal-sm">
-                                <div class="modal-content">
-                                    <div class='modal-header'>
-                                        {# Translators: Header2 #}
-                                        <h2 id='modalTitle'>{% blocktrans %}Delete This Morphology{% endblocktrans %}</h2>
-                                    </div>
-                                    <div class='modal-body'>
-                                        {# Translators: Question #}
-                                        <p>{% blocktrans %}Are you sure you want to delete this? This cannot be
-                                            undone.{% endblocktrans %}</p>
-                                    </div>
-                                    <form action='{% url "dictionary:update_gloss" gloss.id %}' method='post'>
-                                        {% csrf_token %}
-                                        <input type='hidden' name='id'
-                                               value='morphology-definition-delete_{{morphdef.id}}'>
-                                        <input type='hidden' name='value' value='confirmed'>
+                <div
+                  class="modal fade"
+                  id="delete_morphology-definition_modal_{{morphdef.id}}"
+                  role="dialog"
+                  aria-labelledby="#modalTitle"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        {# Translators: Header2 #}
+                        <h2 id="modalTitle">
+                          {% blocktrans %}Delete This
+                            Morphology{% endblocktrans %}
+                        </h2>
+                      </div>
+                      <div class="modal-body">
+                        {# Translators: Question #}
+                        <p>
+                          {% blocktrans %}Are you sure you want to delete this?
+                            This cannot be undone.{% endblocktrans %}
+                        </p>
+                      </div>
+                      <form
+                        action='{% url "dictionary:update_gloss" gloss.id %}'
+                        method="post"
+                      >
+                        {% csrf_token %}
+                        <input
+                          type="hidden"
+                          name="id"
+                          value="morphology-definition-delete_{{morphdef.id}}"
+                        />
+                        <input type="hidden" name="value" value="confirmed" />
 
-                                        <div class="modal-footer">
-                                            {# Translators: Button #}
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">
-                                                {% blocktrans %}Cancel{% endblocktrans %}
-                                            </button>
-                                            {# Translators: Submit button #}
-                                            <input type="submit" class="btn btn-primary"
-                                                   value='{% blocktrans %}Confirm Delete{% endblocktrans %}'>
-                                        </div>
-                                    </form>
-
-                                </div>
-                            </div>
+                        <div class="modal-footer">
+                          {# Translators: Button #}
+                          <button
+                            type="button"
+                            class="btn btn-default"
+                            data-dismiss="modal"
+                          >
+                            {% blocktrans %}Cancel{% endblocktrans %}
+                          </button>
+                          {# Translators: Submit button #}
+                          <input
+                            type="submit"
+                            class="btn btn-primary"
+                            value="{% blocktrans %}Confirm Delete{% endblocktrans %}"
+                          />
                         </div>
-                    </td>
-                    <td class='edit edit_morphology_role' id='morphology-definition-role_{{morphdef.id}}'>
-                        {{morphdef.role}}
-                    </td>
-                    <td class='edit edit_morpheme' id='morphology-definition-morpheme_{{morphdef.id}}'>
-                        {{morphdef.morpheme}}
-                    </td>
-                    <td>(<a href='{% url "dictionary:admin_gloss_view" pk=morphdef.morpheme.pk %}'>view</a>)</td>
-                </tr>
-                {% endfor %}
-            </table>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td
+                class="edit edit_morphology_role"
+                id="morphology-definition-role_{{morphdef.id}}"
+              >
+                {{ morphdef.role }}
+              </td>
+              <td
+                class="edit edit_morpheme"
+                id="morphology-definition-morpheme_{{morphdef.id}}"
+              >
+                {{ morphdef.morpheme }}
+              </td>
+              <td>
+                (<a
+                  href='{% url "dictionary:admin_gloss_view" pk=morphdef.morpheme.pk %}'
+                >view</a>)
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
 
-            {% if perms.dictionary.change_gloss %}
-                 <form id='add_morphologydefinition_form' method='post' action='{% url 'dictionary:add_morphologydefinition' %}'>
-                    {% csrf_token %}
-                    <table class='table table-condensed'>
-                        <tr>
-                            <td style="width:2em;"></td>
-                            <td style="width:12em;">{{morphologyform.role}}</td>
-                            {# Translators: Placeholder #}
-                            <td><input class='form-control glosstypeahead'
-                                       placeholder='{% blocktrans %}Gloss{% endblocktrans %}'
-                                       name='morpheme_id'></td>
-                            {# Translators: Submit button #}
-                            <td><input class='btn btn-primary'
-                                       value='{% blocktrans %}Add Morphology Definition{% endblocktrans %}' type='submit'>
-                            </td>
-                        </tr>
-                    </table>
-                </form>
-                <table class='table table-condensed'>
-                            {% for value,name,label,kind in morphology_fields %}
-                            <tr>
-                                <th>{{label}}</th>
-                                <td class="edit edit_{{kind}}" id='{{name}}'>{% value value %}</td>
-                            </tr>
-                            {% endfor %}
-                </table>
-            {% endif %}
-        </div>
+        {% if perms.dictionary.change_gloss %}
+          <form
+            id="add_morphologydefinition_form"
+            method="post"
+            action="{% url 'dictionary:add_morphologydefinition' %}"
+          >
+            {% csrf_token %}
+            <table class="table table-condensed">
+              <tr>
+                <td style="width: 2em"></td>
+                <td style="width: 12em">{{ morphologyform.role }}</td>
+                {# Translators: Placeholder #}
+                <td>
+                  <input
+                    class="form-control glosstypeahead"
+                    placeholder="{% blocktrans %}Gloss{% endblocktrans %}"
+                    name="morpheme_id"
+                  />
+                </td>
+                {# Translators: Submit button #}
+                <td>
+                  <input
+                    class="btn btn-primary"
+                    value="{% blocktrans %}Add Morphology Definition{% endblocktrans %}"
+                    type="submit"
+                  />
+                </td>
+              </tr>
+            </table>
+          </form>
+          <table class="table table-condensed">
+            {% for value,name,label,kind in morphology_fields %}
+              <tr>
+                <th>{{ label }}</th>
+                <td class="edit edit_{{kind}}" id="{{name}}">
+                  {% value value %}
+                </td>
+              </tr>
+            {% endfor %}
+          </table>
+        {% endif %}
+      </div>
     </div>
 
     <div class="panel panel-default">
-        <div class='panel-heading'>
-            <div class='panel-title'>
-                {# Translators: #}
-                <a data-toggle='collapse' data-parent='#definition' href='#semantics'>
-                    {% blocktrans %}Semantics{% endblocktrans %}</a>
-            </div>
+      <div class="panel-heading">
+        <div class="panel-title">
+          {# Translators: #}
+          <a data-toggle="collapse" data-parent="#definition" href="#semantics">
+            {% blocktrans %}Semantics{% endblocktrans %}</a>
         </div>
-        <div id='semantics' class='panel-collapse collapse'>
-            <table class='table table-condensed'>
-                <tr>
-                    <th>Semantic Fields</th>
-                    <td class="edit edit_list_check" id="semantic_field">{{gloss.semantic_field.all|join:"&#10;<br>"}}</td>
-                </tr>
-            </table>
-            <table class='table table-condensed'>
-                {% for value,name,label,kind in semantics_fields %}
-                <tr>
-                    <th>{{label}}</th>
-                    <td class="edit edit_{{kind}}" id='{{name}}'>{% value value %}</td>
-                </tr>
-                {% endfor %}
-
-            </table>
-        </div>
+      </div>
+      <div id="semantics" class="panel-collapse collapse">
+        <table class="table table-condensed">
+          <tr>
+            <th>Semantic Fields</th>
+            <td class="edit edit_list_check" id="semantic_field">
+              {{ gloss.semantic_field.all|join:"&#10;<br>" }}
+            </td>
+          </tr>
+        </table>
+        <table class="table table-condensed">
+          {% for value,name,label,kind in semantics_fields %}
+            <tr>
+              <th>{{ label }}</th>
+              <td class="edit edit_{{kind}}" id="{{name}}">
+                {% value value %}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
     </div>
 
     <div id="gloss-relations" class="panel panel-default">
-        <div class='panel-heading'>
-            <div class='panel-title'>
-                {# Translators: #}
-                <a data-toggle='collapse' data-parent='#definition' href='#glossrelationslist'>
-                    {% blocktrans %}Relations{% endblocktrans %}</a>
-            </div>
+      <div class="panel-heading">
+        <div class="panel-title">
+          {# Translators: #}
+          <a
+            data-toggle="collapse"
+            data-parent="#definition"
+            href="#glossrelationslist"
+          >
+            {% blocktrans %}Relations{% endblocktrans %}</a>
         </div>
-        <div id="glossrelationslist" class='panel-collapse collapse'>
-            <ul class="list-group gloss-relations">
-                {% for gr in glossrelations %}
-                {% tags_for_object gr as tag_list %}
-                <li class="list-group-item list-group-item-relation">
-                    <a href="{% url 'dictionary:admin_gloss_view' gr.target.id %}"
-                    data-thumbnail-src="{% if gr.target.glossvideo_set.all.0.posterfile %}{{gr.target.glossvideo_set.all.0.posterfile.url}}{% endif %}"
-                    data-video-src="{% if gr.target.glossvideo_set.all.0.videofile %}{{ gr.target.glossvideo_set.all.0.videofile.url }}"
-                    data-content-type="{{ gr.target.glossvideo_set.all.0.get_content_type}}{% endif %}">
-                        <span class="glyphicon glyphicon-circle-arrow-right"></span> {{gr}}</a>
-                    {% for tag in tag_list %}
-                    <span class="badge" style="float:inherit;">{{tag}}</span>
-                    {% endfor %}
-                    <form class="update_glossrelation" method="POST" action="{% url 'dictionary:add_glossrelation' %}" style="display:none;float:right;" >{% csrf_token %}
-                        <input type="hidden" name="delete" value="{{gr.id}}">
-                        <button type="submit" class="btn btn-link" >
-                            <span class="glyphicon glyphicon-trash" style="color:red;"></span></button>
-                    </form>
-                </li>
-                {% empty %}
-                <li class="list-group-item">{% blocktrans %}No relations.{% endblocktrans %}</li>
-                {% endfor %}
-            </ul>
-            <div class="update_glossrelation" style="display: none;">
-                <form class="form-inline" method="POST" action="{% url 'dictionary:add_glossrelation' %}">{% csrf_token %}
-                    <input type="hidden" name="source" value="{{gloss.id}}">
-                    {% bootstrap_field glossrelationform.target show_label=False %}
-                    {% bootstrap_field glossrelationform.tag %}
-                    <button class="btn btn-primary btn-sm" type="submit">{% blocktrans %}Add relation{% endblocktrans %}</button>
-                </form>
-            </div>
-            <ul class="list-group gloss-relations-reverse">
-                {% for gr in glossrelations_reverse %}
-                {% tags_for_object gr as tag_list %}
-                <li class="list-group-item">
-                    <a href="{% url 'dictionary:admin_gloss_view' gr.source.id %}"
-                    data-thumbnail-src="{% if gr.source.glossvideo_set.all.0.posterfile %}{{gr.source.glossvideo_set.all.0.posterfile.url}}{% endif %}"
-                    data-video-src="{% if gr.source.glossvideo_set.all.0.videofile %}{{ gr.source.glossvideo_set.all.0.videofile.url }}"
-                    data-content-type="{{ gr.source.glossvideo_set.all.0.get_content_type}}{% endif %}">
-                        <span class="glyphicon glyphicon-circle-arrow-left"></span> {{gr.source}}</a>
-                    {% for tag in tag_list %}
-                    <span class="badge" style="float:inherit;">{{tag}}</span>
-                    {% endfor %}
-                </li>
-                {% empty %}
-                <li class="list-group-item">{% blocktrans %}No reverse relations.{% endblocktrans %}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-
-    <div class="panel panel-default">
-        <div class='panel-heading'>
-            <div class='panel-title'>
-                {# Translators: #}
-                <a data-toggle='collapse' data-parent='#definition' href='#relationsforeign'>
-                    {% blocktrans %}Relations to Foreign Signs{% endblocktrans %}</a>
-            </div>
-        </div>
-        <div id='relationsforeign' class='collapse'>
-            <table class='table table-condensed'>
-                <tr>
-                    <th style='width:1em'></th>
-                    {# Translators: Loan from another language(?) #}
-                    <th style='width:3em'>{% blocktrans %}Loan{% endblocktrans %}</th>
-                    {# Translators: #}
-                    <th style='width:6em'>{% blocktrans %}Related Language{% endblocktrans %}</th>
-                    {# Translators: Equivalent Gloss in related language #}
-                    <th style='width:10em'>{% blocktrans %}Gloss in related language{% endblocktrans %}</th>
-                </tr>
-
-                {% for rel in gloss.relationtoforeignsign_set.all %}
-                <tr>
-                    <td>
-                        <span class='glyphicon glyphicon-trash relation_delete' data-toggle='modal'
-                              data-target='#delete_relation_modal_{{rel.id}}'></span>
-
-                        <div class="modal fade" id="delete_relation_modal_{{rel.id}}" role="dialog"
-                             aria-labelledby="#modalTitle" aria-hidden="true">
-                            <div class="modal-dialog modal-sm">
-                                <div class="modal-content">
-                                    <div class='modal-header'>
-                                        {# Translators: Header2 #}
-                                        <h2 id='modalTitle'>
-                                            {% blocktrans %}Delete This Relation{% endblocktrans %}</h2>
-                                    </div>
-                                    <div class='modal-body'>
-                                        {# Translators: Question #}
-                                        <p>{% blocktrans %}Are you sure you want to delete this? This cannot be
-                                            undone.{% endblocktrans %}</p>
-                                    </div>
-                                    <form action='{% url "dictionary:update_gloss" gloss.id %}' method='post'>
-                                        {% csrf_token %}
-                                        <input type='hidden' name='id' value='relationforeigndelete_{{rel.id}}'>
-                                        <input type='hidden' name='value' value='confirmed'>
-
-                                        <div class="modal-footer">
-                                            {# Translators: Button #}
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">
-                                                {% blocktrans %}Cancel{% endblocktrans %}
-                                            </button>
-                                            {# Translators: Submit button #}
-                                            <input type="submit" class="btn btn-primary"
-                                                   value='{% blocktrans %}Confirm Delete{% endblocktrans %}'>
-                                        </div>
-                                    </form>
-
-                                </div>
-                            </div>
-                        </div>
-
-                    </td>
-
-                    <td class='edit edit_check' id='relationforeign-loan_{{rel.id}}'>{{rel.loan}}</td>
-                    <td class='edit edit_text' id='relationforeign-other-lang_{{rel.id}}'>{{rel.other_lang}}</td>
-                    <td class='edit edit_text' id='relationforeign-other-lang-gloss_{{rel.id}}'>
-                        {{rel.other_lang_gloss}}
-                    </td>
-                    {% endfor %}
-            </table>
-
-            {% if perms.dictionary.change_gloss %}
-            <form id='add_relationtoforeignsign_form' method='post' action='{% url 'dictionary:add_relationtoforeignsign' %}'>
+      </div>
+      <div id="glossrelationslist" class="panel-collapse collapse">
+        <ul class="list-group gloss-relations">
+          {% for gr in glossrelations %}
+            {% tags_for_object gr as tag_list %}
+            <li class="list-group-item list-group-item-relation">
+              <a
+                href="{% url 'dictionary:admin_gloss_view' gr.target.id %}"
+                data-thumbnail-src="{% if gr.target.glossvideo_set.all.0.posterfile %}{{gr.target.glossvideo_set.all.0.posterfile.url}}{% endif %}"
+                data-video-src="{% if gr.target.glossvideo_set.all.0.videofile %}{{ gr.target.glossvideo_set.all.0.videofile.url }}"
+                data-content-type="{{ gr.target.glossvideo_set.all.0.get_content_type}}{% endif %}"
+              >
+                <span class="glyphicon glyphicon-circle-arrow-right"></span>
+                {{ gr }}</a>
+              {% for tag in tag_list %}
+                <span class="badge" style="float: inherit">{{ tag }}</span>
+              {% endfor %}
+              <form
+                class="update_glossrelation"
+                method="POST"
+                action="{% url 'dictionary:add_glossrelation' %}"
+                style="display: none; float: right"
+              >
+                {% csrf_token %}
+                <input type="hidden" name="delete" value="{{gr.id}}" />
+                <button type="submit" class="btn btn-link">
+                  <span
+                    class="glyphicon glyphicon-trash"
+                    style="color: red"
+                  ></span>
+                </button>
+              </form>
+            </li>
+          {% empty %}
+            <li class="list-group-item">
+              {% blocktrans %}No relations.{% endblocktrans %}
+            </li>
+          {% endfor %}
+        </ul>
+        <div class="update_glossrelation" style="display: none">
+          <form
+            class="form-inline"
+            method="POST"
+            action="{% url 'dictionary:add_glossrelation' %}"
+          >
             {% csrf_token %}
-            <input type='hidden' name='sourceid' value='{{gloss.pk}}'>
-            <table class='table table-condensed'>
-                <tr>
-                    <td><input class='checkbox' name='loan' type='checkbox'></td>
-                    {# Translators: #}
-                    <td><input class='form-control'
-                               placeholder='{% blocktrans %}Related language{% endblocktrans %}' name='other_lang'
-                               type='text'></td>
-                    {# Translators: #}
-                    <td><input class='form-control'
-                               placeholder='{% blocktrans %}Gloss in related language{% endblocktrans %}'
-                               name='other_lang_gloss' type='text'></td>
-                    {# Translators: #}
-                    <td><input class='btn btn-primary'
-                               value='{% blocktrans %}Add Relation to Foreign Sign{% endblocktrans %}'
-                               type='submit'></td>
-                </tr>
-            </table>
-            </form>
-            {% endif %}
+            <input type="hidden" name="source" value="{{gloss.id}}" />
+            {% bootstrap_field glossrelationform.target show_label=False %}
+            {% bootstrap_field glossrelationform.tag %}
+            <button class="btn btn-primary btn-sm" type="submit">
+              {% blocktrans %}Add relation{% endblocktrans %}
+            </button>
+          </form>
         </div>
+        <ul class="list-group gloss-relations-reverse">
+          {% for gr in glossrelations_reverse %}
+            {% tags_for_object gr as tag_list %}
+            <li class="list-group-item">
+              <a
+                href="{% url 'dictionary:admin_gloss_view' gr.source.id %}"
+                data-thumbnail-src="{% if gr.source.glossvideo_set.all.0.posterfile %}{{gr.source.glossvideo_set.all.0.posterfile.url}}{% endif %}"
+                data-video-src="{% if gr.source.glossvideo_set.all.0.videofile %}{{ gr.source.glossvideo_set.all.0.videofile.url }}"
+                data-content-type="{{ gr.source.glossvideo_set.all.0.get_content_type}}{% endif %}"
+              >
+                <span class="glyphicon glyphicon-circle-arrow-left"></span>
+                {{ gr.source }}</a>
+              {% for tag in tag_list %}
+                <span class="badge" style="float: inherit">{{ tag }}</span>
+              {% endfor %}
+            </li>
+          {% empty %}
+            <li class="list-group-item">
+              {% blocktrans %}No reverse relations.{% endblocktrans %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
 
     <div class="panel panel-default">
-        <div class='panel-heading'>
-            <div class='panel-title'>
-                <a data-toggle='collapse' data-parent='#definition' href='#usage_variation'>
-                    {% blocktrans %}Usage and Variation{% endblocktrans %}</a>
-            </div>
+      <div class="panel-heading">
+        <div class="panel-title">
+          {# Translators: #}
+          <a
+            data-toggle="collapse"
+            data-parent="#definition"
+            href="#relationsforeign"
+          >
+            {% blocktrans %}Relations to Foreign Signs{% endblocktrans %}</a>
         </div>
-        <div id='usage_variation' class='panel-collapse collapse'>
-            <table class='table table-condensed'>
-                <tr>
-                    <th>Usage</th>
-                    <td class="edit edit_list_check" id="usage">{{gloss.usage.all|join:"&#10;<br>"}}</td>
-                    {% for value, name, label, kind in usage_fields %}
-                        <tr>
-                            <th>{{ label }}</th>
-                            <td class="edit edit_text" id="{{ name }}">{% value value %}</td>
-                        </tr>
-                    {% endfor %}
-                </tr>
-            </table>
-            <table class='table table-condensed'>
-                <tr>
-                    <th>Age variation</th>
-                    <td class="edit edit_list edit_list_optional" id="age_variation">{{gloss.age_variation}}</td>
-                </tr>
-            </table>
-        </div>
-    </div>
+      </div>
+      <div id="relationsforeign" class="collapse">
+        <table class="table table-condensed">
+          <tr>
+            <th style="width: 1em"></th>
+            {# Translators: Loan from another language(?) #}
+            <th style="width: 3em">{% blocktrans %}Loan{% endblocktrans %}</th>
+            {# Translators: #}
+            <th style="width: 6em">
+              {% blocktrans %}Related Language{% endblocktrans %}
+            </th>
+            {# Translators: Equivalent Gloss in related language #}
+            <th style="width: 10em">
+              {% blocktrans %}Gloss in related language{% endblocktrans %}
+            </th>
+          </tr>
 
-    <div class="panel panel-default">
-        <div class='panel-heading'>
-            <div class='panel-title'>
-                <a data-toggle='collapse' data-parent='#definition' href='#examples'>
-                    {% blocktrans %}Examples{% endblocktrans %}</a>
-            </div>
-        </div>
-        <div id='examples' class='panel-collapse collapse'>
-            <table class='table table-condensed'>
-                {% for value,name,label,kind in examples_fields %}
-                <tr>
-                    <th>{{label}}</th>
-                    <td class="edit edit_text" id='{{name}}'>{% value value %}</td>
-                </tr>
-                {% endfor %}
+          {% for rel in gloss.relationtoforeignsign_set.all %}
+            <tr>
+              <td>
+                <span
+                  class="glyphicon glyphicon-trash relation_delete"
+                  data-toggle="modal"
+                  data-target="#delete_relation_modal_{{rel.id}}"
+                ></span>
 
-            </table>
-        </div>
-    </div>
+                <div
+                  class="modal fade"
+                  id="delete_relation_modal_{{rel.id}}"
+                  role="dialog"
+                  aria-labelledby="#modalTitle"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        {# Translators: Header2 #}
+                        <h2 id="modalTitle">
+                          {% blocktrans %}Delete This
+                            Relation{% endblocktrans %}
+                        </h2>
+                      </div>
+                      <div class="modal-body">
+                        {# Translators: Question #}
+                        <p>
+                          {% blocktrans %}Are you sure you want to delete this?
+                            This cannot be undone.{% endblocktrans %}
+                        </p>
+                      </div>
+                      <form
+                        action='{% url "dictionary:update_gloss" gloss.id %}'
+                        method="post"
+                      >
+                        {% csrf_token %}
+                        <input
+                          type="hidden"
+                          name="id"
+                          value="relationforeigndelete_{{rel.id}}"
+                        />
+                        <input type="hidden" name="value" value="confirmed" />
 
-    <div class="panel panel-default">
-        <div class='panel-heading'>
-            <div class='panel-title'>
+                        <div class="modal-footer">
+                          {# Translators: Button #}
+                          <button
+                            type="button"
+                            class="btn btn-default"
+                            data-dismiss="modal"
+                          >
+                            {% blocktrans %}Cancel{% endblocktrans %}
+                          </button>
+                          {# Translators: Submit button #}
+                          <input
+                            type="submit"
+                            class="btn btn-primary"
+                            value="{% blocktrans %}Confirm Delete{% endblocktrans %}"
+                          />
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <td class="edit edit_check" id="relationforeign-loan_{{rel.id}}">
+                {{ rel.loan }}
+              </td>
+              <td
+                class="edit edit_text"
+                id="relationforeign-other-lang_{{rel.id}}"
+              >
+                {{ rel.other_lang }}
+              </td>
+              <td
+                class="edit edit_text"
+                id="relationforeign-other-lang-gloss_{{rel.id}}"
+              >
+                {{ rel.other_lang_gloss }}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+
+        {% if perms.dictionary.change_gloss %}
+          <form
+            id="add_relationtoforeignsign_form"
+            method="post"
+            action="{% url 'dictionary:add_relationtoforeignsign' %}"
+          >
+            {% csrf_token %}
+            <input type="hidden" name="sourceid" value="{{gloss.pk}}" />
+            <table class="table table-condensed">
+              <tr>
+                <td><input class="checkbox" name="loan" type="checkbox" /></td>
                 {# Translators: #}
-                <a data-toggle='collapse' data-parent='#definition' href='#frequency'>
-                    {% blocktrans %}Frequency{% endblocktrans %}</a>
-            </div>
-        </div>
-        <div id='frequency' class='panel-collapse collapse'>
-            <table class='table table-condensed'>
-                {% for value,name,label,kind in frequency_fields %}
-                <tr>
-                    <th>{{label}}</th>
-                    <td class="edit edit_text" id='{{name}}'>{% value value %}</td>
-                </tr>
-                {% endfor %}
-
+                <td>
+                  <input
+                    class="form-control"
+                    placeholder="{% blocktrans %}Related language{% endblocktrans %}"
+                    name="other_lang"
+                    type="text"
+                  />
+                </td>
+                {# Translators: #}
+                <td>
+                  <input
+                    class="form-control"
+                    placeholder="{% blocktrans %}Gloss in related language{% endblocktrans %}"
+                    name="other_lang_gloss"
+                    type="text"
+                  />
+                </td>
+                {# Translators: #}
+                <td>
+                  <input
+                    class="btn btn-primary"
+                    value="{% blocktrans %}Add Relation to Foreign Sign{% endblocktrans %}"
+                    type="submit"
+                  />
+                </td>
+              </tr>
             </table>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="panel-title">
+          <a
+            data-toggle="collapse"
+            data-parent="#definition"
+            href="#usage_variation"
+          >
+            {% blocktrans %}Usage and Variation{% endblocktrans %}</a>
         </div>
+      </div>
+      <div id="usage_variation" class="panel-collapse collapse">
+        <table class="table table-condensed">
+          <tr>
+            <th>Usage</th>
+            <td class="edit edit_list_check" id="usage">
+              {{ gloss.usage.all|join:"&#10;<br>" }}
+            </td>
+            {% for value, name, label, kind in usage_fields %}
+              <tr>
+                <th>{{ label }}</th>
+                <td class="edit edit_text" id="{{ name }}">
+                  {% value value %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tr>
+        </table>
+        <table class="table table-condensed">
+          <tr>
+            <th>Age variation</th>
+            <td class="edit edit_list edit_list_optional" id="age_variation">
+              {{ gloss.age_variation }}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="panel-title">
+          <a data-toggle="collapse" data-parent="#definition" href="#examples">
+            {% blocktrans %}Examples{% endblocktrans %}</a>
+        </div>
+      </div>
+      <div id="examples" class="panel-collapse collapse">
+        <table class="table table-condensed">
+          {% for value,name,label,kind in examples_fields %}
+            <tr>
+              <th>{{ label }}</th>
+              <td class="edit edit_text" id="{{name}}">{% value value %}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="panel-title">
+          {# Translators: #}
+          <a data-toggle="collapse" data-parent="#definition" href="#frequency">
+            {% blocktrans %}Frequency{% endblocktrans %}</a>
+        </div>
+      </div>
+      <div id="frequency" class="panel-collapse collapse">
+        <table class="table table-condensed">
+          {% for value,name,label,kind in frequency_fields %}
+            <tr>
+              <th>{{ label }}</th>
+              <td class="edit edit_text" id="{{name}}">{% value value %}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
     </div>
 
     <div>
-        <hr style="border-top-color:#C0C0C0;margin-bottom:10px;">
+      <hr style="border-top-color: #c0c0c0; margin-bottom: 10px" />
 
-        {% get_comment_form for gloss as formcomment %}
-        <form action="{% comment_form_target %}" method="POST">
+      {% get_comment_form for gloss as formcomment %}
+      <form action="{% comment_form_target %}" method="POST">
         {% csrf_token %}
         <div class="form-group">
-            <label class="control-label" for="id_comment">{% blocktrans %}Add comment{% endblocktrans %}</label>
-            <textarea name="comment" rows="3" title="" required="" cols="40" id="id_comment"
-                    maxlength="3000" placeholder="{% blocktrans %}Add comment{% endblocktrans %}"
-                    class="form-control"></textarea>
+          <label class="control-label" for="id_comment">{% blocktrans %}Add
+              comment{% endblocktrans %}</label>
+          <textarea
+            name="comment"
+            rows="3"
+            title=""
+            required=""
+            cols="40"
+            id="id_comment"
+            maxlength="3000"
+            placeholder="{% blocktrans %}Add comment{% endblocktrans %}"
+            class="form-control"
+          ></textarea>
         </div>
-        <input name="honeypot" id="id_honeypot" type="text" style="display:none;">
+        <input
+          name="honeypot"
+          id="id_honeypot"
+          type="text"
+          style="display: none"
+        />
         {{ formcomment.content_type }}
         {{ formcomment.object_pk }}
         {{ formcomment.timestamp }}
         {{ formcomment.security_hash }}
-        <input type="hidden" name="next" value="{% url 'dictionary:admin_gloss_view' gloss.id %}">
+        <input
+          type="hidden"
+          name="next"
+          value="{% url 'dictionary:admin_gloss_view' gloss.id %}"
+        />
         <button type="submit" class="btn btn-default" id="id_submit_comm">
-            {% blocktrans %}Add comment{% endblocktrans %}</button>
-        </form>
+          {% blocktrans %}Add comment{% endblocktrans %}
+        </button>
+      </form>
     </div>
-
-</div>
+  </div>
 {% endif %}

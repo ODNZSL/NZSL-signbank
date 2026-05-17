@@ -1,24 +1,21 @@
 {% extends "flatpages/default.html" %}
 {% load i18n %}
 {% block pagecontent %}
-<div class='row'>
+  <div class="row">
     <div class="{% if perms.dictionary.search_gloss %}col-md-8{% else %}col-md-12{% endif %}">
-    {{ flatpage.content }}
+      {{ flatpage.content }}
     </div>
     {% if perms.dictionary.search_gloss %}
-    <div class="col-md-4" id="front-right">
-    </div>
+      <div class="col-md-4" id="front-right"></div>
     {% endif %}
-</div>
+  </div>
 {% endblock %}
 {% block extrajs %}
-    {% if perms.dictionary.search_gloss %}
+  {% if perms.dictionary.search_gloss %}
     <script type="text/javascript">
-    $(document).ready(function() {
-     $('#front-right').load('/queue/details/');
-    });
+      $(document).ready(function() {
+       $('#front-right').load('/queue/details/');
+      });
     </script>
-    {% endif %}
+  {% endif %}
 {% endblock %}
-
-
