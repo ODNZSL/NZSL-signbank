@@ -114,14 +114,14 @@ files = [
 
 [[package]]
 name = "django"
-version = "5.2.13"
+version = "5.2.14"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "django-5.2.13-py3-none-any.whl", hash = "sha256:5788fce61da23788a8ce6f02583765ab060d396720924789f97fa42119d37f7a"},
-    {file = "django-5.2.13.tar.gz", hash = "sha256:a31589db5188d074c63f0945c3888fad104627dfcc236fb2b97f71f89da33bc4"},
+    {file = "django-5.2.14-py3-none-any.whl", hash = "sha256:6f712143bd3064310d1f50fac859c3e9a274bdcfc9595339853be7779297fc76"},
+    {file = "django-5.2.14.tar.gz", hash = "sha256:58a63ba841662e5c686b57ba1fec52ddd68c0b93bd96ac3029d55728f00bf8a2"},
 ]
 
 [package.dependencies]
@@ -348,6 +348,34 @@ develop = false
 [package.source]
 type = "directory"
 url = "vendor/django-tagging"
+
+[[package]]
+name = "djangofmt"
+version = "0.2.7"
+description = "A fast, HTML aware, Django template formatter, written in Rust."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "djangofmt-0.2.7-py3-none-linux_armv6l.whl", hash = "sha256:ab162912c80b862587b77a494df54bfeeb92d1335dd99d5c26c3566b8a433b87"},
+    {file = "djangofmt-0.2.7-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:c0382ad1085db1b2ab8e9c5bd8cfefd52cea880415bb2da87819fb306736f84a"},
+    {file = "djangofmt-0.2.7-py3-none-macosx_11_0_arm64.whl", hash = "sha256:26bb664073ba10764b2a445d131496b7f51e5c7e201f0b05b945615a50bb14c5"},
+    {file = "djangofmt-0.2.7-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:68ed44dba61953a35a60c50ec781a85d82f6d43c186388e91d9942f9912db4eb"},
+    {file = "djangofmt-0.2.7-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:af83bb4c1d4cc5927e20a9793eb9d06a8793e7f5b175dba1d63b796014c3659a"},
+    {file = "djangofmt-0.2.7-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:7be012f9fc40940a739e22483f604aef9bf519bb1a9b46a6f55c702b5b99447f"},
+    {file = "djangofmt-0.2.7-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:8c1d2d1cdd998f0092771ad163b06607a5c09412cbd6be396f5317e8fbd2bd7f"},
+    {file = "djangofmt-0.2.7-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:70d0c9ff31955fdaef9ff4e7790a858d7bf6fc8cd9c72232dd30f171859fdff5"},
+    {file = "djangofmt-0.2.7-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:67ee9e98a1d49ccb05a417f9d6473d8a33d204ae4ffb7f04c8cd995f1a93944a"},
+    {file = "djangofmt-0.2.7-py3-none-manylinux_2_31_riscv64.whl", hash = "sha256:5e38a22a50f58e89bee5ec0f7f291284cb5049726ef1c10aea3dde03348d7304"},
+    {file = "djangofmt-0.2.7-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:40266cd68066433afd9f8262a4a88667dd0a7aead17dc0bd2995a5ee0c1235de"},
+    {file = "djangofmt-0.2.7-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:600bfbe91345f384ee903bb3e43d66dc2977b34cce7bcd71285a80886467953f"},
+    {file = "djangofmt-0.2.7-py3-none-musllinux_1_2_i686.whl", hash = "sha256:4d9d92461adfff7afd8ab7840b31ba551b2ef7a6c28413bdb0c87143c4eea844"},
+    {file = "djangofmt-0.2.7-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:4afacdb854cb74b50a74e554bdd2fbb543b67300bfa041c55ea3b9f90f79eb7e"},
+    {file = "djangofmt-0.2.7-py3-none-win32.whl", hash = "sha256:c56c49104e91bc0a611a71c0860cf7dafc2c755e44b315851732370a39c25121"},
+    {file = "djangofmt-0.2.7-py3-none-win_amd64.whl", hash = "sha256:dccbc17c77df063fe90a03fc7cd8fcc01f2aa2579d8ae2e0d3347d5d7b40ed2f"},
+    {file = "djangofmt-0.2.7-py3-none-win_arm64.whl", hash = "sha256:a14c39da6ec3b3e78ebe96375d69ee24dbead99e8b2756f4a26aeae5ee512da8"},
+    {file = "djangofmt-0.2.7.tar.gz", hash = "sha256:814db331cfd5c37aca677957ee0155991f08d3ac23731810cf34e00a2d15dcc8"},
+]
 
 [[package]]
 name = "gunicorn"
@@ -618,14 +646,14 @@ files = [
 
 [[package]]
 name = "urllib3"
-version = "2.6.3"
+version = "2.7.0"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "urllib3-2.6.3-py3-none-any.whl", hash = "sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4"},
-    {file = "urllib3-2.6.3.tar.gz", hash = "sha256:1b62b6884944a57dbe321509ab94fd4d3b307075e0c2eae991ac71ee15ad38ed"},
+    {file = "urllib3-2.7.0-py3-none-any.whl", hash = "sha256:9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897"},
+    {file = "urllib3-2.7.0.tar.gz", hash = "sha256:231e0ec3b63ceb14667c67be60f2f2c40a518cb38b03af60abc813da26505f4c"},
 ]
 
 [package.extras]
@@ -664,4 +692,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "f8fa98c9feff7775e4ad548734b383abc3e898d3a760a135444b04d17269b488"
+content-hash = "b11274905d96b2e2020e0bbe311e4722ce6820f0957026b27c6473d0c8f1aa0a"

@@ -3,37 +3,56 @@
 {% load bootstrap3 %}
 {% load i18n %}
 {% load static %}
-{% block bootstrap3_title %}{{gloss}} [{{gloss.dataset}}] | {% endblock %}
+{% block bootstrap3_title %}{{ gloss }} [{{ gloss.dataset }}] | {% endblock %}
 {% block extrahead %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/jquery.atwho.min.css' %}">
-<link rel="stylesheet" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}">
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="{% static 'css/jquery.atwho.min.css' %}"
+  />
+  <link
+    rel="stylesheet"
+    href="{% static 'css/jquery-ui/jquery-ui.min.css' %}"
+  />
 {% endblock %}
 {% block extrajs %}
-<script src="{% static 'js/jquery.caret.min.js' %}"></script>
-<script src="{% static 'js/jquery.atwho.min.js' %}"></script>
-{% if perms.dictionary.change_gloss %}
-<script type="text/javascript" src="{% static "js/jquery.jeditable.js" %}"></script>
-<script type="text/javascript" src="{% static "js/jquery.jeditable.checkbox.js" %}"></script>
-<script type="text/javascript" src="{% static "js/typeahead.bundle.min.js" %}"></script>
-<script src="{% static "js/RecordRTC.min.js" %}"></script>
-<link rel="stylesheet" href="{% static "css/jquery-ui/jquery-ui.min.css" %}">
+  <script src="{% static 'js/jquery.caret.min.js' %}"></script>
+  <script src="{% static 'js/jquery.atwho.min.js' %}"></script>
+  {% if perms.dictionary.change_gloss %}
+    <script
+      type="text/javascript"
+      src='{% static "js/jquery.jeditable.js" %}'
+    ></script>
+    <script
+      type="text/javascript"
+      src='{% static "js/jquery.jeditable.checkbox.js" %}'
+    ></script>
+    <script
+      type="text/javascript"
+      src='{% static "js/typeahead.bundle.min.js" %}'
+    ></script>
+    <script src='{% static "js/RecordRTC.min.js" %}'></script>
+    <link
+      rel="stylesheet"
+      href='{% static "css/jquery-ui/jquery-ui.min.css" %}'
+    />
     {% if not gloss.published %}{# Don't allow recording of webcam videos to published Glosses. #}
-{% include "dictionary/record_video.html" %}
+      {% include "dictionary/record_video.html" %}
     {% endif %}
-{% endif %}
-<script type="text/javascript">
-$(document).ready(function () {
-    // Delete modal for comment deletion.
-    $('#delete_comment_modal').on('show.bs.modal', function (event) {
-      var button = $(event.relatedTarget); // Button that triggered the modal
-      var recipient = button.data('comment-id');
-      var modal = $(this);
-      modal.find('.modal-body form input[name="comment_id"]').val(recipient);
-      modal.find('.modal-body form').attr('action', '/comments/delete/'+recipient+'/');
+  {% endif %}
+  <script type="text/javascript">
+    $(document).ready(function () {
+        // Delete modal for comment deletion.
+        $('#delete_comment_modal').on('show.bs.modal', function (event) {
+          var button = $(event.relatedTarget); // Button that triggered the modal
+          var recipient = button.data('comment-id');
+          var modal = $(this);
+          modal.find('.modal-body form input[name="comment_id"]').val(recipient);
+          modal.find('.modal-body form').attr('action', '/comments/delete/'+recipient+'/');
+        });
     });
-});
-</script>
-<script type="text/javascript">
+  </script>
+  <script type="text/javascript">
     // These variables are used in gloss_edit.js
     var enable_edit_button_text = "{% blocktrans %}Enable Edit{% endblocktrans %}";
     var disable_edit_button_text = "{% blocktrans %}Disable Edit{% endblocktrans %}";
@@ -85,437 +104,703 @@ $(document).ready(function () {
             }
         }
     });
-</script>
-{% if perms.dictionary.change_gloss %}
-    <script type='text/javascript'>
-         var edit_post_url = '{% url 'dictionary:update_gloss' gloss.id %}';
-         var choice_lists = {{gloss.get_choice_lists|safe}};
-         var dataset_users = {{dataset_users|safe}};
-         var assignable_users = {{assignable_users|safe}};
-         var lemmas = {{lemmas|safe}};
-         var csrf_token = '{{csrf_token}}';
+  </script>
+  {% if perms.dictionary.change_gloss %}
+    <script type="text/javascript">
+      var edit_post_url = '{% url 'dictionary:update_gloss' gloss.id %}';
+      var choice_lists = {{gloss.get_choice_lists|safe}};
+      var dataset_users = {{dataset_users|safe}};
+      var assignable_users = {{assignable_users|safe}};
+      var lemmas = {{lemmas|safe}};
+      var csrf_token = '{{csrf_token}}';
     </script>
-    <script type='text/javascript' src="{% static "js/gloss_edit.js" %}"></script>
+    <script
+      type="text/javascript"
+      src='{% static "js/gloss_edit.js" %}'
+    ></script>
     <script>
-        // Make setting videos publicity form ajax.
-        $( ".change-video-publicity-form" ).submit(function( event ) {
-          event.preventDefault();
-          var formurl = $( this ).attr('action');
-          var formdata = $( this ).serialize();
-          var elem = $(this);
-          var set_private_text = '{% blocktrans %}Set private{% endblocktrans %}';
-          var set_public_text = '{% blocktrans %}Set public{% endblocktrans %}';
-          var formbutton_text = elem.children('button').text();
-          var input_value = elem.children('input[name="is_public"]').val();
-          $.ajax({
-          type: "POST",
-            url: formurl,
-            data: formdata,
-          })
-          .done( function() {
-            elem.closest('div.player').toggleClass('video-not-public');
-            // Toggle buttons text between private_text and public_text
-            elem.children('button').text(formbutton_text == set_public_text ? set_private_text : set_public_text);
-            // Toggle hidden inputs value between True and False
-            elem.children('input[name="is_public"]').val(input_value == 'True' ? 'False' : 'True');
-          })
-          .fail( function () {
-            console.log('Could not change publicity.');
-          });
-        });
-    </script>
-{% endif %}
-    {# This is for GlossRelation form #}
-    <script src="{% static "js/jquery-ui.min.js" %}"></script>
-    <script>
-      $( function() {
-        var availableTags = {{dataset_glosses|safe}};
-        $( ".glossrelation-autocomplete" ).autocomplete({
-          source: availableTags
+      // Make setting videos publicity form ajax.
+      $( ".change-video-publicity-form" ).submit(function( event ) {
+        event.preventDefault();
+        var formurl = $( this ).attr('action');
+        var formdata = $( this ).serialize();
+        var elem = $(this);
+        var set_private_text = '{% blocktrans %}Set private{% endblocktrans %}';
+        var set_public_text = '{% blocktrans %}Set public{% endblocktrans %}';
+        var formbutton_text = elem.children('button').text();
+        var input_value = elem.children('input[name="is_public"]').val();
+        $.ajax({
+        type: "POST",
+          url: formurl,
+          data: formdata,
+        })
+        .done( function() {
+          elem.closest('div.player').toggleClass('video-not-public');
+          // Toggle buttons text between private_text and public_text
+          elem.children('button').text(formbutton_text == set_public_text ? set_private_text : set_public_text);
+          // Toggle hidden inputs value between True and False
+          elem.children('input[name="is_public"]').val(input_value == 'True' ? 'False' : 'True');
+        })
+        .fail( function () {
+          console.log('Could not change publicity.');
         });
       });
     </script>
-    <script>
+  {% endif %}
+  {# This is for GlossRelation form #}
+  <script src='{% static "js/jquery-ui.min.js" %}'></script>
+  <script>
+    $( function() {
+      var availableTags = {{dataset_glosses|safe}};
+      $( ".glossrelation-autocomplete" ).autocomplete({
+        source: availableTags
+      });
+    });
+  </script>
+  <script>
     // Returns a list to be used for mentions
-$('#id_comment').atwho({
-    at: '@',
-    data: dataset_users,
-});
-    </script>
+    $('#id_comment').atwho({
+        at: '@',
+        data: dataset_users,
+    });
+  </script>
 
-    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'js/video-tooltip.js' %}"></script>
+  <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+  <script src="{% static 'js/video-tooltip.js' %}"></script>
 {% endblock %}
 
 {% block content %}
-<div id="searchresults" style="overflow-y:hidden;">
+  <div id="searchresults" style="overflow-y: hidden">
     {% if request.session.search_results %}{# See if search_results in sessions is empty #}
-    <strong>{% blocktrans %}Search results:{% endblocktrans %}</strong>
-    <div id="results-inline" class="btn-group" role="group" aria-label="search results" style="white-space:nowrap;">
-    </div>
+      <strong>{% blocktrans %}Search results:{% endblocktrans %}</strong>
+      <div
+        id="results-inline"
+        class="btn-group"
+        role="group"
+        aria-label="search results"
+        style="white-space: nowrap"
+      >
+      </div>
     {% endif %}
-</div>
+  </div>
 
-
-{# div not indented to ease code diffing #}
-<div id="signinfo" class='navbar navbar-default navbar-collapse'>
+  {# div not indented to ease code diffing #}
+  <div id="signinfo" class="navbar navbar-default navbar-collapse">
     <div id="datasetname" class="pull-left">
-        <h4>{% blocktrans%}Dataset{% endblocktrans %}: <span class="dataset-{{gloss.dataset.id}}-color label label-default">{{dataset}}</span></h4>
+      <h4>
+        {% blocktrans %}Dataset{% endblocktrans %}: <span
+          class="dataset-{{gloss.dataset.id}}-color label label-default"
+        >{{ dataset }}</span>
+      </h4>
     </div>
     {% if perms.dictionary.change_gloss %}
-        {% if not gloss.published %}{# Don't allow recording webcam videos for published Glosses. #}
-        <button type="button" class="btn btn-info navbar-btn" id="btn-record-video" data-toggle="modal"
-                data-target="#record-video-Modal" style="float:left; margin-left:20px; display:none;">
-            <span class="glyphicon glyphicon-facetime-video" aria-hidden="true" style="color:black;"></span>
-            {% blocktrans %}Record a video{% endblocktrans %}</button>
-        {% endif %}
-    <div class='pull-right'>
+      {% if not gloss.published %}{# Don't allow recording webcam videos for published Glosses. #}
+        <button
+          type="button"
+          class="btn btn-info navbar-btn"
+          id="btn-record-video"
+          data-toggle="modal"
+          data-target="#record-video-Modal"
+          style="float: left; margin-left: 20px; display: none"
+        >
+          <span
+            class="glyphicon glyphicon-facetime-video"
+            aria-hidden="true"
+            style="color: black"
+          ></span>
+          {% blocktrans %}Record a video{% endblocktrans %}
+        </button>
+      {% endif %}
+      <div class="pull-right">
         {# Translators: Text that appears when editing is on #}
-        <span id='edit_message'
-              style="display:none">{% blocktrans %}Click on red text to edit{% endblocktrans %}&nbsp;</span>
+        <span id="edit_message" style="display: none">{% blocktrans %}Click on
+            red text to edit{% endblocktrans %}&nbsp;</span>
         {# Translators: Button #}
-        <button id='enable_edit' class='btn btn-default navbar-btn'>{% blocktrans %}Enable Edit{% endblocktrans %}</button>
-    </div>
+        <button id="enable_edit" class="btn btn-default navbar-btn">
+          {% blocktrans %}Enable Edit{% endblocktrans %}
+        </button>
+      </div>
     {% endif %}
-</div>
+  </div>
 
+  {# Tabs nav bar #}
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="active">
+      <a href="#gloss_main_edit_tab" role="tab" data-toggle="tab">Edit</a>
+    </li>
+    <li>
+      <a href="#gloss_public_dictionary_tab" role="tab" data-toggle="tab"
+      >Public View</a>
+    </li>
+    <li>
+      <a href="#gloss_revision_history_tab" role="tab" data-toggle="tab"
+      >Revision History</a>
+    </li>
+    <li>
+      <a href="#gloss_validation_results_tab" role="tab" data-toggle="tab"
+      >Validation Results</a>
+    </li>
+  </ul>
 
-{# Tabs nav bar #}
-<ul class="nav nav-tabs" role="tablist">
-    <li class="active"><a href="#gloss_main_edit_tab" role="tab" data-toggle="tab">Edit</a></li>
-    <li><a href="#gloss_public_dictionary_tab" role="tab" data-toggle="tab">Public View</a></li>
-    <li><a href="#gloss_revision_history_tab" role="tab" data-toggle="tab">Revision History</a></li>
-    <li><a href="#gloss_validation_results_tab" role="tab" data-toggle="tab">Validation Results</a></li>
-</ul>
-
-{# Tabs wrapper #}
-<div class="tab-content">
-
-{# Tab: main gloss editing pane #}
-<div class="tab-pane active" id="gloss_main_edit_tab">
-
-{# div not indented to ease code diffing #}
-<div class="container-fluid">
-    <div id="definitionblock" class="row">
-        <div id="leftblock" class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
-
+  {# Tabs wrapper #}
+  <div class="tab-content">
+    {# Tab: main gloss editing pane #}
+    <div class="tab-pane active" id="gloss_main_edit_tab">
+      {# div not indented to ease code diffing #}
+      <div class="container-fluid">
+        <div id="definitionblock" class="row">
+          <div id="leftblock" class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
             <div id="videocontainer">
-
-                {% if gloss.glossvideo_set.exists %}
-                    {% for glossvideo in gloss.glossvideo_set.all %}
-                        <div class="player well well-sm{% if glossvideo.is_public %} video-is-public{% else %} video-not-public{% endif %}">
-                            <div class="video-title">
-                                <h4 class="edit edit_text" id="video_title{{glossvideo.pk}}">{{glossvideo.title}} - {{glossvideo.video_type}}</h4>
-                            </div>
-                            {% if glossvideo.is_video %}
-                                <div class="embed-responsive embed-responsive-16by9">
-                                    <video id="glossvideo-{{glossvideo.pk}}" class="embed-responsive-item" width="450" preload="metadata" controls muted
-                                            {% if glossvideo.posterfile %} poster="{{glossvideo.posterfile.url}}"{% endif %}>
-                                        <source src="{{glossvideo.get_absolute_url}}" type="{{glossvideo.content_type}}">
-                                        {% blocktrans %}Your browser does not support the video tag.{% endblocktrans %}
-                                    </video>
-                                </div>
-                            {% elif glossvideo.is_image %}
-                                <img src="{{glossvideo.get_absolute_url}}" alt="{{glossvideo.title}} - {{glossvideo.video_type}}" class="img-responsive center-block" />
-                            {% endif %}
-                            <div class="video_edit" style="display:none;">
-                                <div class="video-ordering">
-                                    <form action="{% url 'video:change_glossvideo_order' %}" method="post">{% csrf_token %}
-                                        <button type="submit" class="btn btn-default" name="direction" value="up">
-                                            <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
-                                        </button>
-                                        <button type="submit" class="btn btn-default" name="direction" value="down">
-                                            <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
-                                        </button>
-                                        <input type="hidden" name="videoid" value="{{glossvideo.pk}}">
-                                    </form>
-                                </div>
-                                <div class="poster-edit">
-                                    {% if glossvideo.is_video %}
-                                        <button type="button"
-                                                class="btn btn-success"
-                                                id="vidbtn-{{glossvideo.pk}}"
-                                                onclick="grabScreenshot({{glossvideo.pk}})"
-                                                data-toggle="modal"
-                                                data-target="#glossvideo{{glossvideo.pk}}-Modal">
-                                                    {% blocktrans %}Capture new poster image{% endblocktrans %}
-                                        </button>
-                                    {% endif %}
-                                </div>
-                                <form class="change-video-type" action="{% url 'video:glossvideo_update' %}" method="post">{% csrf_token %}
-                                    <input type="hidden" name="glossvideo" value="{{glossvideo.pk}}">
-                                    <input type="hidden" name="gloss" value="{{glossvideo.gloss.pk}}">
-
-                                    <select name="video_type" onchange="this.form.submit()">
-                                      {% for value, name in field_choices.video_type.items %}
-                                        <option
-                                            {% if value == glossvideo.video_type.machine_value %}selected {%endif%}
-                                            value="{{value}}">{{name}}</option>
-                                      {% endfor %}
-                                    </select>
-
-                                    <noscript>
-                                        <button type="submit" class="btn btn-sm btn-primary">Change type</button>
-                                    </noscript>
-                                </form>
-
-                                <div class="change-video-publicity">
-                                    <form class="change-video-publicity-form" action="{% url 'video:change_glossvideo_publicity' %}" method="post">{% csrf_token %}
-                                        <input type="hidden" name="videoid" value="{{glossvideo.pk}}">
-                                        {% if glossvideo.is_public %}
-                                            <input type="hidden" name="is_public" value="False">
-                                            <button type="submit" class="btn btn-default">{% blocktrans %}Set private{% endblocktrans %}</button>
-                                        {% else %}
-                                            <input type="hidden" name="is_public" value="True">
-                                            <button type="submit" class="btn btn-default">{% blocktrans %}Set public{% endblocktrans %}</button>
-                                        {% endif %}
-                                    </form>
-                                </div>
-                            </div>
-
-                            <!-- Modal -->
-                            <div class="modal fade" id="glossvideo{{glossvideo.pk}}-Modal" tabindex="-1" role="dialog" aria-labelledby="glossvideo{{glossvideo.pk}}-ModalLabel">
-                                <div class="modal-dialog modal-lg" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                          <h4 class="modal-title" id="glossvideo{{glossvideo.pk}}-ModalLabel">{% blocktrans %}Update poster image for video{% endblocktrans %} {{glossvideo.videofile}}</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <canvas id="vidcanvas-{{glossvideo.pk}}" class="img-responsive">Your browser does not support the HTML5 canvas tag.</canvas>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <form enctype="multipart/form-data" action="{% url 'video:add_poster' %}" method="post">
-                                                {% csrf_token %}
-
-                                                <input type="hidden" name="pk" value="{{glossvideo.pk}}">
-                                                <input type="hidden" name="posterfile" id="posterfile-{{glossvideo.pk}}">
-                                                              <button type="button" class="btn btn-default" data-dismiss="modal">{%blocktrans%}Close{%endblocktrans%}</button>
-                                                <input class='btn btn-primary' type='submit' value='{% blocktrans %}Save changes{% endblocktrans %}'>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--Modal ends -->
-                        </div>
-                    {% endfor %}
-
-                    <script type="text/javascript">
-                    function grabScreenshot(glossvideo_pk) {
-                      /* This function grabs a screenshot from a desired frame in a video and adds it into a form field. */
-                      var canvas = document.getElementById("vidcanvas-"+glossvideo_pk);
-                      var video = document.getElementById("glossvideo-"+glossvideo_pk);
-                      canvas.width = video.videoWidth;
-                      canvas.height = video.videoHeight;
-                      var ctx=canvas.getContext("2d");
-                      // Draw the image into the canvas
-                      ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-                      var posterfileinput = document.getElementById("posterfile-"+glossvideo_pk);
-                      // Set the captured image data as base64 encoded into the posterfile form field.
-                      posterfileinput.value = canvas.toDataURL('image/jpeg');
-                    }
-                    </script>
-
-                {% else %}
-                    <div id="novideo" class="alert alert-danger" role="alert">
-                        <p><strong>{% blocktrans %}No videos available for this gloss.{% endblocktrans %}</strong></p>
+              {% if gloss.glossvideo_set.exists %}
+                {% for glossvideo in gloss.glossvideo_set.all %}
+                  <div class="player well well-sm{% if glossvideo.is_public %} video-is-public{% else %} video-not-public{% endif %}">
+                    <div class="video-title">
+                      <h4
+                        class="edit edit_text"
+                        id="video_title{{glossvideo.pk}}"
+                      >
+                        {{ glossvideo.title }} - {{ glossvideo.video_type }}
+                      </h4>
                     </div>
-                {% endif %}
+                    {% if glossvideo.is_video %}
+                      <div class="embed-responsive embed-responsive-16by9">
+                        <video
+                          id="glossvideo-{{glossvideo.pk}}"
+                          class="embed-responsive-item"
+                          width="450"
+                          preload="metadata"
+                          controls
+                          muted
+                          {% if glossvideo.posterfile %}
+                            poster="{{glossvideo.posterfile.url}}"
+                          {% endif %}
+                        >
+                          <source
+                            src="{{glossvideo.get_absolute_url}}"
+                            type="{{glossvideo.content_type}}"
+                          />
+                          {% blocktrans %}Your browser does not support the
+                            video tag.{% endblocktrans %}
+                        </video>
+                      </div>
+                    {% elif glossvideo.is_image %}
+                      <img
+                        src="{{glossvideo.get_absolute_url}}"
+                        alt="{{glossvideo.title}} - {{glossvideo.video_type}}"
+                        class="img-responsive center-block"
+                      />
+                    {% endif %}
+                    <div class="video_edit" style="display: none">
+                      <div class="video-ordering">
+                        <form
+                          action="{% url 'video:change_glossvideo_order' %}"
+                          method="post"
+                        >
+                          {% csrf_token %}
+                          <button
+                            type="submit"
+                            class="btn btn-default"
+                            name="direction"
+                            value="up"
+                          >
+                            <span
+                              class="glyphicon glyphicon-chevron-up"
+                              aria-hidden="true"
+                            ></span>
+                          </button>
+                          <button
+                            type="submit"
+                            class="btn btn-default"
+                            name="direction"
+                            value="down"
+                          >
+                            <span
+                              class="glyphicon glyphicon-chevron-down"
+                              aria-hidden="true"
+                            ></span>
+                          </button>
+                          <input
+                            type="hidden"
+                            name="videoid"
+                            value="{{glossvideo.pk}}"
+                          />
+                        </form>
+                      </div>
+                      <div class="poster-edit">
+                        {% if glossvideo.is_video %}
+                          <button
+                            type="button"
+                            class="btn btn-success"
+                            id="vidbtn-{{glossvideo.pk}}"
+                            onclick="grabScreenshot({{glossvideo.pk}})"
+                            data-toggle="modal"
+                            data-target="#glossvideo{{glossvideo.pk}}-Modal"
+                          >
+                            {% blocktrans %}Capture new poster
+                              image{% endblocktrans %}
+                          </button>
+                        {% endif %}
+                      </div>
+                      <form
+                        class="change-video-type"
+                        action="{% url 'video:glossvideo_update' %}"
+                        method="post"
+                      >
+                        {% csrf_token %}
+                        <input
+                          type="hidden"
+                          name="glossvideo"
+                          value="{{glossvideo.pk}}"
+                        />
+                        <input
+                          type="hidden"
+                          name="gloss"
+                          value="{{glossvideo.gloss.pk}}"
+                        />
 
+                        <select name="video_type" onchange="this.form.submit()">
+                          {% for value, name in field_choices.video_type.items %}
+                            <option
+                              {% if value == glossvideo.video_type.machine_value %}
+                                selected
+                              {% endif %}
+                              value="{{value}}"
+                            >
+                              {{ name }}
+                            </option>
+                          {% endfor %}
+                        </select>
+
+                        <noscript>
+                          <button type="submit" class="btn btn-sm btn-primary">
+                            Change type
+                          </button>
+                        </noscript>
+                      </form>
+
+                      <div class="change-video-publicity">
+                        <form
+                          class="change-video-publicity-form"
+                          action="{% url 'video:change_glossvideo_publicity' %}"
+                          method="post"
+                        >
+                          {% csrf_token %}
+                          <input
+                            type="hidden"
+                            name="videoid"
+                            value="{{glossvideo.pk}}"
+                          />
+                          {% if glossvideo.is_public %}
+                            <input
+                              type="hidden"
+                              name="is_public"
+                              value="False"
+                            />
+                            <button type="submit" class="btn btn-default">
+                              {% blocktrans %}Set private{% endblocktrans %}
+                            </button>
+                          {% else %}
+                            <input
+                              type="hidden"
+                              name="is_public"
+                              value="True"
+                            />
+                            <button type="submit" class="btn btn-default">
+                              {% blocktrans %}Set public{% endblocktrans %}
+                            </button>
+                          {% endif %}
+                        </form>
+                      </div>
+                    </div>
+
+                    <!-- Modal -->
+                    <div
+                      class="modal fade"
+                      id="glossvideo{{glossvideo.pk}}-Modal"
+                      tabindex="-1"
+                      role="dialog"
+                      aria-labelledby="glossvideo{{glossvideo.pk}}-ModalLabel"
+                    >
+                      <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button
+                              type="button"
+                              class="close"
+                              data-dismiss="modal"
+                              aria-label="Close"
+                            >
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4
+                              class="modal-title"
+                              id="glossvideo{{glossvideo.pk}}-ModalLabel"
+                            >
+                              {% blocktrans %}Update poster image for
+                                video{% endblocktrans %}
+                              {{ glossvideo.videofile }}
+                            </h4>
+                          </div>
+                          <div class="modal-body">
+                            <canvas
+                              id="vidcanvas-{{glossvideo.pk}}"
+                              class="img-responsive"
+                            >Your browser does not support the HTML5 canvas
+                              tag.</canvas>
+                          </div>
+                          <div class="modal-footer">
+                            <form
+                              enctype="multipart/form-data"
+                              action="{% url 'video:add_poster' %}"
+                              method="post"
+                            >
+                              {% csrf_token %}
+
+                              <input
+                                type="hidden"
+                                name="pk"
+                                value="{{glossvideo.pk}}"
+                              />
+                              <input
+                                type="hidden"
+                                name="posterfile"
+                                id="posterfile-{{glossvideo.pk}}"
+                              />
+                              <button
+                                type="button"
+                                class="btn btn-default"
+                                data-dismiss="modal"
+                              >
+                                {% blocktrans %}Close{% endblocktrans %}
+                              </button>
+                              <input
+                                class="btn btn-primary"
+                                type="submit"
+                                value="{% blocktrans %}Save changes{% endblocktrans %}"
+                              />
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!--Modal ends -->
+                  </div>
+                {% endfor %}
+
+                <script type="text/javascript">
+                  function grabScreenshot(glossvideo_pk) {
+                    /* This function grabs a screenshot from a desired frame in a video and adds it into a form field. */
+                    var canvas = document.getElementById("vidcanvas-"+glossvideo_pk);
+                    var video = document.getElementById("glossvideo-"+glossvideo_pk);
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    var ctx=canvas.getContext("2d");
+                    // Draw the image into the canvas
+                    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+                    var posterfileinput = document.getElementById("posterfile-"+glossvideo_pk);
+                    // Set the captured image data as base64 encoded into the posterfile form field.
+                    posterfileinput.value = canvas.toDataURL('image/jpeg');
+                  }
+                </script>
+              {% else %}
+                <div id="novideo" class="alert alert-danger" role="alert">
+                  <p>
+                    <strong>{% blocktrans %}No videos available for this
+                        gloss.{% endblocktrans %}</strong>
+                  </p>
+                </div>
+              {% endif %}
             </div>
 
             <div>
-                <div id="editvideodata" class="panel panel-default">
-                    {% if perms.dictionary.change_gloss and perms.dictionary.update_video %}
-                    <div class='editform' style="display:none;">
-                        <div class="uploadvid">
-                            <fieldset>
-                                {# Translators: Upload/Add new video to Signbank #}
-                                <legend>{% blocktrans %}Upload Video{% endblocktrans %}</legend>
-                                <form action="{% url 'video:upload_glossvideo_gloss' %}" method="post"
-                                      enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    <input type='hidden' name='redirect' value='{{request.path}}?edit'>
-                                    <input type='hidden' name='gloss' value='{{gloss.pk}}'>
-                                    {% bootstrap_field glossvideoform.videofile show_help=False %}
-                                    {% bootstrap_field glossvideoform.title %}
-                                    {% bootstrap_field glossvideoform.video_type %}
+              <div id="editvideodata" class="panel panel-default">
+                {% if perms.dictionary.change_gloss and perms.dictionary.update_video %}
+                  <div class="editform" style="display: none">
+                    <div class="uploadvid">
+                      <fieldset>
+                        {# Translators: Upload/Add new video to Signbank #}
+                        <legend>
+                          {% blocktrans %}Upload Video{% endblocktrans %}
+                        </legend>
+                        <form
+                          action="{% url 'video:upload_glossvideo_gloss' %}"
+                          method="post"
+                          enctype="multipart/form-data"
+                        >
+                          {% csrf_token %}
+                          <input
+                            type="hidden"
+                            name="redirect"
+                            value="{{request.path}}?edit"
+                          />
+                          <input
+                            type="hidden"
+                            name="gloss"
+                            value="{{gloss.pk}}"
+                          />
+                          {% bootstrap_field glossvideoform.videofile show_help=False %}
+                          {% bootstrap_field glossvideoform.title %}
+                          {% bootstrap_field glossvideoform.video_type %}
 
-                                    {# Translators: Submit button #}
-                                    <input class='btn btn-primary' type='submit'
-                                           value='{% blocktrans %}Upload Video{% endblocktrans %}' style="margin-top:5px"/>
-                                </form>
-                            </fieldset>
-                        </div>
-                    </div>
-                    {% endif %}
-                {% include "dictionary/glosstags.html" %}
-                </div>
-            </div>
-        </div>
-
-        <div class='panel-group col-lg-7 col-md-6 col-sm-12 col-xs-12' id='definition'>
-            <table class='table table-condensed'>
-                {# Translators: Information about a Gloss #}
-                <tr {% if gloss.published %}class="success"{% endif %}>
-                    <th>{% blocktrans %}Gloss:{% endblocktrans %}</th>
-                    <td class='edit edit_text' id='idgloss'>{% value gloss.idgloss %}</td>
-                </tr>
-                {# Translators: Information about a Gloss #}
-                <tr>
-                    <th>{% blocktrans %}Gloss in Māori:{% endblocktrans %}</th>
-                    <td class='edit edit_text' id='idgloss_mi'>{% value gloss.idgloss_mi %}</td>
-                </tr>
-
-                {% for translation_language, translations in translation_languages_and_translations %}
-                <tr>
-                    <th>{% blocktrans %}Translations in {% endblocktrans %}{{ translation_language.name }}
-                         <span class="glyphicon glyphicon-question-sign color-flatblue" aria-hidden="true"
-                               data-toggle="tooltip" data-placement="top"
-                               title="{% blocktrans %}After each translation enter a comma (,) or a semicolon (;).
-                               Usage of numbers that end with a dot (.) is allowed (e.g. 11.) and they will not be part
-                               of translations.{% endblocktrans %}"></span>:</th>
-                    <td>
-                        <table>
-                            <tr>
-                                <td>{% blocktrans %}Major {% endblocktrans %}</td>
-                                <td>&nbsp;</td>
-                                {% if translations.translations %}
-                                    <td class='edit edit_area_translations' id='keywords_{{ translation_language.language_code_2char }}'>{{ translations.translations }}</td>
-                                {% else %}
-                                    <td class='edit edit_area_translations' id='keywords_{{ translation_language.language_code_2char }}'></td>
-                                {% endif %}
-                            </tr>
-                            <tr>
-                                <td>{% blocktrans %}Secondary {% endblocktrans %}</td>
-                                <td>&nbsp;</td>
-                                {% if translations.translations_secondary %}
-                                    <td class='edit edit_area_translations' id='keywords_secondary_{{ translation_language.language_code_2char }}'>{{ translations.translations_secondary }}</td>
-                                {% else %}
-                                    <td class='edit edit_area_translations' id='keywords_secondary_{{ translation_language.language_code_2char }}'></td>
-                                {% endif %}
-                            </tr>
-                            <tr>
-                                <td>{% blocktrans %}Minor {% endblocktrans %}</td>
-                                <td>&nbsp;</td>
-                                {% if translations.translations_minor %}
-                                    <td class='edit edit_area_translations' id='keywords_minor_gloss_{{ translation_language.language_code_2char }}'>{{ translations.translations_minor }}</td>
-                                {% else %}
-                                    <td class='edit edit_area_translations' id='keywords_minor_gloss_{{ translation_language.language_code_2char }}'></td>
-                                {% endif %}
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                {% endfor %}
-
-                {# Translators: Information about a Gloss #}
-                <tr>
-                    <th>{% blocktrans %}Notes:{% endblocktrans %}</th>
-                    <td class='edit edit_area_notes' id='notes'>{% value gloss.notes %}</td>
-                </tr>
-                {# Translators: Information about a Gloss #}
-                <tr>
-                    <th>{% blocktrans %}Hint:{% endblocktrans %}</th>
-                    <td class='edit edit_area_notes' id='hint'>{% value gloss.hint %}</td>
-                </tr>
-
-                <tr>
-                    <th>{% blocktrans %}Wordclasses:{% endblocktrans %}</th>
-                    <td class="edit edit_list_check" id="wordclass">{{gloss.wordclasses.all|join:", "}}</td>
-                </tr>
-                <tr>
-                    <th>{% blocktrans %}URL:{% endblocktrans %}</th>
-                    <td id='url_field'>
-                        {% for url in glossurls %}
-                        <p><a href="{{url.url}}" id="glossurl-{{url.id}}" class="edit edit_url" target="_blank"
-                        data-glossurl-id="{{url.id}}">{{url.url}}</a>
-                            <a href="{% url 'dictionary:delete_glossurl' glossurl=url.id %}"
-                            class="glossurl-delete" style="display:none;">
-                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                            </a></p>
-                        {% endfor %}
-                        <form method="POST" action="{% url 'dictionary:update_gloss' glossid=gloss.id %}" class="glossurlform" style="display:none;">{% csrf_token %}
-                            <input type="hidden" name="id" value="glossurl-create">
-                            <input type="text" name="value">
-                            <input type="submit" value="{% blocktrans %}Add new URL{% endblocktrans %}">
+                          {# Translators: Submit button #}
+                          <input
+                            class="btn btn-primary"
+                            type="submit"
+                            value="{% blocktrans %}Upload Video{% endblocktrans %}"
+                            style="margin-top: 5px"
+                          />
                         </form>
-                    </td>
-                </tr>
-                {# Translators: Information about a Gloss #}
+                      </fieldset>
+                    </div>
+                  </div>
+                {% endif %}
+                {% include "dictionary/glosstags.html" %}
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="panel-group col-lg-7 col-md-6 col-sm-12 col-xs-12"
+            id="definition"
+          >
+            <table class="table table-condensed">
+              {# Translators: Information about a Gloss #}
+              <tr {% if gloss.published %}class="success"{% endif %}>
+                <th>{% blocktrans %}Gloss:{% endblocktrans %}</th>
+                <td class="edit edit_text" id="idgloss">
+                  {% value gloss.idgloss %}
+                </td>
+              </tr>
+              {# Translators: Information about a Gloss #}
+              <tr>
+                <th>{% blocktrans %}Gloss in Māori:{% endblocktrans %}</th>
+                <td class="edit edit_text" id="idgloss_mi">
+                  {% value gloss.idgloss_mi %}
+                </td>
+              </tr>
+
+              {% for translation_language, translations in translation_languages_and_translations %}
                 <tr>
-                    <th>{% blocktrans %}Signer:{% endblocktrans %}</th>
-                    <td id='signer' class="edit edit_list edit_list_optional">{{gloss.signer}}</td>
+                  <th>
+                    {% blocktrans %}Translations in
+                    {% endblocktrans %}{{ translation_language.name }}
+                    <span
+                      class="glyphicon glyphicon-question-sign color-flatblue"
+                      aria-hidden="true"
+                      data-toggle="tooltip"
+                      data-placement="top"
+                      title="{% blocktrans %}After each translation enter a comma (,) or a semicolon (;).
+                               Usage of numbers that end with a dot (.) is allowed (e.g. 11.) and they will not be part
+                               of translations.{% endblocktrans %}"
+                    ></span>:
+                  </th>
+                  <td>
+                    <table>
+                      <tr>
+                        <td>{% blocktrans %}Major {% endblocktrans %}</td>
+                        <td>&nbsp;</td>
+                        {% if translations.translations %}
+                          <td
+                            class="edit edit_area_translations"
+                            id="keywords_{{ translation_language.language_code_2char }}"
+                          >
+                            {{ translations.translations }}
+                          </td>
+                        {% else %}
+                          <td
+                            class="edit edit_area_translations"
+                            id="keywords_{{ translation_language.language_code_2char }}"
+                          >
+                          </td>
+                        {% endif %}
+                      </tr>
+                      <tr>
+                        <td>{% blocktrans %}Secondary {% endblocktrans %}</td>
+                        <td>&nbsp;</td>
+                        {% if translations.translations_secondary %}
+                          <td
+                            class="edit edit_area_translations"
+                            id="keywords_secondary_{{ translation_language.language_code_2char }}"
+                          >
+                            {{ translations.translations_secondary }}
+                          </td>
+                        {% else %}
+                          <td
+                            class="edit edit_area_translations"
+                            id="keywords_secondary_{{ translation_language.language_code_2char }}"
+                          >
+                          </td>
+                        {% endif %}
+                      </tr>
+                      <tr>
+                        <td>{% blocktrans %}Minor {% endblocktrans %}</td>
+                        <td>&nbsp;</td>
+                        {% if translations.translations_minor %}
+                          <td
+                            class="edit edit_area_translations"
+                            id="keywords_minor_gloss_{{ translation_language.language_code_2char }}"
+                          >
+                            {{ translations.translations_minor }}
+                          </td>
+                        {% else %}
+                          <td
+                            class="edit edit_area_translations"
+                            id="keywords_minor_gloss_{{ translation_language.language_code_2char }}"
+                          >
+                          </td>
+                        {% endif %}
+                      </tr>
+                    </table>
+                  </td>
                 </tr>
-                <tr>
-                    <th>{% blocktrans %}Assigned user:{% endblocktrans %}</th>
-                    <td id="assigned_user" class="edit edit_assignable_user">{{gloss.assigned_user.get_full_name}}</td>
-                </tr>
+              {% endfor %}
+
+              {# Translators: Information about a Gloss #}
+              <tr>
+                <th>{% blocktrans %}Notes:{% endblocktrans %}</th>
+                <td class="edit edit_area_notes" id="notes">
+                  {% value gloss.notes %}
+                </td>
+              </tr>
+              {# Translators: Information about a Gloss #}
+              <tr>
+                <th>{% blocktrans %}Hint:{% endblocktrans %}</th>
+                <td class="edit edit_area_notes" id="hint">
+                  {% value gloss.hint %}
+                </td>
+              </tr>
+
+              <tr>
+                <th>{% blocktrans %}Wordclasses:{% endblocktrans %}</th>
+                <td class="edit edit_list_check" id="wordclass">
+                  {{ gloss.wordclasses.all|join:", " }}
+                </td>
+              </tr>
+              <tr>
+                <th>{% blocktrans %}URL:{% endblocktrans %}</th>
+                <td id="url_field">
+                  {% for url in glossurls %}
+                    <p>
+                      <a
+                        href="{{url.url}}"
+                        id="glossurl-{{url.id}}"
+                        class="edit edit_url"
+                        target="_blank"
+                        data-glossurl-id="{{url.id}}"
+                      >{{ url.url }}</a>
+                      <a
+                        href="{% url 'dictionary:delete_glossurl' glossurl=url.id %}"
+                        class="glossurl-delete"
+                        style="display: none"
+                      >
+                        <span
+                          class="glyphicon glyphicon-remove"
+                          aria-hidden="true"
+                        ></span>
+                      </a>
+                    </p>
+                  {% endfor %}
+                  <form
+                    method="POST"
+                    action="{% url 'dictionary:update_gloss' glossid=gloss.id %}"
+                    class="glossurlform"
+                    style="display: none"
+                  >
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="glossurl-create" />
+                    <input type="text" name="value" />
+                    <input
+                      type="submit"
+                      value="{% blocktrans %}Add new URL{% endblocktrans %}"
+                    />
+                  </form>
+                </td>
+              </tr>
+              {# Translators: Information about a Gloss #}
+              <tr>
+                <th>{% blocktrans %}Signer:{% endblocktrans %}</th>
+                <td id="signer" class="edit edit_list edit_list_optional">
+                  {{ gloss.signer }}
+                </td>
+              </tr>
+              <tr>
+                <th>{% blocktrans %}Assigned user:{% endblocktrans %}</th>
+                <td id="assigned_user" class="edit edit_assignable_user">
+                  {{ gloss.assigned_user.get_full_name }}
+                </td>
+              </tr>
             </table>
             <!-- Advanced properties start -->
             {% include "dictionary/gloss_detail_advanced.html" %}
             <!-- Advanced properties end -->
 
-            <br>
+            <br />
 
-            <table class='table table-condensed'>
-                {# Translators: Information about a Gloss #}
-                <tr>
-                    <th>{% blocktrans %}Sign number:{% endblocktrans %}</th>
-                    <td id='sign-number'>{{gloss.id}}</td>
-                </tr>
-                <tr>
-                  <th>{% blocktrans %}NZSL Share ID:{% endblocktrans %}</th>
-                  <td class='edit edit_text'
-                      id='nzsl_share_id'>{% value gloss.nzsl_share_id %}</td>
-                </tr>
-                <tr>
-                    <th>{% blocktrans %}Film batch:{% endblocktrans %}</th>
-                    <td class="edit edit_text" id='filmbatch'>{{gloss.filmbatch}}</td>
-                </tr>
-                <tr>
-                    <th>{% blocktrans %}Concise:{% endblocktrans %}</th>
-                    <td id="concise">{{ gloss.concise }}</td>
-                </tr>
-                <tr>
-                    <th>{% blocktrans %}Lemma:{% endblocktrans %}</th>
-                    <td class="edit edit_lemma" id="lemma">{% value gloss.lemma %}</td>
-                    <td>
-                        <form method="POST" action="{% url 'dictionary:add_lemma' glossid=gloss.id  %}" class="lemmaform" style="display:none;">{% csrf_token %}
-                            <input type="hidden" name="id" value="lemma-create">
-                            <input type="text" name="value">
-                            <input type="submit" value="{% blocktrans %}Add new Lemma{% endblocktrans %}">
-                        </form>
-                    </td>
-                </tr>
+            <table class="table table-condensed">
+              {# Translators: Information about a Gloss #}
+              <tr>
+                <th>{% blocktrans %}Sign number:{% endblocktrans %}</th>
+                <td id="sign-number">{{ gloss.id }}</td>
+              </tr>
+              <tr>
+                <th>{% blocktrans %}NZSL Share ID:{% endblocktrans %}</th>
+                <td class="edit edit_text" id="nzsl_share_id">
+                  {% value gloss.nzsl_share_id %}
+                </td>
+              </tr>
+              <tr>
+                <th>{% blocktrans %}Film batch:{% endblocktrans %}</th>
+                <td class="edit edit_text" id="filmbatch">
+                  {{ gloss.filmbatch }}
+                </td>
+              </tr>
+              <tr>
+                <th>{% blocktrans %}Concise:{% endblocktrans %}</th>
+                <td id="concise">{{ gloss.concise }}</td>
+              </tr>
+              <tr>
+                <th>{% blocktrans %}Lemma:{% endblocktrans %}</th>
+                <td class="edit edit_lemma" id="lemma">
+                  {% value gloss.lemma %}
+                </td>
+                <td>
+                  <form
+                    method="POST"
+                    action="{% url 'dictionary:add_lemma' glossid=gloss.id  %}"
+                    class="lemmaform"
+                    style="display: none"
+                  >
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="lemma-create" />
+                    <input type="text" name="value" />
+                    <input
+                      type="submit"
+                      value="{% blocktrans %}Add new Lemma{% endblocktrans %}"
+                    />
+                  </form>
+                </td>
+              </tr>
             </table>
-
+          </div>
         </div>
+      </div>
+    </div>
+    {# Tab: main gloss editing pane #}
 
+    {# Tab: Signbank Dictionary public view pane #}
+    <div class="tab-pane" id="gloss_public_dictionary_tab">
+      {% include "dictionary/gloss_public_dictionary_tab.html" %}
     </div>
 
-</div>
+    {# Tab: gloss editing Revision History pane #}
+    <div class="tab-pane" id="gloss_revision_history_tab">
+      {% include "dictionary/gloss_revision_history_tab.html" %}
+    </div>
 
-</div>
-{# Tab: main gloss editing pane #}
-
-{# Tab: Signbank Dictionary public view pane #}
-<div class="tab-pane" id="gloss_public_dictionary_tab">
-    {% include "dictionary/gloss_public_dictionary_tab.html" %}
-</div>
-
-{# Tab: gloss editing Revision History pane #}
-<div class="tab-pane" id="gloss_revision_history_tab">
-    {% include "dictionary/gloss_revision_history_tab.html" %}
-</div>
-
-{# Tab: gloss validation results pane #}
-<div class="tab-pane" id="gloss_validation_results_tab">
-  {% include "dictionary/gloss_validation_results_tab.html" %}
-</div>
-
-</div>
-{# Tabs wrapper #}
-
+    {# Tab: gloss validation results pane #}
+    <div class="tab-pane" id="gloss_validation_results_tab">
+      {% include "dictionary/gloss_validation_results_tab.html" %}
+    </div>
+  </div>
+  {# Tabs wrapper #}
 {% endblock %}
