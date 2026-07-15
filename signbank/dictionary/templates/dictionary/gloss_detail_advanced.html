@@ -206,9 +206,7 @@
           {% for value,name,label,kind in semantics_fields %}
             <tr>
               <th>{{ label }}</th>
-              <td class="edit edit_{{kind}}" id="{{name}}">
-                {% value value %}
-              </td>
+              <td class="edit edit_{{kind}}" id="{{name}}">{% value value %}</td>
             </tr>
           {% endfor %}
         </table>
@@ -483,9 +481,7 @@
             {% for value, name, label, kind in usage_fields %}
               <tr>
                 <th>{{ label }}</th>
-                <td class="edit edit_text" id="{{ name }}">
-                  {% value value %}
-                </td>
+                <td class="edit edit_text" id="{{ name }}">{% value value %}</td>
               </tr>
             {% endfor %}
           </tr>
