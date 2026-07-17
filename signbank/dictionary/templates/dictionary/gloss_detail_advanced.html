@@ -1,4 +1,3 @@
-<!-- djangofmt:ignore -->
 {% load stylesheet %}
 {% load bootstrap3 %}
 {% load i18n %}
@@ -207,7 +206,9 @@
           {% for value,name,label,kind in semantics_fields %}
             <tr>
               <th>{{ label }}</th>
-              <td class="edit edit_{{kind}}" id="{{name}}">{% value value %}</td>
+              <td class="edit edit_{{kind}}" id="{{name}}">
+                {% value value %}
+              </td>
             </tr>
           {% endfor %}
         </table>
@@ -479,13 +480,15 @@
             <td class="edit edit_list_check" id="usage">
               {{ gloss.usage.all|join:"&#10;<br>" }}
             </td>
+            {% for value, name, label, kind in usage_fields %}
+              <tr>
+                <th>{{ label }}</th>
+                <td class="edit edit_text" id="{{ name }}">
+                  {% value value %}
+                </td>
+              </tr>
+            {% endfor %}
           </tr>
-          {% for value, name, label, kind in usage_fields %}
-            <tr>
-              <th>{{ label }}</th>
-              <td class="edit edit_text" id="{{ name }}">{% value value %}</td>
-            </tr>
-          {% endfor %}
         </table>
         <table class="table table-condensed">
           <tr>

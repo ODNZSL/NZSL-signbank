@@ -1,4 +1,3 @@
-<!-- djangofmt:ignore -->
 {% extends 'baselayout.html' %}
 {% load stylesheet %}
 {% load bootstrap3 %}
@@ -568,12 +567,16 @@
               {# Translators: Information about a Gloss #}
               <tr {% if gloss.published %}class="success"{% endif %}>
                 <th>{% blocktrans %}Gloss:{% endblocktrans %}</th>
-                <td class="edit edit_text" id="idgloss">{% value gloss.idgloss %}</td>
+                <td class="edit edit_text" id="idgloss">
+                  {% value gloss.idgloss %}
+                </td>
               </tr>
               {# Translators: Information about a Gloss #}
               <tr>
                 <th>{% blocktrans %}Gloss in Māori:{% endblocktrans %}</th>
-                <td class="edit edit_text" id="idgloss_mi">{% value gloss.idgloss_mi %}</td>
+                <td class="edit edit_text" id="idgloss_mi">
+                  {% value gloss.idgloss_mi %}
+                </td>
               </tr>
 
               {% for translation_language, translations in translation_languages_and_translations %}
@@ -600,12 +603,15 @@
                           <td
                             class="edit edit_area_translations"
                             id="keywords_{{ translation_language.language_code_2char }}"
-                          >{{ translations.translations }}</td>
+                          >
+                            {{ translations.translations }}
+                          </td>
                         {% else %}
                           <td
                             class="edit edit_area_translations"
                             id="keywords_{{ translation_language.language_code_2char }}"
-                          ></td>
+                          >
+                          </td>
                         {% endif %}
                       </tr>
                       <tr>
@@ -615,12 +621,15 @@
                           <td
                             class="edit edit_area_translations"
                             id="keywords_secondary_{{ translation_language.language_code_2char }}"
-                          >{{ translations.translations_secondary }}</td>
+                          >
+                            {{ translations.translations_secondary }}
+                          </td>
                         {% else %}
                           <td
                             class="edit edit_area_translations"
                             id="keywords_secondary_{{ translation_language.language_code_2char }}"
-                          ></td>
+                          >
+                          </td>
                         {% endif %}
                       </tr>
                       <tr>
@@ -630,12 +639,15 @@
                           <td
                             class="edit edit_area_translations"
                             id="keywords_minor_gloss_{{ translation_language.language_code_2char }}"
-                          >{{ translations.translations_minor }}</td>
+                          >
+                            {{ translations.translations_minor }}
+                          </td>
                         {% else %}
                           <td
                             class="edit edit_area_translations"
                             id="keywords_minor_gloss_{{ translation_language.language_code_2char }}"
-                          ></td>
+                          >
+                          </td>
                         {% endif %}
                       </tr>
                     </table>
@@ -646,12 +658,16 @@
               {# Translators: Information about a Gloss #}
               <tr>
                 <th>{% blocktrans %}Notes:{% endblocktrans %}</th>
-                <td class="edit edit_area_notes" id="notes">{% value gloss.notes %}</td>
+                <td class="edit edit_area_notes" id="notes">
+                  {% value gloss.notes %}
+                </td>
               </tr>
               {# Translators: Information about a Gloss #}
               <tr>
                 <th>{% blocktrans %}Hint:{% endblocktrans %}</th>
-                <td class="edit edit_area_notes" id="hint">{% value gloss.hint %}</td>
+                <td class="edit edit_area_notes" id="hint">
+                  {% value gloss.hint %}
+                </td>
               </tr>
 
               <tr>
@@ -728,11 +744,15 @@
               </tr>
               <tr>
                 <th>{% blocktrans %}NZSL Share ID:{% endblocktrans %}</th>
-                <td class="edit edit_text" id="nzsl_share_id">{% value gloss.nzsl_share_id %}</td>
+                <td class="edit edit_text" id="nzsl_share_id">
+                  {% value gloss.nzsl_share_id %}
+                </td>
               </tr>
               <tr>
                 <th>{% blocktrans %}Film batch:{% endblocktrans %}</th>
-                <td class="edit edit_text" id="filmbatch">{{ gloss.filmbatch }}</td>
+                <td class="edit edit_text" id="filmbatch">
+                  {{ gloss.filmbatch }}
+                </td>
               </tr>
               <tr>
                 <th>{% blocktrans %}Concise:{% endblocktrans %}</th>
