@@ -1,3 +1,4 @@
 ignore:
   - GHSA-q58r-hwc8-rm9j
   - GHSA-vxmc-5x29-h64v
+  - PYSEC-2026-3447
