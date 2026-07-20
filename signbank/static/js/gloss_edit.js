@@ -168,7 +168,11 @@ $.editable.addInputType('multicheckbox', {
 
 function configure_edit() {
 
-    function trim_before(e) {
+    function ensure_trimmed(e) {
+        // todo: we should try and avoid mutating the element like this
+        //   the editable plugin will use it as the value for textareas, which
+        //   are whitespace sensitive, but does not provide a hook for us
+        //   to preprocess the value 
         e.target.innerText = e.target.innerText.trim();
     }
 
