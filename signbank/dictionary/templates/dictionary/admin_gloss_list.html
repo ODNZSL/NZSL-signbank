@@ -474,7 +474,7 @@
             </td>
             <td>{{ gloss.notes }}</td>
             <td>
-              {% for tag in gloss.cached_tags %}<span
+              {% for tag in gloss.tags.all %}<span
                   class="tag"
                 >{{ tag }}</span>{% endfor %}
             </td>

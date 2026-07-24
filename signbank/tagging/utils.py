@@ -24,10 +24,11 @@ def tags_for_object(obj):
         return Tag.objects.none()
 
     content_type = ContentType.objects.get_for_model(obj)
-    return Tag.objects.filter(
-        taggit_taggeditem_items__content_type=content_type,
-        taggit_taggeditem_items__object_id=obj.pk,
-    ).distinct()
+    tag_ids = TaggedItem.objects.filter(
+        content_type=content_type,
+        object_id=obj.pk,
+    ).values_list('tag_id', flat=True)
+    return Tag.objects.filter(pk__in=tag_ids)
 
 
 def add_tag(obj, tag_name):
@@ -107,6 +108,7 @@ def filter_queryset_with_all_tags(queryset, tag_names):
 def tags_used_for_model(model):
     """Return distinct tags used on instances of the given model."""
     content_type = ContentType.objects.get_for_model(model)
-    return Tag.objects.filter(
-        taggit_taggeditem_items__content_type=content_type
-    ).distinct()
+    tag_ids = TaggedItem.objects.filter(
+        content_type=content_type,
+    ).values_list('tag_id', flat=True).distinct()
+    return Tag.objects.filter(pk__in=tag_ids)

@@ -512,3 +512,93 @@ class TestValidationResultsView(TestCase):
             {"sign_seen_yes": 1, "sign_seen_no": 0, "sign_seen_not_sure": 0, "overall": 1}
         )
         self.assertFalse(response.context["show_totals_row"])
+
+
+class GlossListTagFilterTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="tagfilter", email=None, password="test")
+        self.user.user_permissions.add(Permission.objects.get(codename='search_gloss'))
+        self.user.save()
+        self.client = Client()
+        self.client.force_login(self.user)
+
+        signlanguage = SignLanguage.objects.create(
+            pk=2, name="testsignlanguage", language_code_3char="tst"
+        )
+        self.dataset = Dataset.objects.create(
+            name="testdataset", signlanguage=signlanguage
+        )
+        assign_perm("dictionary.view_dataset", self.user, self.dataset)
+
+        self.tag_a, _ = Tag.objects.get_or_create(name='tag-a')
+        self.tag_b, _ = Tag.objects.get_or_create(name='tag-b')
+
+        self.gloss_a_only = Gloss.objects.create(
+            idgloss="gloss-a-only",
+            dataset=self.dataset,
+            created_by=self.user,
+            updated_by=self.user,
+        )
+        self.gloss_a_only.tags.add('tag-a')
+
+        self.gloss_b_only = Gloss.objects.create(
+            idgloss="gloss-b-only",
+            dataset=self.dataset,
+            created_by=self.user,
+            updated_by=self.user,
+        )
+        self.gloss_b_only.tags.add('tag-b')
+
+        self.gloss_both = Gloss.objects.create(
+            idgloss="gloss-both",
+            dataset=self.dataset,
+            created_by=self.user,
+            updated_by=self.user,
+        )
+        self.gloss_both.tags.add('tag-a', 'tag-b')
+
+        self.gloss_none = Gloss.objects.create(
+            idgloss="gloss-none",
+            dataset=self.dataset,
+            created_by=self.user,
+            updated_by=self.user,
+        )
+
+    def _gloss_ids_in_response(self, response):
+        return {gloss.id for gloss in response.context['object_list']}
+
+    def test_tags_filter_requires_all_selected_tags(self):
+        response = self.client.get(
+            reverse('dictionary:admin_gloss_list'),
+            {'tags': [self.tag_a.pk, self.tag_b.pk]},
+        )
+        self.assertEqual(response.status_code, 200)
+        gloss_ids = self._gloss_ids_in_response(response)
+        self.assertIn(self.gloss_both.pk, gloss_ids)
+        self.assertNotIn(self.gloss_a_only.pk, gloss_ids)
+        self.assertNotIn(self.gloss_b_only.pk, gloss_ids)
+        self.assertNotIn(self.gloss_none.pk, gloss_ids)
+
+    def test_nottags_excludes_glosses_with_any_selected_tag(self):
+        response = self.client.get(
+            reverse('dictionary:admin_gloss_list'),
+            {'nottags': [self.tag_a.pk, self.tag_b.pk]},
+        )
+        self.assertEqual(response.status_code, 200)
+        gloss_ids = self._gloss_ids_in_response(response)
+        self.assertIn(self.gloss_none.pk, gloss_ids)
+        self.assertNotIn(self.gloss_a_only.pk, gloss_ids)
+        self.assertNotIn(self.gloss_b_only.pk, gloss_ids)
+        self.assertNotIn(self.gloss_both.pk, gloss_ids)
+
+    def test_nottags_single_tag(self):
+        response = self.client.get(
+            reverse('dictionary:admin_gloss_list'),
+            {'nottags': [self.tag_a.pk]},
+        )
+        self.assertEqual(response.status_code, 200)
+        gloss_ids = self._gloss_ids_in_response(response)
+        self.assertIn(self.gloss_none.pk, gloss_ids)
+        self.assertIn(self.gloss_b_only.pk, gloss_ids)
+        self.assertNotIn(self.gloss_a_only.pk, gloss_ids)
+        self.assertNotIn(self.gloss_both.pk, gloss_ids)

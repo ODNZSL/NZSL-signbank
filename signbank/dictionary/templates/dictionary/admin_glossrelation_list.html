@@ -234,7 +234,7 @@
               >{{ glossrelation.target }}</a>
             </td>
             <td>
-              {% for tag in glossrelation.cached_tags %}<span
+              {% for tag in glossrelation.tags.all %}<span
                   class="tag"
                 >{{ tag }}</span>{% endfor %}
             </td>

@@ -75,9 +75,6 @@ class GlossListView(ListView):
         context['searchform'].fields["dataset"].queryset = Dataset.objects.filter(
             id__in=[x.id for x in allowed_datasets])
 
-        for obj in context['object_list']:
-            obj.cached_tags = list(obj.tags.all())
-
         if 'order' not in self.request.GET:
             context['order'] = 'idgloss'
         else:
@@ -573,7 +570,7 @@ class GlossListView(ListView):
 
         if 'nottags' in get and get['nottags'] != '':
             vals = get.getlist('nottags')
-            # Exclude glosses that have any of the selected tags
+            # Exclude glosses that have any of the selected tags (OR semantics).
             qs = qs.exclude(tags__pk__in=vals).distinct()
 
         if 'relation_to_foreign_signs' in get and get['relation_to_foreign_signs'] != '':
@@ -1092,9 +1089,6 @@ class GlossRelationListView(ListView):
         # Filter the forms dataset field for the datasets user has permission to.
         context['searchform'].fields["dataset"].queryset = Dataset.objects.filter(
             id__in=[x.id for x in allowed_datasets])
-
-        for obj in context['object_list']:
-            obj.cached_tags = list(obj.tags.all())
 
         if 'order' not in self.request.GET:
             context['order'] = 'source'
