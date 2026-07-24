@@ -93,8 +93,12 @@ class GlossDetailPublicView(DetailView):
         gloss = context["gloss"]
         context['translation_languages_and_translations'] = gloss.get_translations_for_translation_languages()
         # GlossRelations for this gloss
-        context['glossrelations'] = GlossRelation.objects.filter(source=gloss)
-        context['glossrelations_reverse'] = GlossRelation.objects.filter(target=gloss)
+        context['glossrelations'] = GlossRelation.objects.filter(
+            source=gloss
+        ).prefetch_related('tags')
+        context['glossrelations_reverse'] = GlossRelation.objects.filter(
+            target=gloss
+        ).prefetch_related('tags')
 
         # Create a meta description for the gloss.
         context["metadesc"] = "{glosstxt}: {idgloss} [{lexicon}] / ".format(

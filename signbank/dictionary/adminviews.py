@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 import csv
 import json
-from collections import defaultdict
 from uuid import uuid4
 
 import djqscsv
@@ -13,7 +12,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.aggregates import StringAgg
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, F, OuterRef, Prefetch, Q, Sum, Value
+from django.db.models import Count, F, OuterRef, Prefetch, Q, Value
 from django.db.models.fields import CharField, NullBooleanField
 from django.db.models.functions import Concat
 from django.http import HttpResponse, JsonResponse
@@ -25,20 +24,38 @@ from django.utils.translation import gettext as _
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django_comments.models import Comment
-from guardian.shortcuts import (get_objects_for_user, get_perms,
-                                get_users_with_perms)
+from guardian.shortcuts import get_objects_for_user, get_perms, get_users_with_perms
 from reversion.models import Version
-from tagging.models import Tag, TaggedItem
+
+from taggit.models import Tag
 
 from ..comments import CommentTagForm
 from ..video.forms import GlossVideoForGlossForm
 from ..video.models import GlossVideo, GlossVideoToken
-from .forms import (GlossRelationForm, GlossRelationSearchForm,
-                    GlossSearchForm, MorphologyForm, RelationForm, TagsAddForm)
-from .models import (Dataset, FieldChoice, Gloss, GlossRelation,
-                     GlossTranslations, GlossURL, Lemma, ManualValidationAggregation, MorphologyDefinition,
-                     Relation, RelationToForeignSign, ShareValidationAggregation, Translation,
-                     ValidationRecord)
+from .forms import (
+    GlossRelationForm,
+    GlossRelationSearchForm,
+    GlossSearchForm,
+    MorphologyForm,
+    RelationForm,
+    TagsAddForm,
+)
+from .models import (
+    Dataset,
+    FieldChoice,
+    Gloss,
+    GlossRelation,
+    GlossTranslations,
+    GlossURL,
+    Lemma,
+    ManualValidationAggregation,
+    MorphologyDefinition,
+    Relation,
+    RelationToForeignSign,
+    ShareValidationAggregation,
+    Translation,
+    ValidationRecord,
+)
 
 
 class GlossListView(ListView):
@@ -58,8 +75,8 @@ class GlossListView(ListView):
         context['searchform'].fields["dataset"].queryset = Dataset.objects.filter(
             id__in=[x.id for x in allowed_datasets])
 
-        populate_tags_for_object_list(
-            context['object_list'], model=self.object_list.model)
+        for obj in context['object_list']:
+            obj.cached_tags = list(obj.tags.all())
 
         if 'order' not in self.request.GET:
             context['order'] = 'idgloss'
@@ -278,10 +295,9 @@ class GlossListView(ListView):
 
         # The queryset may or may not already be filtered for the ready for validation tag.
         # We have to make sure it is filtered by the tag, so we are filtering again
-        ready_for_validation_qs = TaggedItem.objects.get_by_model(
-            self.get_queryset(),
-            settings.TAG_READY_FOR_VALIDATION
-        )
+        ready_for_validation_qs = self.get_queryset().filter(
+            tags__name=settings.TAG_READY_FOR_VALIDATION
+        ).distinct()
 
         # three types of GlossVideos are imported for validation: illustrations, usage examples
         # and videos.
@@ -361,10 +377,9 @@ class GlossListView(ListView):
 
         # The queryset may or may not already be filtered for the validation:check-results tag.
         # We have to make sure it is filtered by the tag, so we are filtering again
-        check_results_qs = TaggedItem.objects.get_by_model(
-            self.get_queryset(),
-            settings.TAG_VALIDATION_CHECK_RESULTS
-        )
+        check_results_qs = self.get_queryset().filter(
+            tags__name=settings.TAG_VALIDATION_CHECK_RESULTS
+        ).distinct()
 
         sign_seen_yes_validation_records = ValidationRecord.objects.filter(
             sign_seen=ValidationRecord.SignSeenChoices.YES
@@ -547,38 +562,19 @@ class GlossListView(ListView):
 
         if 'tags' in get and get['tags'] != '':
             vals = get.getlist('tags')
-
-            tags = []
-            for t in vals:
-                tags.extend(Tag.objects.filter(pk=t))
-
+            tag_names = list(
+                Tag.objects.filter(pk__in=vals).values_list('name', flat=True)
+            )
             # search is an implicit AND so intersection
-            tqs = TaggedItem.objects.get_intersection_by_model(Gloss, tags)
-
-            # intersection
-            qs = qs & tqs
-
-            # print "J :", len(qs)
+            for tag_name in tag_names:
+                qs = qs.filter(tags__name=tag_name)
 
         qs = qs.distinct()
 
         if 'nottags' in get and get['nottags'] != '':
             vals = get.getlist('nottags')
-
-            # print "NOT TAGS: ", vals
-
-            tags = []
-            for t in vals:
-                tags.extend(Tag.objects.filter(name=t))
-
-            # search is an implicit AND so intersection
-            tqs = TaggedItem.objects.get_intersection_by_model(Gloss, tags)
-
-            # print "NOT", tags, len(tqs)
-            # exclude all of tqs from qs
-            qs = [q for q in qs if q not in tqs]
-
-            # print "K :", len(qs)
+            # Exclude glosses that have any of the selected tags
+            qs = qs.exclude(tags__pk__in=vals).distinct()
 
         if 'relation_to_foreign_signs' in get and get['relation_to_foreign_signs'] != '':
             val = get['relation_to_foreign_signs']
@@ -705,11 +701,14 @@ class GlossListView(ListView):
             qs = qs.order_by('idgloss')
 
         # Prefetching translation and dataset objects for glosses to minimize the amount of database queries.
-        qs = qs.prefetch_related(Prefetch('translation_set', queryset=Translation.objects.filter(
-            language__language_code_2char__iexact=get_language()).select_related('keyword')),
+        qs = qs.prefetch_related(
+            'tags',
+            Prefetch('translation_set', queryset=Translation.objects.filter(
+                language__language_code_2char__iexact=get_language()).select_related('keyword')),
             Prefetch('dataset'),
             # Ordering by version to get the first versions posterfile.
-            Prefetch('glossvideo_set', queryset=GlossVideo.objects.all().order_by('version')))
+            Prefetch('glossvideo_set', queryset=GlossVideo.objects.all().order_by('version')),
+        )
 
         # Saving querysets results to sessions, these results can then be used elsewhere (like in gloss_detail)
         # Flush the previous queryset (just in case)
@@ -726,36 +725,6 @@ class GlossListView(ListView):
             self.request.session['search_results'] = items
 
         return qs
-
-
-def populate_tags_for_object_list(object_list, model):
-    """Inserts tags for each item in a list of objects."""
-    # Get the ContentType for the model.
-    content_type = ContentType.objects.get_for_model(model)
-    # Get TaggedItems of selected ContentType for all the list items that have TaggedItems.
-    tagged_items = TaggedItem.objects.filter(content_type=content_type,
-                                             object_id__in=[obj.pk for obj in object_list])
-    tagged_items = tagged_items.select_related('tag')
-    tags_map = defaultdict(list)
-    for tagged_item in tagged_items:
-        tags_map[tagged_item.object_id].append(tagged_item.tag)
-        for obj in object_list:
-            obj.cached_tags = tags_map[obj.pk]
-
-
-def populate_tags_for_queryset(queryset):
-    """Inserts tags for each item in queryset."""
-    # Get the ContentType for the queryset objects.
-    content_type = ContentType.objects.get_for_model(queryset.model)
-    # Get TaggedItems of selected ContentType for all the queryset items that have TaggedItems.
-    tagged_items = TaggedItem.objects.filter(content_type=content_type,
-                                             object_id__in=queryset.values_list('pk', flat=True))
-    tagged_items = tagged_items.select_related('tag')
-    tags_map = defaultdict(list)
-    for tagged_item in tagged_items:
-        tags_map[tagged_item.object_id].append(tagged_item.tag)
-        for obj in queryset:
-            obj.cached_tags = tags_map[obj.pk]
 
 
 class GlossDetailView(DetailView):
@@ -799,9 +768,12 @@ class GlossDetailView(DetailView):
         context['dataset_glosses'] = json.dumps(list(Gloss.objects.filter(
             dataset=dataset).values(label=F('idgloss'), value=F('id'))))
         # GlossRelations for this gloss
-        context['glossrelations'] = GlossRelation.objects.filter(source=gloss)
+        context['glossrelations'] = GlossRelation.objects.filter(
+            source=gloss
+        ).prefetch_related('tags')
         context['glossrelations_reverse'] = GlossRelation.objects.filter(
-            target=gloss)
+            target=gloss
+        ).prefetch_related('tags')
         context['glossurls'] = GlossURL.objects.filter(gloss=gloss)
         context['translation_languages_and_translations'] = gloss.get_translations_for_translation_languages()
 
@@ -1121,8 +1093,8 @@ class GlossRelationListView(ListView):
         context['searchform'].fields["dataset"].queryset = Dataset.objects.filter(
             id__in=[x.id for x in allowed_datasets])
 
-        populate_tags_for_object_list(
-            context['object_list'], model=self.object_list.model)
+        for obj in context['object_list']:
+            obj.cached_tags = list(obj.tags.all())
 
         if 'order' not in self.request.GET:
             context['order'] = 'source'
@@ -1176,23 +1148,20 @@ class GlossRelationListView(ListView):
 
         if 'tags' in get and get['tags'] != '':
             vals = get.getlist('tags', [])
-            tags = []
-            for t in vals:
-                tags.extend(Tag.objects.filter(pk=t))
-
-            # search is an implicit AND so intersection
-            tqs = TaggedItem.objects.get_intersection_by_model(GlossRelation, tags)
-
-            # intersection
-            qs = qs & tqs
+            tag_names = list(
+                Tag.objects.filter(pk__in=vals).values_list('name', flat=True)
+            )
+            for tag_name in tag_names:
+                qs = qs.filter(tags__name=tag_name)
 
         # Prefetching translation and dataset objects for glosses to minimize the amount of database queries.
-        qs = qs.prefetch_related(Prefetch('source__dataset'), Prefetch('target__dataset'),
-                                 Prefetch('source__glossvideo_set', queryset=GlossVideo.objects.all().order_by(
-                                     'version')),
-                                 Prefetch(
-                                     'target__glossvideo_set', queryset=GlossVideo.objects.all().order_by('version'))
-                                 )
+        qs = qs.prefetch_related(
+            'tags',
+            Prefetch('source__dataset'),
+            Prefetch('target__dataset'),
+            Prefetch('source__glossvideo_set', queryset=GlossVideo.objects.all().order_by('version')),
+            Prefetch('target__glossvideo_set', queryset=GlossVideo.objects.all().order_by('version')),
+        )
 
         # Set order according to GET field 'order'
         if 'order' in get:

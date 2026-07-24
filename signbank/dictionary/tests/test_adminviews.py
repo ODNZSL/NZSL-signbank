@@ -15,7 +15,7 @@ from django.urls import reverse
 from django.utils.timezone import get_current_timezone
 from django_comments.models import Comment
 from guardian.shortcuts import assign_perm
-from tagging.models import Tag
+from taggit.models import Tag
 
 from signbank.dictionary.models import (
     Dataset,
@@ -95,7 +95,7 @@ class GlossListViewTestCase(TestCase):
         testgloss = Gloss.objects.create(
             idgloss="testgloss", dataset=dataset, created_by=self.user, updated_by=self.user
         )
-        Tag.objects.add_tag(testgloss, settings.TAG_READY_FOR_VALIDATION)
+        testgloss.tags.add(settings.TAG_READY_FOR_VALIDATION)
 
         language_en = Language.objects.create(
             name="English", language_code_2char="EN", language_code_3char="ENG"
@@ -170,7 +170,7 @@ class GlossListViewTestCase(TestCase):
         testgloss_1 = Gloss.objects.create(
             idgloss="testgloss:1", dataset=dataset, created_by=self.user, updated_by=self.user
         )
-        Tag.objects.add_tag(testgloss_1, settings.TAG_VALIDATION_CHECK_RESULTS)
+        testgloss_1.tags.add(settings.TAG_VALIDATION_CHECK_RESULTS)
         vr1_g1 = ValidationRecord.objects.create(
             gloss=testgloss_1,
             sign_seen=ValidationRecord.SignSeenChoices.YES.value,
@@ -230,7 +230,7 @@ class GlossListViewTestCase(TestCase):
         testgloss_2 = Gloss.objects.create(
             idgloss="testgloss:2", dataset=dataset, created_by=self.user, updated_by=self.user
         )
-        Tag.objects.add_tag(testgloss_2, settings.TAG_VALIDATION_CHECK_RESULTS)
+        testgloss_2.tags.add(settings.TAG_VALIDATION_CHECK_RESULTS)
         vr1_g2 = ValidationRecord.objects.create(
             gloss=testgloss_2,
             sign_seen=ValidationRecord.SignSeenChoices.YES.value,
@@ -496,9 +496,9 @@ class TestValidationResultsView(TestCase):
             {"agrees": 0, "disagrees": 0, "totals": 0}
         )
         empty_share_qs = ShareValidationAggregation.objects.none()
-        self.assertQuerySetEqual(response.context["share_validations"], empty_share_qs)
+        self.assertQuerysetEqual(response.context["share_validations"], empty_share_qs)
         empty_manual_qs = ManualValidationAggregation.objects.none()
-        self.assertQuerySetEqual(response.context["manual_validations"], empty_manual_qs)
+        self.assertQuerysetEqual(response.context["manual_validations"], empty_manual_qs)
         self.assertDictEqual(
             response.context["manual_validations_totals"],
             {"sign_seen_yes": 0, "sign_seen_no": 0, "sign_seen_not_sure": 0, "totals": 0}

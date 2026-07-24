@@ -10,12 +10,11 @@ import reversion
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import OperationalError, models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from tagging.models import Tag
-from tagging.registry import AlreadyRegistered, register as tagging_register
+from taggit.managers import TaggableManager
 
 
 class Dataset(models.Model):
@@ -390,6 +389,9 @@ class Gloss(models.Model):
     #: The User who last updated the Glosses information.
     updated_by = models.ForeignKey(
         User, related_name='updated_by_user', null=True, on_delete=models.SET_NULL)
+
+    #: Tags for this Gloss (django-taggit).
+    tags = TaggableManager(blank=True)
 
     # ### Phonology fields ###
     # Translators: Gloss models field: handedness, verbose name
@@ -816,7 +818,8 @@ class GlossURL(models.Model):
 class AllowedTags(models.Model):
     """Tags a model is allowed to use."""
     #: The tags that are shown in tag lists.
-    allowed_tags = models.ManyToManyField(Tag, verbose_name=_("Allowed tags"))
+    allowed_tags = models.ManyToManyField(
+        'taggit.Tag', verbose_name=_("Allowed tags"))
     #: The ContentType of the object whose AllowedTags we set.
     content_type = models.OneToOneField(ContentType, on_delete=models.CASCADE)
 
@@ -837,9 +840,12 @@ class GlossRelation(models.Model):
     target = models.ForeignKey(
         Gloss, related_name="glossrelation_target", on_delete=models.CASCADE)
 
+    #: Tags for this relation (django-taggit), typically the relation type.
+    tags = TaggableManager(blank=True)
+
     def tag(self):
         """The type of the Relation, a Tag."""
-        return list(Tag.objects.get_for_object(self))
+        return list(self.tags.all())
     tag.short_description = 'Relation type'
 
     class Meta:
@@ -960,10 +966,3 @@ class ValidationRecord(models.Model):
 
 
 
-# Register Models for django-tagging to add wrappers around django-tagging API.
-models_to_register_for_tagging = (Gloss, GlossRelation,)
-for model in models_to_register_for_tagging:
-    try:
-        tagging_register(model)
-    except AlreadyRegistered:
-        pass

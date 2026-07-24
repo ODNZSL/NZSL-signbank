@@ -57,6 +57,8 @@ LANGUAGE_CODE = 'en-nz'
 SITE_ID = 1
 #: A boolean that specifies whether Django's translation system should be enabled.
 USE_I18N = True
+#: A boolean that specifies if localized formatting of data will be enabled by default or not.
+USE_L10N = True
 #: A boolean that specifies if datetimes will be timezone-aware by default or not.
 USE_TZ = True
 #: A list of all available languages.
@@ -165,7 +167,8 @@ INSTALLED_APPS = (
     'signbank.contentpages',
     'signbank.video',
     'reversion',
-    'tagging',
+    'taggit',
+    'signbank.tagging',
     'django_comments',
     'guardian',
     'notifications',
@@ -189,13 +192,14 @@ REGISTRATION_OPEN = False
 #: The URL where requests are redirected after login when the contrib.auth.login view gets no next parameter.
 LOGIN_REDIRECT_URL = '/'
 
-# For django-tagging: force tags to be lowercase.
+# Force tags to be lowercase on write (honoured by signbank.tagging.utils).
 FORCE_LOWERCASE_TAGS = True
 
-# Use our own migrations for flatpages
+# Use our own migrations for flatpages and tagging
 MIGRATION_MODULES = {
     'flatpages': 'signbank.contentpages.migrations',
-    'contentpages': None
+    'tagging': 'signbank.tagging.migrations',
+    'contentpages': None,
 }
 
 

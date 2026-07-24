@@ -3,11 +3,9 @@
 <div id="tags" class="uploadvid">
   <fieldset>
     <legend>{% blocktrans %}Tags{% endblocktrans %}</legend>
-    {% load tagging_tags %}
-    {% tags_for_object gloss as tag_list %}
-    {% if tag_list %}
+    {% if gloss.tags.all %}
       <ul class="taglist">
-        {% for tag in tag_list %}
+        {% for tag in gloss.tags.all %}
           <li class="tagli">
             <div class="tag">
               <span class="tagname">{{ tag }}</span>
