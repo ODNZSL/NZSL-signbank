@@ -168,6 +168,17 @@ $.editable.addInputType('multicheckbox', {
 
 function configure_edit() {
 
+    function ensure_trimmed(e) {
+        // todo: we should try and avoid mutating the DOM element like this
+        //   the editable plugin will use it as the value for textareas, which
+        //   are whitespace sensitive, so we need to trim the value, however
+        //   doing it this way leaves the element permanently changed.
+        //   the editable plugin does not provide us with an on-the-fly hook
+        //   for modifying the incoming value, so for now this is the best we
+        //   can do.
+        e.target.innerText = e.target.innerText.trim();
+    }
+
     $.fn.editable.defaults['indicator'] = 'Saving...';
     $.fn.editable.defaults['tooltip'] = 'Click to edit...';
     $.fn.editable.defaults['placeholder'] = '-';
@@ -183,7 +194,9 @@ function configure_edit() {
                         };
 
 
-     $('.edit_text').editable(edit_post_url);
+     $('.edit_text').editable(edit_post_url, {
+         before    : ensure_trimmed,
+     });
      $('.edit_int').editable(edit_post_url, {
          type      : 'positiveinteger',
          onerror : function(settings, original, xhr){
@@ -192,19 +205,22 @@ function configure_edit() {
                     },
      });
      $('.edit_area').editable(edit_post_url, {
-         type      : 'textarea'
+         type      : 'textarea',
+         before    : ensure_trimmed,
      });
      $('.edit_area_translations').editable(edit_post_url, {
          type      : 'textarea',
          width     : 400,
          rows      : 3,
          onblur    : 'ignore',
+         before    : ensure_trimmed,
      });
      $('.edit_area_notes').editable(edit_post_url, {
          type      : 'textarea',
          width     : 400,
          rows      : 3,
          onblur    : 'ignore',
+         before    : ensure_trimmed,
      });
      $('.edit_url').editable(edit_post_url, {
          type      : 'text',
