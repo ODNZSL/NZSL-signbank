@@ -328,8 +328,7 @@ class ShareCSVImportTestCase(TestCase):
         ).filter(
             tags__name=share_tag.name
         ).distinct()
-        self.assertQuerysetEqual(tagged_glosses, gloss_qs)
-
+        self.assertQuerySetEqual(tagged_glosses, gloss_qs)
         # There should be no gloss videos at this point because we have mocked the task to
         # create them
         self.assertEqual(gloss.glossvideo_set.count(), 0)
