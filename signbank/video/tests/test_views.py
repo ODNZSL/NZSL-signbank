@@ -200,6 +200,102 @@ class UpploadGlossVideoTestCase(TestCase):
             'videofile': self.testfile, 'gloss': self.testgloss.pk, 'video_type': self.video_type.machine_value, 'redirect': reverse('video:manage_videos')})
         self.assertEqual(response.url, reverse('video:manage_videos'))
 
+    def test_upload_same_client_filename_twice_keeps_both(self):
+        """Same client filename must create two distinct storage objects."""
+        first_bytes = b'first-video-content \x00\x01'
+        second_bytes = b'second-video-content \x00\x02'
+        client_filename = 'collision.mp4'
+
+        response_1 = self.client.post(reverse('video:upload_glossvideo_gloss'), {
+            'videofile': SimpleUploadedFile(
+                client_filename, first_bytes, content_type='video/mp4'),
+            'gloss': self.testgloss.pk,
+            'video_type': self.video_type.machine_value,
+        })
+        response_2 = self.client.post(reverse('video:upload_glossvideo_gloss'), {
+            'videofile': SimpleUploadedFile(
+                client_filename, second_bytes, content_type='video/mp4'),
+            'gloss': self.testgloss.pk,
+            'video_type': self.video_type.machine_value,
+        })
+        self.assertEqual(response_1.status_code, 302)
+        self.assertEqual(response_2.status_code, 302)
+
+        videos = list(self.testgloss.glossvideo_set.order_by('pk'))
+        self.assertEqual(len(videos), 2)
+        self.assertNotEqual(videos[0].videofile.name, videos[1].videofile.name)
+
+        for video in videos:
+            expected_name = video.videofile.storage.get_valid_name(
+                video.create_filename())
+            self.assertEqual(video.videofile.name, expected_name)
+            self.assertTrue(video.videofile.storage.exists(video.videofile.name))
+
+        with videos[0].videofile.open('rb') as handle:
+            self.assertEqual(handle.read(), first_bytes)
+        with videos[1].videofile.open('rb') as handle:
+            self.assertEqual(handle.read(), second_bytes)
+
+
+class GlossVideoRenameTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="test", email=None, password="test")
+        self.signlanguage = SignLanguage.objects.create(
+            pk=2, name="testsignlanguage", language_code_3char="tst")
+        self.dataset = Dataset.objects.create(
+            name="testdataset", signlanguage=self.signlanguage)
+        self.testgloss = Gloss.objects.create(
+            idgloss="testgloss", dataset=self.dataset,
+            created_by=self.user, updated_by=self.user)
+        self.video_type = FieldChoice.objects.create(
+            field="video_type", machine_value=1000, english_name="Test")
+
+    def test_rename_video_noop_when_already_canonical(self):
+        glossvideo = GlossVideo.objects.create(
+            gloss=self.testgloss,
+            dataset=self.dataset,
+            videofile=SimpleUploadedFile(
+                'temp.mp4', b'canonical-bytes', content_type='video/mp4'),
+            video_type=self.video_type,
+        )
+        storage = glossvideo.videofile.storage
+        canonical = storage.get_valid_name(glossvideo.create_filename())
+        self.assertEqual(glossvideo.videofile.name, canonical)
+
+        glossvideo.rename_video()
+        self.assertEqual(glossvideo.videofile.name, canonical)
+
+    def test_rename_video_when_target_already_exists(self):
+        """rename_video must run even if a stale object occupies the target key."""
+        fresh_bytes = b'fresh-content'
+        glossvideo = GlossVideo.objects.create(
+            gloss=self.testgloss,
+            dataset=self.dataset,
+            videofile=SimpleUploadedFile(
+                'temp.mp4', fresh_bytes, content_type='video/mp4'),
+            video_type=self.video_type,
+        )
+        storage = glossvideo.videofile.storage
+        canonical = storage.get_valid_name(glossvideo.create_filename())
+        self.assertEqual(glossvideo.videofile.name, canonical)
+
+        # Move the real content onto a non-canonical key and leave a stale
+        # orphan at the canonical path (the old skip-if-exists bug).
+        temp_key = 'glossvideo/zz/uploaded-basename.mp4'
+        storage.delete(canonical)
+        storage.save(temp_key, ContentFile(fresh_bytes))
+        storage.save(canonical, ContentFile(b'stale-orphan'))
+        glossvideo.videofile.name = temp_key
+
+        glossvideo.rename_video()
+
+        self.assertEqual(glossvideo.videofile.name, canonical)
+        with storage.open(canonical, 'rb') as handle:
+            self.assertEqual(handle.read(), fresh_bytes)
+        self.assertFalse(storage.exists(temp_key))
+
+
 class ExportGlossvideoCsvTestCase(TestCase):
     def setUp(self):
         # Create user and add permissions
