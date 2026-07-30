@@ -202,8 +202,9 @@ class GlossVideo(models.Model):
             # Already at the canonical key — nothing to do.
             if old_name == full_new_path:
                 return
-            # Clear a stale/orphan object at the target so save() keeps the
-            # canonical name when AWS_S3_FILE_OVERWRITE is False.
+            # Clear a stale/orphan object at the target before writing the
+            # canonical key (avoids leaving two DB rows pointing at one object
+            # if a previous upload failed mid-rename).
             if storage.exists(full_new_path):
                 storage.delete(full_new_path)
             # Save the file into the new path.
