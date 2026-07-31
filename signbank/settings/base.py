@@ -251,8 +251,6 @@ if os.getenv('AWS_STORAGE_BUCKET_NAME'):
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     GLOSS_VIDEO_FILE_STORAGE = DEFAULT_FILE_STORAGE
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
-    # Prevent accidental clobbering when two uploads share a basename.
-    AWS_S3_FILE_OVERWRITE = False
 else:
     GLOSS_VIDEO_FILE_STORAGE = 'signbank.video.models.GlossVideoStorage'
 
