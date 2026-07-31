@@ -1,33 +1,36 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import re
 
 from django import forms
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic.list import ListView
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.utils import OperationalError, ProgrammingError
+from django.dispatch import receiver
 from django.forms import ModelForm
 from django.forms.models import model_to_dict
 from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as _lazy
-from django.contrib.sites.shortcuts import get_current_site
-from django.dispatch import receiver
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.utils import OperationalError, ProgrammingError
-from django.contrib.auth.models import User
-
-from tagging.models import Tag, TaggedItem
-from guardian.shortcuts import get_objects_for_user
-from django_comments.models import Comment
-from django_comments.signals import comment_was_posted
-from django_comments.forms import CommentForm
+from django.views.generic.list import ListView
 from django_comments import get_model as django_comments_get_model
 from django_comments.admin import CommentsAdmin
+from django_comments.forms import CommentForm
+from django_comments.models import Comment
+from django_comments.signals import comment_was_posted
+from guardian.shortcuts import get_objects_for_user
 from notifications.signals import notify
 
-from .dictionary.models import AllowedTags
+from taggit.models import Tag, TaggedItem
+
+from signbank.tagging.utils import add_tag, filter_queryset_with_all_tags
+
 from .dictionary.admin import TagAdminInline, TagListFilter
+from .dictionary.models import AllowedTags
 
 
 class CommentTagForm(forms.Form):
@@ -53,8 +56,7 @@ def edit_comment(request, id):
             comment.comment = form.cleaned_data["comment"]
             comment.save()
             if form.cleaned_data["tag"]:
-                tag = form.cleaned_data["tag"]
-                Tag.objects.add_tag(comment, tag)
+                add_tag(comment, form.cleaned_data["tag"].name)
         if 'HTTP_REFERER' in request.META:
             return redirect(request.META['HTTP_REFERER'])
         else:
@@ -125,9 +127,9 @@ class CommentListView(ListView):
         if 'user_name' in get and get['user_name'] != '':
             qs = qs.filter(user_name__icontains=get['user_name'])
         if 'tag' in get and get['tag'] != '':
-            tags = Tag.objects.filter(name=get['tag'])
-            tagged = TaggedItem.objects.get_intersection_by_model(Comment, tags)
-            qs = qs.filter(id__in=tagged)
+            tag_names = [get['tag']]
+            tagged = filter_queryset_with_all_tags(Comment.objects.all(), tag_names)
+            qs = qs.filter(id__in=tagged.values_list('id', flat=True))
 
         qs = qs.filter(is_removed=False)
 
@@ -175,7 +177,7 @@ def add_tags_to_comments(sender, request, comment, **kwargs):
         form = CommentTagForm(request.POST)
         if form.is_valid():
             if form.cleaned_data["tag"]:
-                Tag.objects.add_tag(comment, form.cleaned_data["tag"].name)
+                add_tag(comment, form.cleaned_data["tag"].name)
 
 
 class CommentTagInlineForm(ModelForm):

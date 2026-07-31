@@ -2,7 +2,6 @@
 {% load bootstrap3 %}
 {% load i18n %}
 {% load static %}
-{% load tagging_tags %}
 {% load comments %}
 
 {# This file is meant to be included in gloss_detail.html #}
@@ -230,7 +229,6 @@
       <div id="glossrelationslist" class="panel-collapse collapse">
         <ul class="list-group gloss-relations">
           {% for gr in glossrelations %}
-            {% tags_for_object gr as tag_list %}
             <li class="list-group-item list-group-item-relation">
               <a
                 href="{% url 'dictionary:admin_gloss_view' gr.target.id %}"
@@ -240,7 +238,7 @@
               >
                 <span class="glyphicon glyphicon-circle-arrow-right"></span>
                 {{ gr }}</a>
-              {% for tag in tag_list %}
+              {% for tag in gr.tags.all %}
                 <span class="badge" style="float: inherit">{{ tag }}</span>
               {% endfor %}
               <form
@@ -282,7 +280,6 @@
         </div>
         <ul class="list-group gloss-relations-reverse">
           {% for gr in glossrelations_reverse %}
-            {% tags_for_object gr as tag_list %}
             <li class="list-group-item">
               <a
                 href="{% url 'dictionary:admin_gloss_view' gr.source.id %}"
@@ -292,7 +289,7 @@
               >
                 <span class="glyphicon glyphicon-circle-arrow-left"></span>
                 {{ gr.source }}</a>
-              {% for tag in tag_list %}
+              {% for tag in gr.tags.all %}
                 <span class="badge" style="float: inherit">{{ tag }}</span>
               {% endfor %}
             </li>
