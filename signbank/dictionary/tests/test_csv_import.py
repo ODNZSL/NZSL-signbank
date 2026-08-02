@@ -8,18 +8,25 @@ import uuid
 from unittest import mock
 
 from django.conf import settings
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import Permission, User
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
 from django_comments import get_model as comments_get_model
 from guardian.shortcuts import assign_perm
-from tagging.models import Tag, TaggedItem
 
 from signbank.dictionary.models import (
-    SignLanguage, Dataset, FieldChoice, Gloss, Language,
-    ManualValidationAggregation, ValidationRecord)
+    Dataset,
+    FieldChoice,
+    Gloss,
+    Language,
+    ManualValidationAggregation,
+    SignLanguage,
+    ValidationRecord,
+)
+from taggit.models import Tag
+
 from signbank.video.models import GlossVideo
 
 
@@ -134,7 +141,7 @@ class ShareCSVImportTestCase(TestCase):
         file_name = "test.csv"
         csv_content = [copy.deepcopy(self._csv_content), copy.deepcopy(self._csv_content)]
         csv_content[1]["id"] = "12345"
-        
+
         with open(file_name, "w") as file:
             writer = csv.writer(file)
             writer.writerow(csv_content[0].keys())
@@ -316,11 +323,12 @@ class ShareCSVImportTestCase(TestCase):
         self.assertEqual(share_validation_aggregation.agrees, 0)
         self.assertEqual(share_validation_aggregation.disagrees, 1)
 
-        tagged_glosses = TaggedItem.objects.get_intersection_by_model(
-            gloss_qs, [not_public_tag, share_tag]
-        )
+        tagged_glosses = gloss_qs.filter(
+            tags__name=not_public_tag.name
+        ).filter(
+            tags__name=share_tag.name
+        ).distinct()
         self.assertQuerySetEqual(tagged_glosses, gloss_qs)
-
         # There should be no gloss videos at this point because we have mocked the task to
         # create them
         self.assertEqual(gloss.glossvideo_set.count(), 0)
@@ -392,7 +400,7 @@ class QualtricsCSVImportTestCase(TestCase):
             video_type=validation_video_type,
             title="Main"
         )
-        Tag.objects.add_tag(self.gloss_1, settings.TAG_READY_FOR_VALIDATION)
+        self.gloss_1.tags.add(settings.TAG_READY_FOR_VALIDATION)
         self.gloss_2 = Gloss.objects.create(idgloss="testgloss:2", dataset=self.dataset)
         testfile_2 = SimpleUploadedFile(
             "testvid.mp4", b'data \x00\x01', content_type="video/mp4")
@@ -404,7 +412,7 @@ class QualtricsCSVImportTestCase(TestCase):
             video_type=validation_video_type,
             title="Main"
         )
-        Tag.objects.add_tag(self.gloss_2, settings.TAG_READY_FOR_VALIDATION)
+        self.gloss_2.tags.add(settings.TAG_READY_FOR_VALIDATION)
 
         # Assign view permissions to dataset for user
         assign_perm('view_dataset', self.user, self.dataset)
@@ -649,11 +657,13 @@ class QualtricsCSVImportTestCase(TestCase):
             comment="comment",
         ).exists())
 
-        check_results_tagged_glosses = TaggedItem.objects.get_by_model(Gloss, [check_results_tag])
+        check_results_tagged_glosses = Gloss.objects.filter(
+            tags__name=check_results_tag.name
+        )
         self.assertIn(self.gloss_1, check_results_tagged_glosses)
         self.assertIn(self.gloss_2, check_results_tagged_glosses)
-        ready_for_validation_tagged_glosses = TaggedItem.objects.get_by_model(
-            Gloss, [ready_for_validation_tag]
+        ready_for_validation_tagged_glosses = Gloss.objects.filter(
+            tags__name=ready_for_validation_tag.name
         )
         self.assertEqual(ready_for_validation_tagged_glosses.count(), 0)
 

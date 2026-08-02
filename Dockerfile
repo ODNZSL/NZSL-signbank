@@ -46,7 +46,6 @@ RUN echo "APT::Install-Recommends \"0\";" >> /etc/apt/apt.conf.d/02recommends &&
 # Install requirements
 WORKDIR /app
 ADD pyproject.toml poetry.lock /app/
-COPY --link vendor/ /app/vendor/
 
 RUN poetry config installer.max-workers 10 && \
     poetry config virtualenvs.create false &&  \

@@ -2,27 +2,50 @@
 from __future__ import unicode_literals
 
 import re
+
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db.models.fields import BooleanField
-from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
-                         HttpResponseForbidden, HttpResponseNotAllowed,
-                         HttpResponseRedirect, HttpResponseServerError)
+from django.http import (
+    Http404,
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+    HttpResponseNotAllowed,
+    HttpResponseRedirect,
+    HttpResponseServerError,
+)
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils.translation import gettext as _
 from guardian.shortcuts import get_perms
-from tagging.models import Tag, TaggedItem
 
-from .forms import (GlossRelationForm, MorphologyForm,
-                    RelationForm, RelationToForeignSignForm, TagDeleteForm,
-                    TagsAddForm, TagUpdateForm)
-from .models import (Dialect, FieldChoice, Gloss, Lemma, GlossRelation,
-                     GlossTranslations, GlossURL, Language,
-                     MorphologyDefinition, Relation, RelationToForeignSign,
-                     build_choice_list)
+from signbank.tagging.utils import normalize_tag_name
+
 from ..video.models import GlossVideo
+from .forms import (
+    GlossRelationForm,
+    MorphologyForm,
+    RelationForm,
+    RelationToForeignSignForm,
+    TagDeleteForm,
+    TagsAddForm,
+    TagUpdateForm,
+)
+from .models import (
+    Dialect,
+    FieldChoice,
+    Gloss,
+    GlossRelation,
+    GlossTranslations,
+    GlossURL,
+    Language,
+    Lemma,
+    MorphologyDefinition,
+    Relation,
+    RelationToForeignSign,
+    build_choice_list,
+)
 
 
 @permission_required('dictionary.change_gloss')
@@ -595,11 +618,7 @@ def add_tag(request, glossid):
         if form.is_valid():
             if form.cleaned_data['delete']:
                 tag = form.cleaned_data['tag']
-                # get the relevant TaggedItem
-                ti = get_object_or_404(
-                    TaggedItem, object_id=gloss.id, tag__name=tag,
-                    content_type=ContentType.objects.get_for_model(Gloss))
-                ti.delete()
+                gloss.tags.remove(normalize_tag_name(tag.name))
                 response = HttpResponse(
                     'deleted', content_type='text/plain')
                 return response
@@ -607,9 +626,7 @@ def add_tag(request, glossid):
         form = TagUpdateForm(request.POST)
         if form.is_valid():
             tag = form.cleaned_data['tag']
-
-            # we need to wrap the tag name in quotes since it might contain spaces
-            Tag.objects.add_tag(gloss, '"%s"' % tag)
+            gloss.tags.add(normalize_tag_name(tag.name))
             # response is new HTML for the tag list and form
             response = render(request, 'dictionary/glosstags.html',
                               {'gloss': gloss, 'tagsaddform': TagsAddForm()})
@@ -620,21 +637,12 @@ def add_tag(request, glossid):
             if form.is_valid():
                 tags = form.cleaned_data['tags']
                 for tag in tags:
-                    add_tags_to_gloss(gloss, tag)
+                    gloss.tags.add(normalize_tag_name(tag.name))
 
                 response = render(request, 'dictionary/glosstags.html',
                                   {'gloss': gloss, 'tagsaddform': TagsAddForm()})
 
     return response
-
-
-# We are using this custom-made function instead of the in-built due to the incorrect handling of tags which contains
-# spaces.
-def add_tags_to_gloss(gloss, tag):
-    tag = Tag.objects.filter(name=tag.name).first()
-    c_type = ContentType.objects.get_for_model(gloss)
-    TaggedItem._default_manager.get_or_create(
-        tag=tag, content_type=c_type, object_id=gloss.pk)
 
 
 def gloss_relation(request):
@@ -648,9 +656,7 @@ def gloss_relation(request):
                 msg = _("You do not have permissions to delete relations from glosses of this lexicon.")
                 messages.error(request, msg)
                 raise PermissionDenied(msg)
-            ct = ContentType.objects.get_for_model(GlossRelation)
-            # Delete TaggedItems and the GlossRelation
-            TaggedItem.objects.filter(object_id=glossrelation.id, content_type=ct).delete()
+            glossrelation.tags.clear()
             glossrelation.delete()
 
             if "HTTP_REFERER" in request.META:
@@ -667,8 +673,8 @@ def gloss_relation(request):
             target = get_object_or_404(Gloss, id=form.cleaned_data["target"])
             glossrelation = GlossRelation.objects.create(source=source, target=target)
             if form.cleaned_data["tag"]:
-                TaggedItem.objects.create(
-                    object=glossrelation, tag=form.cleaned_data["tag"])
+                tag = form.cleaned_data["tag"]
+                glossrelation.tags.add(normalize_tag_name(tag.name))
             if "HTTP_REFERER" in request.META:
                 return redirect(request.META["HTTP_REFERER"])
             return redirect("/")

@@ -20,14 +20,13 @@ from django.db.models import Q, F, Count, Case, Value, When, BooleanField
 from urllib.parse import quote
 from wsgiref.util import FileWrapper
 
-from tagging.models import Tag
 from guardian.shortcuts import get_perms, get_objects_for_user, get_users_with_perms
 from notifications.signals import notify
 
 from signbank.dictionary.models import Dataset, Keyword, FieldChoice, Gloss, GlossRelation
 from signbank.dictionary.forms import GlossCreateForm, LexiconForm
 from signbank.dictionary import tools
-from signbank.dictionary.update import add_tags_to_gloss
+from signbank.tagging.utils import normalize_tag_name
 
 from signbank.video.models import GlossVideo
 from signbank.video.forms import GlossVideoForm
@@ -52,8 +51,8 @@ def create_gloss(request):
             new_gloss.updated_by = request.user
             new_gloss.save()
             if form.cleaned_data["tag"]:
-                tag = Tag.objects.filter(name=form.cleaned_data["tag"].name).first()
-                add_tags_to_gloss(new_gloss, tag)
+                tag = form.cleaned_data["tag"]
+                new_gloss.tags.add(normalize_tag_name(tag.name))
             if glossvideoform.cleaned_data['videofile']:
                 glossvideo = glossvideoform.save(commit=False)
                 glossvideo.gloss = new_gloss

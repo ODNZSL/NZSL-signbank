@@ -62,6 +62,13 @@ class GlossVideoDynamicStorage(import_string(settings.GLOSS_VIDEO_FILE_STORAGE))
         )
 
 
+def glossvideo_upload_to(instance, filename):
+    """Ignore the client basename; use a unique temp key until rename_video.
+
+    Durable keys still use create_filename() after the object has a PK.
+    """
+    _root, ext = os.path.splitext(filename)
+    return "{uuid}{ext}".format(uuid=uuid.uuid4().hex, ext=ext)
 
 
 class GlossVideo(models.Model):
@@ -70,7 +77,8 @@ class GlossVideo(models.Model):
     title = models.CharField(_("Title"), blank=True, unique=False, max_length=100,
                              help_text=_("Descriptive name of the video."))
     #: Video file of the GlossVideo.
-    videofile = models.FileField(_("Video file"), storage=GlossVideoDynamicStorage(),
+    videofile = models.FileField(_("Video file"), upload_to=glossvideo_upload_to,
+                                 storage=GlossVideoDynamicStorage(),
                                  help_text=_("Video file."))
     #: Poster image of the GlossVideo.
     posterfile = models.FileField(_("Poster file"), upload_to=os.path.join("posters"),
@@ -186,18 +194,25 @@ class GlossVideo(models.Model):
         if hasattr(self, 'gloss') and self.gloss is not None:
             # Store the old file path, needed for removal later.
             old_file = self.videofile
+            old_name = old_file.name
             # Create the base filename.
             new_filename = self.create_filename()
             # Get the relative path in media folder.
             full_new_path = storage.get_valid_name(new_filename)
-            # Proceed to change the file path if the new path is not equal to old path.
-            if not self.videofile.storage.exists(full_new_path):
-                # Save the file into the new path.
-                saved_file_path = storage.save(full_new_path, old_file)
-                # Set the actual file path to videofile.
-                self.videofile = saved_file_path
-
-                old_file.storage.delete(old_file.name)
+            # Already at the canonical key — nothing to do.
+            if old_name == full_new_path:
+                return
+            # Clear a stale/orphan object at the target before writing the
+            # canonical key (avoids leaving two DB rows pointing at one object
+            # if a previous upload failed mid-rename).
+            if storage.exists(full_new_path):
+                storage.delete(full_new_path)
+            # Save the file into the new path.
+            saved_file_path = storage.save(full_new_path, old_file)
+            # Set the actual file path to videofile.
+            self.videofile = saved_file_path
+            if old_name and old_name != saved_file_path:
+                storage.delete(old_name)
 
     def create_filename(self):
         """Returns a correctly named filename"""

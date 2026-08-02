@@ -13,7 +13,9 @@ from django.utils.translation import gettext as _
 from guardian.admin import GuardedModelAdmin
 from modeltranslation.admin import TranslationAdmin as ModelTranslationAdmin
 from reversion.admin import VersionAdmin
-from tagging.models import Tag, TaggedItem
+from taggit.models import Tag, TaggedItem
+
+from signbank.tagging.utils import tags_used_for_model
 
 from .models import (AllowedTags, Dataset, Dialect, FieldChoice, Gloss, Lemma,
                      GlossRelation, GlossTranslations, GlossURL, Language,
@@ -27,14 +29,18 @@ class TagListFilter(admin.SimpleListFilter):
     parameter_name = 'tag'
 
     def lookups(self, request, model_admin):
-        tags = Tag.objects.usage_for_model(model_admin.model)
+        tags = tags_used_for_model(model_admin.model)
         return [(tag.name, _(tag.name)) for tag in tags]
 
     def queryset(self, request, queryset):
         if self.value():
+            if hasattr(queryset.model, 'tags'):
+                return queryset.filter(tags__name=self.value()).distinct()
             ct = ContentType.objects.get_for_model(queryset.model)
-            return queryset.filter(id__in=[x.object_id for x in TaggedItem.objects.filter(tag__name=self.value(),
-                                                                                          content_type=ct)])
+            return queryset.filter(id__in=TaggedItem.objects.filter(
+                tag__name=self.value(),
+                content_type=ct,
+            ).values_list('object_id', flat=True))
 
 
 class DatasetAdmin(GuardedModelAdmin, ModelTranslationAdmin):

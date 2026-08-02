@@ -1,7 +1,6 @@
 {% extends "baselayout.html" %}
 {% load i18n %}
 {% load comments %}
-{% load tagging_tags %}
 {% block bootstrap3_title %}{{ gloss }} [{{ gloss.dataset.public_name }}] |
 {% endblock %}
 {% block metadesc %}<meta
@@ -214,7 +213,6 @@
                   </div>
                   <ul class="list-group">
                     {% for gr in glossrelations %}
-                      {% tags_for_object gr as tag_list %}
                       <li class="list-group-item list-group-item-relation">
                         <a
                           href="{% url 'dictionary:public_gloss_view' gr.target.id %}"
@@ -223,7 +221,7 @@
                             class="glyphicon glyphicon-circle-arrow-right"
                           ></span>
                           {{ gr }}</a>
-                        {% for tag in tag_list %}
+                        {% for tag in gr.tags.all %}
                           <span
                             class="badge"
                             style="float: inherit"
@@ -252,7 +250,6 @@
                   </div>
                   <ul class="list-group">
                     {% for gr in glossrelations_reverse %}
-                      {% tags_for_object gr as tag_list %}
                       <li class="list-group-item">
                         <a
                           href="{% url 'dictionary:public_gloss_view' gr.source.id %}"
@@ -261,7 +258,7 @@
                             class="glyphicon glyphicon-circle-arrow-left"
                           ></span>
                           {{ gr.source }}</a>
-                        {% for tag in tag_list %}
+                        {% for tag in gr.tags.all %}
                           <span
                             class="badge"
                             style="float: inherit"
