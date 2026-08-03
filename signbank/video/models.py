@@ -55,6 +55,9 @@ class GlossVideoDynamicStorage(import_string(settings.GLOSS_VIDEO_FILE_STORAGE))
         if not isinstance(self, S3Boto3Storage):
             return
 
+        if not name:
+            return
+
         self.bucket.meta.client.put_object_acl(
             ACL='public-read' if is_public else 'private',
             Bucket=self.bucket.name,
@@ -116,8 +119,42 @@ class GlossVideo(models.Model):
         verbose_name = _('Gloss video')
         verbose_name_plural = _('Gloss videos')
 
+
+    def _previous_visibility_state(self):
+        if not self.pk:
+            return None, None
+        previous = type(self).objects.filter(pk=self.pk).values(
+            'is_public', 'videofile'
+        ).first()
+        if not previous:
+            return None, None
+        return previous['is_public'], previous['videofile']
+
+    def _other_rows_reference_videofile(self, name, exclude_pk=None):
+        if not name:
+            return False
+        queryset = type(self).objects.filter(videofile=name)
+        if exclude_pk is not None:
+            queryset = queryset.exclude(pk=exclude_pk)
+        return queryset.exists()
+
+    def _sync_s3_acl(self):
+        if self.videofile.name:
+            self.videofile.storage.set_public(self.videofile.name, self.is_public)
+
+    def _should_sync_s3_acl(self, creating, previous_is_public, previous_videofile_name):
+        if not self.videofile.name:
+            return False
+        if creating:
+            return True
+        return (
+            self.is_public != previous_is_public
+            or self.videofile.name != previous_videofile_name
+        )
+
     def save(self, *args, **kwargs):
         creating = self._state.adding
+        previous_is_public, previous_videofile_name = self._previous_visibility_state()
         if creating:
             # If no title is set, use the filename of the uploaded file.
             if not self.title:
@@ -134,6 +171,16 @@ class GlossVideo(models.Model):
             self.rename_video()
             # Save without args and kwargs.
             super(GlossVideo, self).save()
+
+        if self._should_sync_s3_acl(creating, previous_is_public, previous_videofile_name):
+            self._sync_s3_acl()
+
+    def delete(self, *args, **kwargs):
+        if self.videofile and self.videofile.name:
+            if self._other_rows_reference_videofile(self.videofile.name, exclude_pk=self.pk):
+                type(self).objects.filter(pk=self.pk).update(videofile='')
+                self.videofile.name = ''
+        super(GlossVideo, self).delete(*args, **kwargs)
 
     def next_version(self):
         """Return a next suitable version number."""
@@ -205,7 +252,10 @@ class GlossVideo(models.Model):
             # Clear a stale/orphan object at the target before writing the
             # canonical key (avoids leaving two DB rows pointing at one object
             # if a previous upload failed mid-rename).
-            if storage.exists(full_new_path):
+            if (
+                not self._other_rows_reference_videofile(full_new_path, exclude_pk=self.pk)
+                and storage.exists(full_new_path)
+            ):
                 storage.delete(full_new_path)
             # Save the file into the new path.
             saved_file_path = storage.save(full_new_path, old_file)
@@ -254,17 +304,16 @@ class GlossVideo(models.Model):
         return content_type
 
     def is_image(self):
-        return self.get_content_type().startswith("image/")
+        content_type = self.get_content_type()
+        return content_type is not None and content_type.startswith("image/")
 
     def is_video(self):
-        return self.get_content_type().startswith("video/")
+        content_type = self.get_content_type()
+        return content_type is not None and content_type.startswith("video/")
 
     def set_public(self, is_public):
         self.is_public = is_public
         self.save()
-        self.videofile.storage.set_public(self.videofile.name, is_public)
-
-        True
 
     def has_poster(self):
         """Returns true if the glossvideo has a poster file."""
