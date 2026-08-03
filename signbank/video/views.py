@@ -412,7 +412,7 @@ def change_glossvideo_publicity(request):
     """Moves selected glossvideos position within glosses glossvideos."""
     if request.method == 'POST':
         videoid = request.POST["videoid"]
-        is_public = request.POST["is_public"]
+        is_public = request.POST["is_public"] == "True"
         video = GlossVideo.objects.get(pk=videoid)
         if 'view_dataset' not in get_perms(request.user, video.gloss.dataset):
             # If user has no permissions to dataset, raise PermissionDenied to show 403 template.
