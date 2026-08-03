@@ -147,10 +147,14 @@ class ChangeGlossVideoPublicityTestCase(TestCase):
 
     @patch('signbank.video.models.GlossVideoDynamicStorage.set_public')
     def test_set_private_parses_false_string(self, mock_set_public):
-        response = self.client.post(reverse('video:change_glossvideo_publicity'), {
-            'videoid': self.glossvideo.pk,
-            'is_public': 'False',
-        })
+        response = self.client.post(
+            reverse('video:change_glossvideo_publicity'),
+            {
+                'videoid': self.glossvideo.pk,
+                'is_public': 'False',
+            },
+            HTTP_REFERER='http://testserver/gloss/1/',
+        )
         self.assertEqual(response.status_code, 302)
         self.glossvideo.refresh_from_db()
         self.assertFalse(self.glossvideo.is_public)
