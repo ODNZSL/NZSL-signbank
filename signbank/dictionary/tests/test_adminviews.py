@@ -15,7 +15,7 @@ from django.urls import reverse
 from django.utils.timezone import get_current_timezone
 from django_comments.models import Comment
 from guardian.shortcuts import assign_perm
-from taggit.models import Tag
+from signbank.tagging.models import Tag
 
 from signbank.dictionary.models import (
     Dataset,

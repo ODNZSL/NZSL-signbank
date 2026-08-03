@@ -4,8 +4,11 @@ Small tagging helpers for models that cannot host a TaggableManager
 """
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
-from taggit.models import Tag, TaggedItem
+from django.db.utils import OperationalError, ProgrammingError
+
+from signbank.tagging.models import Tag, TaggedItem
 
 
 def normalize_tag_name(tag_name):
@@ -16,6 +19,29 @@ def normalize_tag_name(tag_name):
     if getattr(settings, 'FORCE_LOWERCASE_TAGS', False):
         tag_name = tag_name.lower()
     return tag_name
+
+
+def tags_for_selection(model=None, content_type=None):
+    """
+    Return tags for use in form choice fields.
+
+    When an AllowedTags entry exists for the content type, limits choices
+    to those allowed tags; otherwise returns all tags.
+    """
+    if model is not None:
+        content_type = ContentType.objects.get_for_model(model)
+
+    if content_type is not None:
+        from signbank.dictionary.models import AllowedTags
+
+        try:
+            return AllowedTags.objects.get(
+                content_type=content_type,
+            ).allowed_tags.all()
+        except (ObjectDoesNotExist, OperationalError, ProgrammingError):
+            pass
+
+    return Tag.objects.all()
 
 
 def tags_for_object(obj):

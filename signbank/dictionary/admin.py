@@ -6,16 +6,15 @@ from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.forms import CheckboxSelectMultiple, ModelForm, Textarea
 from django.utils.translation import gettext as _
 from guardian.admin import GuardedModelAdmin
 from modeltranslation.admin import TranslationAdmin as ModelTranslationAdmin
 from reversion.admin import VersionAdmin
-from taggit.models import Tag, TaggedItem
+from signbank.tagging.models import TaggedItem
 
-from signbank.tagging.utils import tags_used_for_model
+from signbank.tagging.utils import tags_for_selection, tags_used_for_model
 
 from .models import (AllowedTags, Dataset, Dialect, FieldChoice, Gloss, Lemma,
                      GlossRelation, GlossTranslations, GlossURL, Language,
@@ -85,14 +84,7 @@ class TagAdminInline(GenericTabularInline):
 class GlossRelationTagAdminInlineForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(GlossRelationTagAdminInlineForm, self).__init__(*args, **kwargs)
-        ct = ContentType.objects.get_for_model(GlossRelation)
-        try:
-            # Limit choices, try to get allowed tags based on ContentType from AllowedTags.
-            self.fields['tag'].queryset = AllowedTags.objects.get(
-                content_type=ct).allowed_tags.all()
-        except (AttributeError, ObjectDoesNotExist):
-            # Get all tags.
-            self.fields['tag'].queryset = Tag.objects.all()
+        self.fields['tag'].queryset = tags_for_selection(GlossRelation)
 
 
 class GlossRelationTagAdminInline(TagAdminInline):
@@ -127,14 +119,7 @@ class GlossURLInline(admin.TabularInline):
 class GlossTagInlineForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(GlossTagInlineForm, self).__init__(*args, **kwargs)
-        ct = ContentType.objects.get_for_model(Gloss)
-        try:
-            # Limit choices, try to get allowed tags based on ContentType from AllowedTags.
-            self.fields['tag'].queryset = AllowedTags.objects.get(
-                content_type=ct).allowed_tags.all()
-        except (AttributeError, ObjectDoesNotExist):
-            # Get all tags.
-            self.fields['tag'].queryset = Tag.objects.all()
+        self.fields['tag'].queryset = tags_for_selection(Gloss)
 
 
 class GlossTagInline(TagAdminInline):

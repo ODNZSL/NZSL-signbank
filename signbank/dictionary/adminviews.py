@@ -27,7 +27,7 @@ from django_comments.models import Comment
 from guardian.shortcuts import get_objects_for_user, get_perms, get_users_with_perms
 from reversion.models import Version
 
-from taggit.models import Tag
+from signbank.tagging.models import Tag
 
 from ..comments import CommentTagForm
 from ..video.forms import GlossVideoForGlossForm
