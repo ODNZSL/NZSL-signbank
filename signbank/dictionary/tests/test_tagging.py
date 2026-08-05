@@ -5,15 +5,47 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django_comments.models import Comment
 from guardian.shortcuts import assign_perm
-from taggit.models import Tag
+from signbank.tagging.models import Tag
 
 from signbank.dictionary.models import Dataset, Gloss, GlossRelation, SignLanguage
-from signbank.tagging.utils import add_tag, normalize_tag_name, tags_for_object
+from signbank.tagging.utils import add_tag, normalize_tag_name, tags_for_object, tags_for_selection
 
 
 class NormalizeTagNameTestCase(TestCase):
     def test_force_lowercase_and_strip(self):
         self.assertEqual(normalize_tag_name('  Foo Bar  '), 'foo bar')
+
+
+class TagsForSelectionTestCase(TestCase):
+    def test_tags_are_ordered_alphabetically(self):
+        Tag.objects.create(name='zebra')
+        Tag.objects.create(name='alpha')
+        Tag.objects.create(name='middle')
+
+        names = list(tags_for_selection().values_list('name', flat=True))
+        self.assertEqual(names, sorted(names))
+
+
+class GlossTagOrderingTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='tag-order', password='test')
+        self.signlanguage = SignLanguage.objects.create(
+            pk=2, name='testsignlanguage', language_code_3char='tst'
+        )
+        self.dataset = Dataset.objects.create(
+            name='testdataset', signlanguage=self.signlanguage
+        )
+        self.gloss = Gloss.objects.create(
+            idgloss='tag-order-gloss',
+            dataset=self.dataset,
+            created_by=self.user,
+            updated_by=self.user,
+        )
+
+    def test_gloss_tags_are_ordered_alphabetically(self):
+        self.gloss.tags.add('zebra', 'alpha', 'middle')
+        names = list(self.gloss.tags.values_list('name', flat=True))
+        self.assertEqual(names, sorted(names))
 
 
 class GlossTaggingTestCase(TestCase):

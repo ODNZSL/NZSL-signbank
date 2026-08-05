@@ -16,6 +16,8 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from taggit.managers import TaggableManager
 
+from signbank.tagging.models import Tag
+
 
 class Dataset(models.Model):
     """Dataset/Lexicon of which Glosses are part of."""
@@ -391,7 +393,7 @@ class Gloss(models.Model):
         User, related_name='updated_by_user', null=True, on_delete=models.SET_NULL)
 
     #: Tags for this Gloss (django-taggit).
-    tags = TaggableManager(blank=True)
+    tags = TaggableManager(blank=True, through='taggit.TaggedItem', to=Tag, ordering=['name'])
 
     # ### Phonology fields ###
     # Translators: Gloss models field: handedness, verbose name
@@ -819,7 +821,7 @@ class AllowedTags(models.Model):
     """Tags a model is allowed to use."""
     #: The tags that are shown in tag lists.
     allowed_tags = models.ManyToManyField(
-        'taggit.Tag', verbose_name=_("Allowed tags"))
+        Tag, verbose_name=_("Allowed tags"))
     #: The ContentType of the object whose AllowedTags we set.
     content_type = models.OneToOneField(ContentType, on_delete=models.CASCADE)
 
@@ -841,7 +843,7 @@ class GlossRelation(models.Model):
         Gloss, related_name="glossrelation_target", on_delete=models.CASCADE)
 
     #: Tags for this relation (django-taggit), typically the relation type.
-    tags = TaggableManager(blank=True)
+    tags = TaggableManager(blank=True, through='taggit.TaggedItem', to=Tag, ordering=['name'])
 
     def tag(self):
         """The type of the Relation, a Tag."""
