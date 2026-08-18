@@ -222,6 +222,19 @@ def get_s3_lastmodified(video_key):
     return S3_CLIENT.head_object(Bucket=AWS_S3_BUCKET, Key=video_key)["LastModified"]
 
 
+
+def csv_safe_field(value):
+    """Strip characters that break QUOTE_NONE CSV output."""
+    if value is None:
+        return ""
+    return (
+        str(value)
+        .replace(CSV_DELIMITER, "")
+        .replace("\n", " ")
+        .replace("\r", "")
+    )
+
+
 def build_csv_header():
     return [
         "Action",
@@ -263,17 +276,17 @@ def build_csv_row(
     action = get_recommended_action(key_in_nzsl, key_in_s3)
 
     return [
-        action,
-        f"{filter_fakekey(video_key)}",
-        f"{lastmodified}",
-        f"{canned_acl_expected}",
-        f"{canned_acl}",
-        f"{gloss_id}",
-        f"{video_id}",
-        f"{gloss_public}",
-        f"{video_public}",
-        f"{gloss_idgloss}",
-        f"{gloss_created_at}",
+        csv_safe_field(action),
+        csv_safe_field(filter_fakekey(video_key)),
+        csv_safe_field(lastmodified),
+        csv_safe_field(canned_acl_expected),
+        csv_safe_field(canned_acl),
+        csv_safe_field(gloss_id),
+        csv_safe_field(video_id),
+        csv_safe_field(gloss_public),
+        csv_safe_field(video_public),
+        csv_safe_field(gloss_idgloss),
+        csv_safe_field(gloss_created_at),
     ]
 
 

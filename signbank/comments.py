@@ -7,8 +7,6 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.utils import OperationalError, ProgrammingError
 from django.dispatch import receiver
 from django.forms import ModelForm
 from django.forms.models import model_to_dict
@@ -25,21 +23,16 @@ from django_comments.signals import comment_was_posted
 from guardian.shortcuts import get_objects_for_user
 from notifications.signals import notify
 
-from taggit.models import Tag, TaggedItem
+from signbank.tagging.models import TaggedItem
 
-from signbank.tagging.utils import add_tag, filter_queryset_with_all_tags
+from signbank.tagging.utils import add_tag, filter_queryset_with_all_tags, tags_for_selection
 
 from .dictionary.admin import TagAdminInline, TagListFilter
-from .dictionary.models import AllowedTags
 
 
 class CommentTagForm(forms.Form):
     """Form for tags, meant to be used when adding tags to Comments."""
-    try:
-        qs = AllowedTags.objects.get(content_type=ContentType.objects.get_for_model(Comment)).allowed_tags.all()
-    except (ObjectDoesNotExist, OperationalError, ProgrammingError):
-        qs = Tag.objects.all()
-    tag = forms.ModelChoiceField(queryset=qs, required=False, empty_label="---", to_field_name='name',
+    tag = forms.ModelChoiceField(queryset=tags_for_selection(Comment), required=False, empty_label="---", to_field_name='name',
                                  widget=forms.Select(attrs={'class': 'form-control'}), label=_lazy('Tag'))
 
 
@@ -75,11 +68,7 @@ def bind_comment(request, comment):
 
 
 class EditCommentForm(ModelForm):
-    try:
-        qs = AllowedTags.objects.get(content_type=ContentType.objects.get_for_model(Comment)).allowed_tags.all()
-    except (ObjectDoesNotExist, OperationalError, ProgrammingError):
-        qs = Tag.objects.all()
-    tag = forms.ModelChoiceField(queryset=qs, required=False, empty_label="---", to_field_name='name',
+    tag = forms.ModelChoiceField(queryset=tags_for_selection(Comment), required=False, empty_label="---", to_field_name='name',
                                  widget=forms.Select(attrs={'class': 'form-control'}), label=_lazy('Tag'))
 
     class Meta:
@@ -183,13 +172,7 @@ def add_tags_to_comments(sender, request, comment, **kwargs):
 class CommentTagInlineForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(CommentTagInlineForm, self).__init__(*args, **kwargs)
-        ct = ContentType.objects.get_for_model(Comment)
-        try:
-            # Limit choices, try to get allowed tags based on ContentType from AllowedTags.
-            self.fields['tag'].queryset = AllowedTags.objects.get(content_type=ct).allowed_tags.all()
-        except (AttributeError, ObjectDoesNotExist):
-            # Get all tags.
-            self.fields['tag'].queryset = Tag.objects.all()
+        self.fields['tag'].queryset = tags_for_selection(Comment)
 
 
 class CommentTagInline(TagAdminInline):

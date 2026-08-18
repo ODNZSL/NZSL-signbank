@@ -1,3 +1,12 @@
-# Legacy Tag / TaggedItem models lived here for migration history only.
-# They are removed by tagging.0004 after data was copied to django-taggit.
-# Runtime code should import Tag / TaggedItem from taggit.models.
+from taggit.models import Tag as TaggitTag
+from taggit.models import TaggedItem
+
+__all__ = ['Tag', 'TaggedItem']
+
+
+class Tag(TaggitTag):
+    """Project Tag model with the same default ordering as legacy django-tagging."""
+
+    class Meta:
+        proxy = True
+        ordering = ('name',)

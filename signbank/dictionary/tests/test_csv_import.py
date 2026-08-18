@@ -25,7 +25,7 @@ from signbank.dictionary.models import (
     SignLanguage,
     ValidationRecord,
 )
-from taggit.models import Tag
+from signbank.tagging.models import Tag
 
 from signbank.video.models import GlossVideo
 
