@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
 from signbank.dictionary.models import Gloss
-
+from storages.backends.s3boto3 import S3Boto3Storage
 
 class Command(BaseCommand):
     help = 'generate a list of gloss IDs and their video URLs'
@@ -52,9 +52,16 @@ class Command(BaseCommand):
                 if not options["sameonly"] or ( same and options["sameonly"] ):
                     print(orig_name, end="")
                     print(f",{canon_name}" if options["compare"] else "")
+                    if isinstance(storage, S3Boto3Storage):
+                        print(f"S3 Storage: {storage.bucket_name}")
                 if options["convert"]:
                     if same:
                         print(f"NO CHANGE: {orig_name}")
                     else:
                         # do here
-                        print(f"CONVERTED: {orig_name} --> {canon_name}")
+                        # We could actually do the rename here, the same way Josh's code does
+                        # What we'd want to do is do it on UAT, then sync UAT's S3 bucket --> prod
+                        #print(f"CONVERTED: {orig_name} --> {canon_name}")
+
+                        # Prove the stored item exists
+                        print(f"Object exists: {storage.exists(orig_name)}")
