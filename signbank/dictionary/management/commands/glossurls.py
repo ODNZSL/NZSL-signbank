@@ -55,6 +55,11 @@ class Command(BaseCommand):
                     if isinstance(storage, S3Boto3Storage):
                         print(f"S3 Storage: {storage.bucket_name}")
                 if options["convert"]:
+                    # dev safety
+                    if storage.bucket_name != "nzsl-signbank-media-dev":
+                        print("Oi! Not DEV bucket!")
+                        return
+
                     if same:
                         print(f"NO CHANGE: {orig_name}")
                     else:
@@ -65,3 +70,7 @@ class Command(BaseCommand):
 
                         # Prove the stored item exists
                         print(f"Object exists: {storage.exists(orig_name)}")
+
+                        # Move it to the new name
+                        # Josh's rename code should 'just work' here, so let's try
+                        glossvideo.rename_video()
