@@ -98,9 +98,7 @@ class Command(BaseCommand):
                         print(f"NO CHANGE: {orig_name}")
                     else:
                         # Prove the stored item exists
-                        if storage.exists(orig_name):
-                            print(f"Object exists: {orig_name}")
-                        else:
+                        if not storage.exists(orig_name):
                             print(f"IGNORE: Storage could not find {orig_name}")
                             continue
 
