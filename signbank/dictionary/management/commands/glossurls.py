@@ -7,9 +7,15 @@ from signbank.dictionary.models import Gloss
 from storages.backends.s3boto3 import S3Boto3Storage
 from pprint import pprint
 
+
 class Command(BaseCommand):
-    help = 'generate a list of gloss IDs and their video URLs'
-    args = ''
+
+    help = (
+        "Report Gloss IDs and their GlossVideo urls. Can also update GlossVideo urls to newer 'canonical' versions. "
+        "By default this is dry-run, but '--commit' will write the changes back to storage (eg. S3) and the database. "
+        "A DATABASE_URL must be defined. "
+        "If using S3 an AWS_PROFILE must be defined. The S3 bucket used will be the one defined in django settings."
+    )
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -24,21 +30,21 @@ class Command(BaseCommand):
             default=False,
             required=False,
             action="store_true",
-            help=f"Print the url and the 'canonical' url, comma separated",
+            help=f"Print the GlossVideo url and its 'canonical' url, comma separated",
         )
         parser.add_argument(
             "--sameonly",
             default=False,
             required=False,
             action="store_true",
-            help=f"Only show entries where url and 'canonical' url match",
+            help=f"Only show GlossVideo's where url and 'canonical' url match",
         )
         parser.add_argument(
             "--convert",
             default=False,
             required=False,
             action="store_true",
-            help=f"Rename the file on Storage, and overwrite the old url with the 'canonical' url, in the database (default dry-run)",
+            help=f"Rename the GlossVideo file on Storage, and overwrite the old GlossVideo url with the 'canonical' url, in the database (default dry-run)",
         )
         parser.add_argument(
             "--commit",
@@ -54,21 +60,18 @@ class Command(BaseCommand):
                 storage = glossvideo.videofile.storage
                 orig_name = glossvideo.videofile.name
                 canon_name = storage.get_valid_name(glossvideo.create_filename())
+
                 if not options["noid"]:
                     print(gloss.id)
+
                 same = orig_name == canon_name
-                if not options["sameonly"] or ( same and options["sameonly"] ):
+                if not options["sameonly"] or (options["sameonly"] and same):
                     print(orig_name, end="")
                     print(f",{canon_name}" if options["compare"] else "")
                     if isinstance(storage, S3Boto3Storage):
                         print(f"S3 Storage: {storage.bucket_name}")
+
                 if options["convert"]:
-
-                    # DEV safety, purely for testing
-                    if storage.bucket_name != "nzsl-signbank-media-dev":
-                        print("ABORT: Not DEV bucket!")
-                        return
-
                     if same:
                         print(f"NO CHANGE: {orig_name}")
                     else:
@@ -76,7 +79,7 @@ class Command(BaseCommand):
                         if storage.exists(orig_name):
                             print(f"Object exists: {orig_name}")
                         else:
-                            print(f"ERROR: Storage could not find {orig_name}")
+                            print(f"IGNORE: Storage could not find {orig_name}")
                             continue
 
                         # Move it to the new name, in storage and db
