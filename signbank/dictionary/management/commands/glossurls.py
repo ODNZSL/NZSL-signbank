@@ -45,7 +45,7 @@ class Command(BaseCommand):
             default=False,
             required=False,
             action="store_true",
-            help=f"Rename the GlossVideo file on Storage, and overwrite the old GlossVideo url with the 'canonical' url, in the database (default dry-run)",
+            help=f"Rename the GlossVideo file on Storage, and overwrite the old GlossVideo url with the 'canonical' url in the database (default dry-run)",
         )
         parser.add_argument(
             "--commit",
