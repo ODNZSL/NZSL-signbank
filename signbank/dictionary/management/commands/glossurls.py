@@ -86,6 +86,8 @@ class Command(BaseCommand):
             for glossvideo in gloss.glossvideo_set.all():
                 storage = glossvideo.videofile.storage
                 orig_name = glossvideo.videofile.name
+                
+                # Same call that rename_video() uses
                 canon_name = storage.get_valid_name(glossvideo.create_filename())
 
                 same = orig_name == canon_name
