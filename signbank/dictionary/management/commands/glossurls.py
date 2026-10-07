@@ -64,16 +64,18 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        # If using S3, print the bucket name
         instance = GlossVideo.objects.first()
         if instance:
+            print("Database connected, found at least one GlossVideo instance")
             storage = instance.videofile.storage
+
+            # If using S3, print the bucket name
             if isinstance(storage, S3Boto3Storage):
                 print(f"S3 Storage: {storage.bucket_name}")
             else:
                 print("S3 not in use")
         else:
-            print("No GlossVideo instances found, unable to determine custom storage backend.")
+            print("No GlossVideo instances found, and also therefore unable to determine custom storage backend.")
 
         if options["s3"]:
             return
@@ -86,7 +88,7 @@ class Command(BaseCommand):
             for glossvideo in gloss.glossvideo_set.all():
                 storage = glossvideo.videofile.storage
                 orig_name = glossvideo.videofile.name
-                
+
                 # Same call that rename_video() uses
                 canon_name = storage.get_valid_name(glossvideo.create_filename())
 
