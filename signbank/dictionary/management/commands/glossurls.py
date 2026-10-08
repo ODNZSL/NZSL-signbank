@@ -87,7 +87,7 @@ class Command(BaseCommand):
             return
 
         # Test videos, change to .all() for actual run
-        for gloss in Gloss.objects.filter(idgloss__in=["Abbotsford:6911", "turn right:904", "clarify:5997"]):
+        for gloss in Gloss.objects.all():
 
             if not options["noid"]:
                 print(gloss.id)
@@ -115,11 +115,15 @@ class Command(BaseCommand):
 
                         # Move the db to the new name
                         # Copy or move the file to the new name
+                        delete_old_name=options["delete"]
+                        print(f"OLD NAME: {orig_name}")
+                        print(f"NEW NAME: {canon_name}")
+                        action_name="RENAMED" if delete_old_name else "COPIED"
                         if options["commit"]:
-                            glossvideo.rename_video(delete_old_name=options["delete"])
+                            glossvideo.rename_video(delete_old_name)
                             glossvideo.save()
                             pprint(glossvideo.__dict__)
-                            print(f"RENAMED: {orig_name} --> {canon_name}")
+                            print(action_name)
                         else:
-                            print(f"(DRY-RUN) {orig_name} --> {canon_name}")
+                            print(f"(DRY-RUN) {action_name}")
 
