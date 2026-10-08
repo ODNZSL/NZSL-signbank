@@ -41,6 +41,13 @@ class Command(BaseCommand):
             help=f"Only show GlossVideo's where url and 'canonical' url match",
         )
         parser.add_argument(
+            "--s3",
+            default=False,
+            required=False,
+            action="store_true",
+            help=f"Just print out the S3 bucket name and return, if S3 is in use",
+        )
+        parser.add_argument(
             "--convert",
             default=False,
             required=False,
@@ -55,15 +62,14 @@ class Command(BaseCommand):
             help=f"WARNING, DESTRUCTIVE: With '--convert' actually perform the actions rather than just dry-running them",
         )
         parser.add_argument(
-            "--s3",
+            "--delete",
             default=False,
             required=False,
             action="store_true",
-            help=f"Just print out the S3 bucket name and return, if S3 is in use",
+            help=f"WARNING, DESTRUCTIVE: Delete old file path",
         )
 
     def handle(self, *args, **options):
-
         instance = GlossVideo.objects.first()
         if instance:
             print("Database connected, found at least one GlossVideo instance")
@@ -75,12 +81,13 @@ class Command(BaseCommand):
             else:
                 print("S3 not in use")
         else:
-            print("No GlossVideo instances found, and also therefore unable to determine custom storage backend.")
+            print("No GlossVideo instances found, and also therefore unable to determine custom storage backend")
 
         if options["s3"]:
             return
 
-        for gloss in Gloss.objects.all():
+        # Test videos, change to .all() for actual run
+        for gloss in Gloss.objects.filter(idgloss__in=["Abbotsford:6911", "turn right:904", "clarify:5997"]):
 
             if not options["noid"]:
                 print(gloss.id)
@@ -106,11 +113,13 @@ class Command(BaseCommand):
                             print(f"IGNORE: Storage could not find {orig_name}")
                             continue
 
-                        # Move it to the new name, in storage and db
+                        # Move the db to the new name
+                        # Copy or move the file to the new name
                         if options["commit"]:
-                            glossvideo.rename_video()
+                            glossvideo.rename_video(delete_old_name=options["delete"])
                             glossvideo.save()
                             pprint(glossvideo.__dict__)
                             print(f"RENAMED: {orig_name} --> {canon_name}")
                         else:
                             print(f"(DRY-RUN) {orig_name} --> {canon_name}")
+
