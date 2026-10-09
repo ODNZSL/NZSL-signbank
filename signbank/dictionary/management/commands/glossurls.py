@@ -4,12 +4,127 @@ from __future__ import unicode_literals
 
 from django.core.management.base import BaseCommand
 from signbank.dictionary.models import Gloss
+from storages.backends.s3boto3 import S3Boto3Storage
+from signbank.video.models import GlossVideo
 
 
 class Command(BaseCommand):
-    help = 'generate a list of gloss IDs and their video URLs'
-    args = ''
+
+    help = (
+        "Report Gloss IDs and their GlossVideo urls. Can also update GlossVideo urls to newer 'canonical' versions. "
+        "By default this is dry-run, but '--commit' will write the changes back to storage (eg. S3) and the database. "
+        "A DATABASE_URL must be defined. "
+        "If using S3 an AWS_PROFILE must be defined. The S3 bucket used will be the one defined in django settings."
+    )
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--noid",
+            default=False,
+            required=False,
+            action="store_true",
+            help=f"Dont print the Gloss Id",
+        )
+        parser.add_argument(
+            "--compare",
+            default=False,
+            required=False,
+            action="store_true",
+            help=f"Print the GlossVideo url and its 'canonical' url, comma separated",
+        )
+        parser.add_argument(
+            "--sameonly",
+            default=False,
+            required=False,
+            action="store_true",
+            help=f"Only show GlossVideo's where url and 'canonical' url match",
+        )
+        parser.add_argument(
+            "--s3",
+            default=False,
+            required=False,
+            action="store_true",
+            help=f"Just print out the S3 bucket name and return, if S3 is in use",
+        )
+        parser.add_argument(
+            "--convert",
+            default=False,
+            required=False,
+            action="store_true",
+            help=f"Rename the GlossVideo file on Storage, and overwrite the old GlossVideo url with the 'canonical' url in the database (default dry-run)",
+        )
+        parser.add_argument(
+            "--commit",
+            default=False,
+            required=False,
+            action="store_true",
+            help=f"WARNING, DESTRUCTIVE: With '--convert' actually perform the actions rather than just dry-running them",
+        )
+        parser.add_argument(
+            "--delete",
+            default=False,
+            required=False,
+            action="store_true",
+            help=f"WARNING, DESTRUCTIVE: Delete old file path (default false)",
+        )
 
     def handle(self, *args, **options):
+        instance = GlossVideo.objects.first()
+        if instance:
+            print("Database connected, found at least one GlossVideo instance")
+            storage = instance.videofile.storage
+
+            # If using S3, print the bucket name
+            if isinstance(storage, S3Boto3Storage):
+                print(f"S3 Storage: {storage.bucket_name}")
+            else:
+                print("S3 not in use")
+        else:
+            print(
+                "No GlossVideo instances found, and also therefore unable to determine custom storage backend"
+            )
+
+        if options["s3"]:
+            return
+
+        delete_old_name = options["delete"]
+        action_name = "MOVED" if delete_old_name else "COPIED"
+
         for gloss in Gloss.objects.all():
-            print(gloss.id, gloss.glossvideo_set.all() or None)
+
+            if not options["noid"]:
+                print(gloss.id)
+
+            for glossvideo in gloss.glossvideo_set.all():
+                storage = glossvideo.videofile.storage
+                orig_name = glossvideo.videofile.name
+
+                # Same call that rename_video() uses
+                canon_name = storage.get_valid_name(glossvideo.create_filename())
+
+                same = orig_name == canon_name
+                if not same and options["sameonly"]:
+                    continue
+
+                print(f"OLD NAME: {orig_name}")
+                print(f"NEW NAME: {canon_name}")
+
+                if options["convert"]:
+                    if same:
+                        print(f"NO CHANGE: {orig_name}")
+                        continue
+
+                    # Prove the stored item exists
+                    if not storage.exists(orig_name):
+                        print(f"IGNORE: Storage could not find {orig_name}")
+                        continue
+
+                    if options["commit"]:
+                        # Move the db row to the new name
+                        # Copy or move the file to the new name
+                        print(f"PREVIOUS: {orig_name}")
+                        glossvideo.rename_video(delete_old_name)
+                        glossvideo.save()
+                        print(f"{action_name}: --> {canon_name}")
+                    else:
+                        print(f"(DRY-RUN) {action_name}: --> {canon_name}")
