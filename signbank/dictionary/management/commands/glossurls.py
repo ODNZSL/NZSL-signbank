@@ -93,6 +93,9 @@ class Command(BaseCommand):
             if not options["noid"]:
                 print(gloss.id)
 
+            delete_old_name = options["delete"]
+            action_name = "MOVED" if delete_old_name else "COPIED"
+
             for glossvideo in gloss.glossvideo_set.all():
                 storage = glossvideo.videofile.storage
                 orig_name = glossvideo.videofile.name
@@ -101,12 +104,9 @@ class Command(BaseCommand):
                 canon_name = storage.get_valid_name(glossvideo.create_filename())
 
                 same = orig_name == canon_name
-                if not options["sameonly"] or (options["sameonly"] and same):
-                    print(orig_name, end="")
-                    print(f",{canon_name}" if options["compare"] else "")
+                if not same and options["sameonly"]:
+                    continue
 
-                delete_old_name = options["delete"]
-                action_name = "MOVED" if delete_old_name else "COPIED"
                 if options["convert"]:
                     if same:
                         print(f"NO CHANGE: {orig_name}")
