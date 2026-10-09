@@ -102,6 +102,9 @@ class Command(BaseCommand):
                 # Same call that rename_video() uses
                 canon_name = storage.get_valid_name(glossvideo.create_filename())
 
+                print(f"OLD NAME: {orig_name}")
+                print(f"NEW NAME: {canon_name}")
+
                 same = orig_name == canon_name
                 if not same and options["sameonly"]:
                     continue
@@ -116,14 +119,12 @@ class Command(BaseCommand):
                         print(f"IGNORE: Storage could not find {orig_name}")
                         continue
 
-                    print(f"OLD NAME: {orig_name}")
-                    print(f"NEW NAME: {canon_name}")
-
                     if options["commit"]:
                         # Move the db row to the new name
                         # Copy or move the file to the new name
+                        print(f"PREVIOUS: {orig_name}")
                         glossvideo.rename_video(delete_old_name)
                         glossvideo.save()
-                        print(action_name)
+                        print(f"{action_name}: --> {canon_name}")
                     else:
-                        print(f"(DRY-RUN) {action_name}")
+                        print(f"(DRY-RUN) {action_name}: --> {canon_name}")
