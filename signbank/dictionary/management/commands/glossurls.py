@@ -66,7 +66,7 @@ class Command(BaseCommand):
             default=False,
             required=False,
             action="store_true",
-            help=f"WARNING, DESTRUCTIVE: Delete old file path",
+            help=f"WARNING, DESTRUCTIVE: Delete old file path (default false)",
         )
 
     def handle(self, *args, **options):
