@@ -81,7 +81,9 @@ class Command(BaseCommand):
             else:
                 print("S3 not in use")
         else:
-            print("No GlossVideo instances found, and also therefore unable to determine custom storage backend")
+            print(
+                "No GlossVideo instances found, and also therefore unable to determine custom storage backend"
+            )
 
         if options["s3"]:
             return
@@ -115,10 +117,10 @@ class Command(BaseCommand):
 
                         # Move the db to the new name
                         # Copy or move the file to the new name
-                        delete_old_name=options["delete"]
+                        delete_old_name = options["delete"]
                         print(f"OLD NAME: {orig_name}")
                         print(f"NEW NAME: {canon_name}")
-                        action_name="MOVED" if delete_old_name else "COPIED"
+                        action_name = "MOVED" if delete_old_name else "COPIED"
                         if options["commit"]:
                             glossvideo.rename_video(delete_old_name)
                             glossvideo.save()
@@ -126,4 +128,3 @@ class Command(BaseCommand):
                             print(action_name)
                         else:
                             print(f"(DRY-RUN) {action_name}")
-
