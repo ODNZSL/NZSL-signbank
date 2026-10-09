@@ -87,7 +87,6 @@ class Command(BaseCommand):
         if options["s3"]:
             return
 
-        # Test videos, change to .all() for actual run
         for gloss in Gloss.objects.all():
 
             if not options["noid"]:
