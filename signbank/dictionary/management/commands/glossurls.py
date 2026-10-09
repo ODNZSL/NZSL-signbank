@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 from django.core.management.base import BaseCommand
 from signbank.dictionary.models import Gloss
 from storages.backends.s3boto3 import S3Boto3Storage
-from pprint import pprint
 from signbank.video.models import GlossVideo
 
 
@@ -106,25 +105,26 @@ class Command(BaseCommand):
                     print(orig_name, end="")
                     print(f",{canon_name}" if options["compare"] else "")
 
+                delete_old_name = options["delete"]
+                action_name = "MOVED" if delete_old_name else "COPIED"
                 if options["convert"]:
                     if same:
                         print(f"NO CHANGE: {orig_name}")
-                    else:
-                        # Prove the stored item exists
-                        if not storage.exists(orig_name):
-                            print(f"IGNORE: Storage could not find {orig_name}")
-                            continue
+                        continue
 
+                    # Prove the stored item exists
+                    if not storage.exists(orig_name):
+                        print(f"IGNORE: Storage could not find {orig_name}")
+                        continue
+
+                    print(f"OLD NAME: {orig_name}")
+                    print(f"NEW NAME: {canon_name}")
+
+                    if options["commit"]:
                         # Move the db row to the new name
                         # Copy or move the file to the new name
-                        delete_old_name = options["delete"]
-                        print(f"OLD NAME: {orig_name}")
-                        print(f"NEW NAME: {canon_name}")
-                        action_name = "MOVED" if delete_old_name else "COPIED"
-                        if options["commit"]:
-                            glossvideo.rename_video(delete_old_name)
-                            glossvideo.save()
-                            pprint(glossvideo.__dict__)
-                            print(action_name)
-                        else:
-                            print(f"(DRY-RUN) {action_name}")
+                        glossvideo.rename_video(delete_old_name)
+                        glossvideo.save()
+                        print(action_name)
+                    else:
+                        print(f"(DRY-RUN) {action_name}")
