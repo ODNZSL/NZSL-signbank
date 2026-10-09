@@ -115,7 +115,7 @@ class Command(BaseCommand):
                             print(f"IGNORE: Storage could not find {orig_name}")
                             continue
 
-                        # Move the db to the new name
+                        # Move the db row to the new name
                         # Copy or move the file to the new name
                         delete_old_name = options["delete"]
                         print(f"OLD NAME: {orig_name}")
