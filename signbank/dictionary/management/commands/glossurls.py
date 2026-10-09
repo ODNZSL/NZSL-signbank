@@ -102,12 +102,12 @@ class Command(BaseCommand):
                 # Same call that rename_video() uses
                 canon_name = storage.get_valid_name(glossvideo.create_filename())
 
-                print(f"OLD NAME: {orig_name}")
-                print(f"NEW NAME: {canon_name}")
-
                 same = orig_name == canon_name
                 if not same and options["sameonly"]:
                     continue
+
+                print(f"OLD NAME: {orig_name}")
+                print(f"NEW NAME: {canon_name}")
 
                 if options["convert"]:
                     if same:
