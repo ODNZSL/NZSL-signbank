@@ -87,13 +87,13 @@ class Command(BaseCommand):
         if options["s3"]:
             return
 
+        delete_old_name = options["delete"]
+        action_name = "MOVED" if delete_old_name else "COPIED"
+
         for gloss in Gloss.objects.all():
 
             if not options["noid"]:
                 print(gloss.id)
-
-            delete_old_name = options["delete"]
-            action_name = "MOVED" if delete_old_name else "COPIED"
 
             for glossvideo in gloss.glossvideo_set.all():
                 storage = glossvideo.videofile.storage
