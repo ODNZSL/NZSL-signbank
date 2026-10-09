@@ -118,7 +118,7 @@ class Command(BaseCommand):
                         delete_old_name=options["delete"]
                         print(f"OLD NAME: {orig_name}")
                         print(f"NEW NAME: {canon_name}")
-                        action_name="RENAMED" if delete_old_name else "COPIED"
+                        action_name="MOVED" if delete_old_name else "COPIED"
                         if options["commit"]:
                             glossvideo.rename_video(delete_old_name)
                             glossvideo.save()
