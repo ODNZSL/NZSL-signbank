@@ -106,8 +106,11 @@ class Command(BaseCommand):
                 if not same and options["sameonly"]:
                     continue
 
-                print(f"OLD NAME: {orig_name}")
-                print(f"NEW NAME: {canon_name}")
+                if options["compare"] or options["convert"]:
+                    print(f"OLD NAME: {orig_name}")
+                    print(f"NEW NAME: {canon_name}")
+                else:
+                    print(orig_name)
 
                 if options["convert"]:
                     if same:
