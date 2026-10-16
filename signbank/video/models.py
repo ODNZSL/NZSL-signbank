@@ -234,7 +234,7 @@ class GlossVideo(models.Model):
     def get_absolute_url(self):
         return self.videofile.url
 
-    def rename_video(self):
+    def rename_video(self, delete_old_name=True):
         """Rename the video and move the video to correct path if the glossvideo object has a foreignkey to a gloss."""
         storage = self.videofile.storage
         # Do not rename the file if glossvideo doesn't have a gloss.
@@ -261,7 +261,7 @@ class GlossVideo(models.Model):
             saved_file_path = storage.save(full_new_path, old_file)
             # Set the actual file path to videofile.
             self.videofile = saved_file_path
-            if old_name and old_name != saved_file_path:
+            if old_name and old_name != saved_file_path and delete_old_name:
                 storage.delete(old_name)
 
     def create_filename(self):
