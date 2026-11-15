@@ -1,12 +1,12 @@
 {% extends "baselayout.html" %}
 {% load i18n %}
-{% block bootstrap3_title %}{{ flatpage.title }} |
+{% block title %}{{ flatpage.title }} |
 {% endblock %}
 
 {% block content %}
   {% block pagecontent %}
     <div class="row">
-      <div class="col-md-10 col-md-offset-1">
+      <div class="col-lg-10 offset-lg-1">
         {{ flatpage.content }}
       </div>
     </div>
@@ -17,7 +17,7 @@
       <div id="editbutton">
         {# Translators: Edit page button in baselayout #}
         <a
-          class="btn btn-default btn-lg"
+          class="btn btn-outline-secondary btn-lg"
           href="{% url 'admin:flatpages_flatpage_change' flatpage.pk %}"
           style="width: 100%"
         >{% blocktrans %}Edit Page{% endblocktrans %}</a>

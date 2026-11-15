@@ -1,40 +1,40 @@
 {% load stylesheet %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load i18n %}
 {% load static %}
 {% load comments %}
 
 {# Tabs wrapper #}
 {% if validation_records or share_validations or manual_validations %}
-  <div class="panel panel-info top-margin">
-    <!-- Default panel contents -->
-    <div class="panel-heading">
+  <div class="card border-info-subtle mb-3 top-margin">
+    <!-- Default card contents -->
+    <div class="card-header bg-info-subtle text-info-emphasis">
       Aggregated validation results from NZSL Share and Validation Survey
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <!-- Table -->
       <table class="table">
         <thead>
           <td></td>
           <td>
             <span
-              class="glyphicon glyphicon-thumbs-up"
+              class="bi bi-hand-thumbs-up-fill"
               aria-hidden="true"
             ></span>
           </td>
           <td>
             <span
-              class="glyphicon glyphicon-thumbs-down"
+              class="bi bi-hand-thumbs-down-fill"
               aria-hidden="true"
             ></span>
           </td>
           <td>
             <span
-              class="glyphicon glyphicon-question-sign"
+              class="bi bi-question-circle-fill"
               aria-hidden="true"
             ></span>
           </td>
-          <td class="info">{% blocktrans %}Total{% endblocktrans %}</td>
+          <td class="table-info">{% blocktrans %}Total{% endblocktrans %}</td>
         </thead>
         <tbody>
           {% if share_validations %}
@@ -43,7 +43,7 @@
               <td>{{ share_validation_totals.agrees }}</td>
               <td>{{ share_validation_totals.disagrees }}</td>
               <td>-</td>
-              <td class="info">{{ share_validation_totals.totals }}</td>
+              <td class="table-info">{{ share_validation_totals.totals }}</td>
             </tr>
           {% endif %}
           {% if validation_records %}
@@ -52,7 +52,7 @@
               <td>{{ validation_record_totals.sign_seen_yes }}</td>
               <td>{{ validation_record_totals.sign_seen_no }}</td>
               <td>{{ validation_record_totals.sign_seen_not_sure }}</td>
-              <td class="info">{{ validation_record_totals.totals }}</td>
+              <td class="table-info">{{ validation_record_totals.totals }}</td>
             </tr>
           {% endif %}
           {% if manual_validations %}
@@ -61,13 +61,13 @@
               <td>{{ manual_validations_totals.sign_seen_yes }}</td>
               <td>{{ manual_validations_totals.sign_seen_no }}</td>
               <td>{{ manual_validations_totals.sign_seen_not_sure }}</td>
-              <td class="info">
+              <td class="table-info">
                 {{ manual_validations_totals.totals }}
               </td>
             </tr>
           {% endif %}
           {% if show_totals_row %}
-            <tr class="info">
+            <tr class="table-info">
               <td>{% blocktrans %}Total{% endblocktrans %}</td>
               <td>{{ totals.sign_seen_yes }}</td>
               <td>{{ totals.sign_seen_no }}</td>
@@ -84,9 +84,9 @@
     </div>
   </div>
 {% else %}
-  <div class="panel panel-warning top-margin">
-    <!-- Default panel contents -->
-    <div class="panel-heading">
+  <div class="card border-warning-subtle mb-3 top-margin">
+    <!-- Default card contents -->
+    <div class="card-header bg-warning-subtle text-warning-emphasis">
       No validtion results available for this gloss
     </div>
   </div>
@@ -99,17 +99,18 @@
       ({{ validation_records|length }})
       {% if validation_records|length > 0 %}
         <span
-          class="glyphicon glyphicon-chevron-down"
+          class="bi bi-chevron-down"
+          role="button"
           aria-hidden="true"
-          data-toggle="collapse"
-          data-target="#validation-records"
+          data-bs-toggle="collapse"
+          data-bs-target="#validation-records"
           aria-expanded="false"
           aria-controls="validation-records"
         ></span>
       {% endif %}
     </h4>
     <div class="collapse" id="validation-records">
-      <dl class="well well-md">
+      <dl class="card card-body bg-body-tertiary mb-3">
         {% for record in validation_records %}
           <dt
             {% if not forloop.first %}class="top-margin"{% endif %}
@@ -117,17 +118,17 @@
           >
             {% if record.sign_seen == "yes" %}
               <span
-                class="glyphicon glyphicon-thumbs-up"
+                class="bi bi-hand-thumbs-up-fill"
                 aria-hidden="true"
               ></span>
             {% elif record.sign_seen == "no" %}
               <span
-                class="glyphicon glyphicon-thumbs-down"
+                class="bi bi-hand-thumbs-down-fill"
                 aria-hidden="true"
               ></span>
             {% else %}
               <span
-                class="glyphicon glyphicon-question-sign"
+                class="bi bi-question-circle-fill"
                 aria-hidden="true"
               ></span>
             {% endif %}
@@ -140,7 +141,7 @@
             {% if record.comment %}
               <div>
                 <span
-                  class="glyphicon glyphicon-comment"
+                  class="bi bi-chat-fill"
                   aria-hidden="true"
                 ></span>&nbsp;{{ record.comment }}
               </div>
@@ -159,17 +160,18 @@
       ({{ manual_validations|length }})
       {% if manual_validations|length > 0 %}
         <span
-          class="glyphicon glyphicon-chevron-down"
+          class="bi bi-chevron-down"
+          role="button"
           aria-hidden="true"
-          data-toggle="collapse"
-          data-target="#manual_validations"
+          data-bs-toggle="collapse"
+          data-bs-target="#manual_validations"
           aria-expanded="false"
           aria-controls="manual_validations"
         ></span>
       {% endif %}
     </h4>
     <div class="collapse" id="manual_validations">
-      <dl class="well well-md">
+      <dl class="card card-body bg-body-tertiary mb-3">
         {% for aggregate in manual_validations %}
           <dt
             {% if not forloop.first %}class="top-margin"{% endif %}
@@ -180,15 +182,15 @@
           <dd>
             <div>
               <span
-                class="glyphicon glyphicon-thumbs-up"
+                class="bi bi-hand-thumbs-up-fill"
                 aria-hidden="true"
               ></span>&nbsp;{{ aggregate.sign_seen_yes }}&nbsp;
               <span
-                class="glyphicon glyphicon-thumbs-down"
+                class="bi bi-hand-thumbs-down-fill"
                 aria-hidden="true"
               ></span>&nbsp;{{ aggregate.sign_seen_no }}&nbsp;
               <span
-                class="glyphicon glyphicon-question-sign"
+                class="bi bi-question-circle-fill"
                 aria-hidden="true"
               ></span>&nbsp;{{ aggregate.sign_seen_not_sure }}
             </div>
@@ -197,7 +199,7 @@
             {% if aggregate.comments %}
               <div>
                 <span
-                  class="glyphicon glyphicon-comment"
+                  class="bi bi-chat-fill"
                   aria-hidden="true"
                 ></span>&nbsp;{{ aggregate.comments }}
               </div>
@@ -216,9 +218,10 @@
       ({{ share_comments|length }})
       {% if share_comments|length > 0 %}
         &nbsp;<span
-          class="glyphicon glyphicon-chevron-down"
-          data-toggle="collapse"
-          data-target="#share-comments"
+          class="bi bi-chevron-down"
+          role="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#share-comments"
           aria-expanded="false"
           aria-controls="share-comments"
           aria-hidden="true"
@@ -227,13 +230,13 @@
     </h4>
     <div id="share-comments" class="collapse">
       {# snippet copied from the django-comments list template #}
-      <dl class="well well-md">
+      <dl class="card card-body bg-body-tertiary mb-3">
         {% for comment in share_comments %}
           <dt
             {% if not forloop.first %}class="top-margin"{% endif %}
             id="c{{ comment.id }}"
           >
-            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+            <span class="bi bi-person-fill" aria-hidden="true"></span>
             &nbsp;{{ comment.user_name }}
           </dt>
           <dd>

@@ -7,30 +7,34 @@
     <div class="btn-group">
       <button
         type="button"
-        class="btn btn-default dropdown-toggle"
-        data-toggle="dropdown"
+        class="btn btn-light dropdown-toggle"
+        data-bs-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-        {{ user }} <span class="caret"></span>
+        <span class="bi bi-person-fill" aria-hidden="true"></span>
+        {{ user }}
       </button>
-      <ul class="dropdown-menu dropdown-menu-right">
+      <ul class="dropdown-menu dropdown-menu-end">
         {% if request.user.is_staff %}
           <li>
-            <a href="{% url 'admin:index' %}">{% blocktrans %}Django
-                admin{% endblocktrans %}</a>
+            <a
+              class="dropdown-item"
+              href="{% url 'admin:index' %}"
+            >{% blocktrans %}Django admin{% endblocktrans %}</a>
           </li>
-          <li role="separator" class="divider"></li>
+          <li><hr class="dropdown-divider" /></li>
         {% endif %}
         <li>
-          <a href="{% url 'password_change' %}">{% blocktrans %}Change
-              password{% endblocktrans %}</a>
+          <a
+            class="dropdown-item"
+            href="{% url 'password_change' %}"
+          >{% blocktrans %}Change password{% endblocktrans %}</a>
         </li>
-        <li role="separator" class="divider"></li>
+        <li><hr class="dropdown-divider" /></li>
         <li>
-          <a href="{% url 'logout' %}"><span
-              class="glyphicon glyphicon-log-out"
+          <a class="dropdown-item" href="{% url 'logout' %}"><span
+              class="bi bi-box-arrow-right"
               aria-hidden="true"
             ></span>
             {% blocktrans %}Sign out{% endblocktrans %}</a>
@@ -39,7 +43,7 @@
     </div>
   {% else %}
     {# Translators: Sign in link #}
-    <a class="btn btn-default" role="button" href="{% url 'login' %}">
+    <a class="btn btn-light" role="button" href="{% url 'login' %}">
       {% blocktrans %}Sign in{% endblocktrans %}</a>
     <a
       class="btn btn-primary"

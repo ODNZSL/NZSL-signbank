@@ -11,13 +11,13 @@
          toggle_edit();
 
          if (window.location.search.match('editrelforeign')) {
-             $('#relationsforeign').addClass('in');
+             $('#relationsforeign').addClass('show');
          }
          else if (window.location.search.match('editrel')) {
-             $('#relations').addClass('in');
+             $('#relations').addClass('show');
          }
          if (window.location.search.match('editmorphdef')) {
-             $('#morphology').addClass('in');
+             $('#morphology').addClass('show');
          }
 
      }
@@ -184,7 +184,7 @@ function configure_edit() {
     $.fn.editable.defaults['placeholder'] = '-';
     // save_button_text and cancel_button_text variables should exist in template (inside blocktrans tags)!
     $.fn.editable.defaults['submit'] = '<button class="btn btn-primary" type="submit">'+save_button_text+'</button>';
-    $.fn.editable.defaults['cancel'] = '<button class="btn btn-default" type="cancel">'+cancel_button_text+'</button>';
+    $.fn.editable.defaults['cancel'] = '<button class="btn btn-outline-secondary" type="cancel">'+cancel_button_text+'</button>';
     $.fn.editable.defaults['width'] = 'none';
     $.fn.editable.defaults['height'] = 'none';
     $.fn.editable.defaults['submitdata'] = {'csrfmiddlewaretoken': csrf_token};

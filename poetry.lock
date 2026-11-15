@@ -134,19 +134,22 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
-name = "django-bootstrap3"
-version = "21.2"
-description = "Bootstrap 3 support for Django projects"
+name = "django-bootstrap5"
+version = "25.3"
+description = "Bootstrap 5 for Django"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "django-bootstrap3-21.2.tar.gz", hash = "sha256:9a7e95a053455c15cdcbc5dc7f9261f9aecf01d0558435b59e7b364765f2c3e2"},
-    {file = "django_bootstrap3-21.2-py3-none-any.whl", hash = "sha256:845a53e0f68fd520e3df6d53686a641e5008329e492687e225a0c394941dd430"},
+    {file = "django_bootstrap5-25.3-py3-none-any.whl", hash = "sha256:3d381a5329a1439ac3237456c28cc8170c62b4c56ad3564d57876ffc3d4c5e78"},
+    {file = "django_bootstrap5-25.3.tar.gz", hash = "sha256:cc36f1a19d3200c0f5628c703320edb5c4e39e19bf17607fadf58ddb11828912"},
 ]
 
 [package.dependencies]
-Django = ">=2.2"
+django = ">=4.2"
+
+[package.extras]
+jinja = ["jinja2 (>=3.0,<4)"]
 
 [[package]]
 name = "django-contrib-comments"
@@ -693,4 +696,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "d8788523fc0b197d71af05366a1a50d06812662619fe06aba13dbe6591908572"
+content-hash = "c53185ed4e977ac41e1eb507b76c280532643bde7f265b40f2430ebcfa570bf1"

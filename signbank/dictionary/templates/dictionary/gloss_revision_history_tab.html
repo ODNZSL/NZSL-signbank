@@ -1,17 +1,27 @@
 {% load stylesheet %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load i18n %}
 {% load static %}
 {% load comments %}
 
 {# Tabs nav bar #}
 <ul class="nav nav-tabs" role="tablist" xmlns="http://www.w3.org/1999/html">
-  <li class="active">
-    <a href="#revision_history_history_tab" role="tab" data-toggle="tab"
+  <li class="nav-item" role="presentation">
+    <a
+      class="nav-link active"
+      href="#revision_history_history_tab"
+      role="tab"
+      data-bs-toggle="tab"
+      aria-selected="true"
     >Changes</a>
   </li>
-  <li>
-    <a href="#revision_history_comments_tab" role="tab" data-toggle="tab"
+  <li class="nav-item" role="presentation">
+    <a
+      class="nav-link"
+      href="#revision_history_comments_tab"
+      role="tab"
+      data-bs-toggle="tab"
+      aria-selected="false"
     >Comments</a>
   </li>
 </ul>
@@ -20,15 +30,15 @@
 <div class="tab-content">
   {# Tab: Revision History #}
   <div class="tab-pane active" id="revision_history_history_tab">
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr>
         <th>{% blocktrans %}Created:{% endblocktrans %}</th>
         <td id="created">
           {% if gloss.created_at %}<span
-              class="glyphicon glyphicon-time"
+              class="bi bi-clock"
               aria-hidden="true"
             ></span> <em>{{ gloss.created_at|date:'Y-m-d H:i' }}</em> <span
-              class="glyphicon glyphicon-user"
+              class="bi bi-person-fill"
               aria-hidden="true"
             ></span> {{ gloss.created_by.username }}{% endif %}
         </td>
@@ -37,9 +47,9 @@
         <th>{% blocktrans %}Updated:{% endblocktrans %}</th>
         <td id="updated">
           {% if gloss.updated_at %}
-            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            <span class="bi bi-clock" aria-hidden="true"></span>
             <em>{{ gloss.updated_at|date:'Y-m-d H:i' }}</em> <span
-              class="glyphicon glyphicon-user"
+              class="bi bi-person-fill"
               aria-hidden="true"
             ></span> {{ gloss.updated_by.username }}
             {% if request.user.is_staff %}
@@ -52,7 +62,7 @@
                 </h4>
               </div>
               <div>
-                <table class="table table-condensed">
+                <table class="table table-sm">
                   <tr>
                     <th>{% blocktrans %}User{% endblocktrans %}</th>
                     <th>{% blocktrans %}Time{% endblocktrans %}</th>
@@ -101,7 +111,7 @@
     {% get_comment_count for gloss as comment_count %}
     <div id="gloss-comments">
       <h4>{% blocktrans %}Comments{% endblocktrans %} ({{ comment_count }})</h4>
-      <div class="well well-md">
+      <div class="card card-body bg-body-tertiary mb-3">
         {% render_comment_list for gloss %}
       </div>
     </div>

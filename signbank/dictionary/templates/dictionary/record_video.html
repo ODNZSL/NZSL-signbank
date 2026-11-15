@@ -3,7 +3,7 @@
 
 <div id="upload_recorded_vid">
   <!--
-  <button type="button" class="btn btn-info navbar-btn" id="btn-record-video" data-toggle="modal" data-target="#record-video-Modal">{% blocktrans %}Record a video{% endblocktrans %}</button>
+  <button type="button" class="btn btn-info" id="btn-record-video" data-bs-toggle="modal" data-bs-target="#record-video-Modal">{% blocktrans %}Record a video{% endblocktrans %}</button>
   -->
   <!-- Modal -->
   <div
@@ -16,19 +16,18 @@
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <button
-            type="button"
-            class="close"
-            data-dismiss="modal"
-            aria-label="Close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
           <h4 class="modal-title" id="record-video-ModalLabel">
             {% blocktrans %}Record a video for{% endblocktrans %}
-            <span class="label label-default">{{ gloss.dataset }}</span>
+            <span class="badge text-bg-secondary">{{ gloss.dataset }}</span>
             {{ gloss.idgloss }}
           </h4>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          >
+          </button>
         </div>
         <div class="modal-body">
           <section class="recordrtc">
@@ -45,18 +44,18 @@
             </div>
 
             <div
-              class="embed-responsive embed-responsive-16by9"
+              class="ratio ratio-16x9"
               style="margin-top: 10px"
             >
               <video class="rtcvideo" controls muted></video>
             </div>
           </section>
         </div>
-        <div class="modal-footer" style="text-align: center">
+        <div class="modal-footer justify-content-center">
           <button
             type="button"
-            class="btn btn-default"
-            data-dismiss="modal"
+            class="btn btn-outline-secondary"
+            data-bs-dismiss="modal"
             onClick="window.location.reload()"
           >
             {% blocktrans %}Close{% endblocktrans %}
@@ -68,7 +67,7 @@
   <!--Modal ends -->
   <script>
     // Reload this modal when closed, so that the uploaded videos appear on the page.
-    $('#record-video-Modal').on('hidden.bs.modal', function (e) {
+    document.getElementById('record-video-Modal').addEventListener('hidden.bs.modal', function (e) {
         location.reload();
     })
   </script>

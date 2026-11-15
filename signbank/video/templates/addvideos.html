@@ -1,6 +1,6 @@
 {% extends "baselayout.html" %}
 {% load i18n %}
-{% block bootstrap3_title %}{% blocktrans %}Upload Videos{% endblocktrans %} |
+{% block title %}{% blocktrans %}Upload Videos{% endblocktrans %} |
 {% endblock %}
 
 {% block extrahead %}
@@ -24,9 +24,10 @@
   </script>
 {% endblock %}
 {% block content %}
-  <div class="page-header">
+  <div class="border-bottom pb-2 mb-4">
     <h2>
       {% blocktrans %}Upload videos{% endblocktrans %} <small
+        class="text-body-secondary"
       >{% blocktrans %}You can select multiple videos to be uploaded at
           once{% endblocktrans %}</small>
     </h2>

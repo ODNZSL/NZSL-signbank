@@ -33,7 +33,7 @@ from .dictionary.admin import TagAdminInline, TagListFilter
 class CommentTagForm(forms.Form):
     """Form for tags, meant to be used when adding tags to Comments."""
     tag = forms.ModelChoiceField(queryset=tags_for_selection(Comment), required=False, empty_label="---", to_field_name='name',
-                                 widget=forms.Select(attrs={'class': 'form-control'}), label=_lazy('Tag'))
+                                 widget=forms.Select(attrs={'class': 'form-select'}), label=_lazy('Tag'))
 
 
 def edit_comment(request, id):
@@ -69,7 +69,7 @@ def bind_comment(request, comment):
 
 class EditCommentForm(ModelForm):
     tag = forms.ModelChoiceField(queryset=tags_for_selection(Comment), required=False, empty_label="---", to_field_name='name',
-                                 widget=forms.Select(attrs={'class': 'form-control'}), label=_lazy('Tag'))
+                                 widget=forms.Select(attrs={'class': 'form-select'}), label=_lazy('Tag'))
 
     class Meta:
         model = Comment

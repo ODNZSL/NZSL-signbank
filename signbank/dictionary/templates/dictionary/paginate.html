@@ -1,20 +1,22 @@
 {% if page_obj.paginator.num_pages > 1 %}
-  <ul class="pagination pagination-sm">
+  <ul class="pagination pagination-sm flex-wrap">
     {% if page_obj.has_previous %}
-      <li>
+      <li class="page-item">
         <a
+          class="page-link"
           href="?page={{ page_obj.previous_page_number }}{% for key,values in request.GET.lists %}{% if key != 'page' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}"
         >&laquo;</a>
       </li>
     {% endif %}
     {% if page_obj.number > 10 %}
-      <li><a>...</a></li>
+      <li class="page-item disabled"><span class="page-link">...</span></li>
     {% endif %}
 
     {% for p in page_obj.paginator.page_range %}
       {% if p < page_obj.number|add:"10" and p > page_obj.number|add:"-10" %}
-        <li {% if p == page_obj.number %}class="active"{% endif %}>
+        <li class="page-item{% if p == page_obj.number %} active{% endif %}">
           <a
+            class="page-link"
             href="?page={{ p }}{% for key,values in request.GET.lists %}{% if not key == 'page' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}"
           >{% if p == 0 %}Start{% else %}{{ p }}{% endif %}</a>
         </li>
@@ -22,17 +24,19 @@
     {% endfor %}
 
     {% if page_obj.paginator.num_pages > page_obj.number|add:"10" %}
-      <li><a>...</a></li>
-      <li>
+      <li class="page-item disabled"><span class="page-link">...</span></li>
+      <li class="page-item">
         <a
+          class="page-link"
           href="?page={{ page_obj.paginator.num_pages }}{% for key,values in request.GET.lists %}{% if not key == 'page' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}"
         >{{ page_obj.paginator.num_pages }}</a>
       </li>
     {% endif %}
 
     {% if page_obj.has_next %}
-      <li>
+      <li class="page-item">
         <a
+          class="page-link"
           href="?page={{ page_obj.next_page_number }}{% for key,values in request.GET.lists %}{% if not key == 'page' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}"
         >&raquo;</a>
       </li>

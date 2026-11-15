@@ -270,7 +270,8 @@ those in emails) to have the correct hostname.
 ### Assets
 
 This project has a mixture of assets that are built into the source tree (things
-like Bootstrap 3, and a range of older jQuery plugins), and dependencies from
+like Bootstrap 5 and Bootstrap Icons, copied in from `node_modules` by
+`npm run collectcss`, and a range of older jQuery plugins), and dependencies from
 package.json (like jQuery and recordrtc). This is useful to know, since
 depending on the feature, a developer might be referencing either or both of
 these sources.
