@@ -1,9 +1,8 @@
 {% extends 'baselayout.html' %}
 {% load stylesheet %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load i18n %}
-{% block bootstrap3_title %}{% blocktrans %}Confirm Import
-    CSV{% endblocktrans %} |
+{% block title %}{% blocktrans %}Confirm Import CSV{% endblocktrans %} |
 {% endblock %}
 
 {% block content %}
@@ -11,7 +10,7 @@
     {% if glosses_new %}
       <h3>
         {% blocktrans %}Glosses to be added to{% endblocktrans %} <span
-          class="label label-default"
+          class="badge text-bg-secondary"
         >{{ dataset }}</span>
       </h3>
       <p>
@@ -36,7 +35,7 @@
       <h3>
         {% blocktrans %}Glosses that will not be added because they already
           exist in{% endblocktrans %} <span
-          class="label label-default"
+          class="badge text-bg-secondary"
         >{{ dataset }}</span>
       </h3>
       <ul>
@@ -79,7 +78,7 @@
     {% if glosses_added %}
       <h3>
         {% blocktrans %}The following glosses were added to{% endblocktrans %}
-        <span class="label label-default">{{ dataset }}</span>
+        <span class="badge text-bg-secondary">{{ dataset }}</span>
       </h3>
       <table class="table">
         <th>Gloss</th>

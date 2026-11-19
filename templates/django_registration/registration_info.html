@@ -3,36 +3,28 @@
   {% blocktrans %}Frequently asked questions about account
     creation{% endblocktrans %}
 </h4>
-<div
-  class="panel-group"
-  id="accordion"
-  role="tablist"
-  aria-multiselectable="true"
->
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingOne">
-      <h4 class="panel-title">
-        <a
-          class="collapsed"
-          role="button"
-          data-toggle="collapse"
-          data-parent="#accordion"
-          href="#collapseOne"
-          aria-expanded="false"
-          aria-controls="collapseOne"
-        >
-          {% blocktrans %}Who can create an account?{% endblocktrans %}
-        </a>
-      </h4>
-    </div>
+<div class="accordion" id="accordion">
+  <div class="accordion-item">
+    <h4 class="accordion-header" id="headingOne">
+      <button
+        class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseOne"
+        aria-expanded="false"
+        aria-controls="collapseOne"
+      >
+        {% blocktrans %}Who can create an account?{% endblocktrans %}
+      </button>
+    </h4>
     <div
       id="collapseOne"
-      class="panel-collapse collapse"
-      role="tabpanel"
+      class="accordion-collapse collapse"
       aria-labelledby="headingOne"
+      data-bs-parent="#accordion"
     >
-      <div class="panel-body">
-        <p class="bg-danger">
+      <div class="accordion-body">
+        <p class="bg-danger-subtle p-2">
           {% blocktrans %}Only create an account if you have been in contact
             with the staff beforehand.{% endblocktrans %}
         </p>
@@ -47,29 +39,26 @@
       </div>
     </div>
   </div>
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingTwo">
-      <h4 class="panel-title">
-        <a
-          class="collapsed"
-          role="button"
-          data-toggle="collapse"
-          data-parent="#accordion"
-          href="#collapseTwo"
-          aria-expanded="false"
-          aria-controls="collapseTwo"
-        >
-          {% blocktrans %}What can you do with an account?{% endblocktrans %}
-        </a>
-      </h4>
-    </div>
+  <div class="accordion-item">
+    <h4 class="accordion-header" id="headingTwo">
+      <button
+        class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseTwo"
+        aria-expanded="false"
+        aria-controls="collapseTwo"
+      >
+        {% blocktrans %}What can you do with an account?{% endblocktrans %}
+      </button>
+    </h4>
     <div
       id="collapseTwo"
-      class="panel-collapse collapse"
-      role="tabpanel"
-      aria-labelledby="headingOne"
+      class="accordion-collapse collapse"
+      aria-labelledby="headingTwo"
+      data-bs-parent="#accordion"
     >
-      <div class="panel-body">
+      <div class="accordion-body">
         <p>
           {% blocktrans %}Depending on the level of user permissions, you can
             see more detailed data about glosses, add data, and edit
@@ -84,29 +73,26 @@
       </div>
     </div>
   </div>
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingThree">
-      <h4 class="panel-title">
-        <a
-          class="collapsed"
-          role="button"
-          data-toggle="collapse"
-          data-parent="#accordion"
-          href="#collapseThree"
-          aria-expanded="false"
-          aria-controls="collapseThree"
-        >
-          {% blocktrans %}How to gain user permissions?{% endblocktrans %}
-        </a>
-      </h4>
-    </div>
+  <div class="accordion-item">
+    <h4 class="accordion-header" id="headingThree">
+      <button
+        class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseThree"
+        aria-expanded="false"
+        aria-controls="collapseThree"
+      >
+        {% blocktrans %}How to gain user permissions?{% endblocktrans %}
+      </button>
+    </h4>
     <div
       id="collapseThree"
-      class="panel-collapse collapse"
-      role="tabpanel"
+      class="accordion-collapse collapse"
       aria-labelledby="headingThree"
+      data-bs-parent="#accordion"
     >
-      <div class="panel-body">
+      <div class="accordion-body">
         <ul>
           <li>
             {% blocktrans %}You can apply for permissions to view more detailed

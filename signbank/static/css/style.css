@@ -1,3 +1,296 @@
+/*
+ * ==== Bootstrap 3 look ====================================================
+ * Keeps the site looking the way it did under Bootstrap 3 now that it runs on
+ * Bootstrap 5: 14px base text, the old colours, white "default" buttons, bold
+ * form labels, hover-only link underlines and the old heading spacing.
+ *
+ * Everything down to "End of Bootstrap 3 look" is cosmetic. Deleting that block
+ * gives the stock Bootstrap 5 look without breaking layout.
+ */
+
+/* ---- Base type and colours ------------------------------------------- */
+html {
+    /* Bootstrap 3 used a 14px base; Bootstrap 5 sizes everything in rem. */
+    font-size: 87.5%;
+}
+:root {
+    --bs-body-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --bs-body-line-height: 1.42857;
+    --bs-body-color: #333;
+    --bs-body-color-rgb: 51, 51, 51;
+    --bs-border-color: #ddd;
+    --bs-border-radius: 4px;
+    --bs-tertiary-bg: #f5f5f5;
+    --bs-tertiary-bg-rgb: 245, 245, 245;
+
+    --bs-primary: #337ab7;
+    --bs-primary-rgb: 51, 122, 183;
+    --bs-secondary: #777;
+    --bs-secondary-rgb: 119, 119, 119;
+    --bs-success: #5cb85c;
+    --bs-success-rgb: 92, 184, 92;
+    --bs-info: #5bc0de;
+    --bs-info-rgb: 91, 192, 222;
+    --bs-warning: #f0ad4e;
+    --bs-warning-rgb: 240, 173, 78;
+    --bs-danger: #d9534f;
+    --bs-danger-rgb: 217, 83, 79;
+
+    --bs-link-color: #337ab7;
+    --bs-link-color-rgb: 51, 122, 183;
+    --bs-link-hover-color: #23527c;
+    --bs-link-hover-color-rgb: 35, 82, 124;
+
+    /* Contextual backgrounds: alerts, coloured card headers. */
+    --bs-success-bg-subtle: #dff0d8;
+    --bs-success-border-subtle: #d6e9c6;
+    --bs-success-text-emphasis: #3c763d;
+    --bs-info-bg-subtle: #d9edf7;
+    --bs-info-border-subtle: #bce8f1;
+    --bs-info-text-emphasis: #31708f;
+    --bs-warning-bg-subtle: #fcf8e3;
+    --bs-warning-border-subtle: #faebcc;
+    --bs-warning-text-emphasis: #8a6d3b;
+    --bs-danger-bg-subtle: #f2dede;
+    --bs-danger-border-subtle: #ebccd1;
+    --bs-danger-text-emphasis: #a94442;
+}
+
+/* ---- Links: underline on hover only ---------------------------------- */
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+.btn:hover,
+.btn-close:hover,
+.nav-link:hover,
+.dropdown-item:hover,
+.page-link:hover {
+    text-decoration: none;
+}
+
+/* ---- Headings and paragraphs ----------------------------------------- */
+h1, h2, h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+h4, h5, h6 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+/* The templates use h4-h6 as compact section labels. */
+h4, .h4 {
+    font-size: 1.286rem;
+}
+h5, .h5 {
+    font-size: 1rem;
+}
+h6, .h6 {
+    font-size: 0.857rem;
+}
+/* Secondary text inside a heading. */
+h1 small, h2 small, h3 small {
+    font-size: 65%;
+    font-weight: 400;
+    color: #777 !important;
+}
+h4 small, h5 small, h6 small {
+    font-size: 75%;
+    font-weight: 400;
+    color: #777 !important;
+}
+.card-title,
+.modal-title,
+.accordion-header {
+    margin-top: 0;
+}
+p {
+    margin-bottom: 10px;
+}
+
+/* ---- Forms ------------------------------------------------------------ */
+label {
+    font-weight: 700;
+}
+.form-check-label,
+.input-group-text,
+label.btn {
+    font-weight: 400;
+}
+.form-control,
+.form-select {
+    border-color: #ccc;
+}
+.input-group-text {
+    background-color: #eee;
+    border-color: #ccc;
+}
+/* Bootstrap 5 draws its own checkboxes with a very pale border; keep the box
+   edge at 3:1 against white like the native controls it replaces. */
+.form-check-input {
+    border-color: #767676;
+}
+.form-check-input:checked {
+    background-color: #337ab7;
+    border-color: #337ab7;
+}
+
+/* ---- Keyboard focus ---------------------------------------------------- */
+/* Bootstrap 5 swaps the browser focus outline for a faint translucent glow.
+   Keep the browser outline, as Bootstrap 3 did. */
+.btn:focus-visible,
+.btn-close:focus-visible,
+.nav-link:focus-visible,
+.page-link:focus-visible,
+.accordion-button:focus-visible,
+.navbar-toggler:focus-visible,
+.form-check-input:focus-visible {
+    outline: 5px auto Highlight;
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+.form-check-input:focus-visible {
+    outline-offset: 2px;
+}
+
+/* ---- Buttons ----------------------------------------------------------- */
+/* Bootstrap 3's white "default" button. */
+.btn-outline-secondary,
+.btn-light {
+    --bs-btn-color: #333;
+    --bs-btn-bg: #fff;
+    --bs-btn-border-color: #ccc;
+    --bs-btn-hover-color: #333;
+    --bs-btn-hover-bg: #e6e6e6;
+    --bs-btn-hover-border-color: #adadad;
+    --bs-btn-active-color: #333;
+    --bs-btn-active-bg: #e6e6e6;
+    --bs-btn-active-border-color: #adadad;
+    --bs-btn-disabled-color: #333;
+    --bs-btn-disabled-bg: #fff;
+    --bs-btn-disabled-border-color: #ccc;
+    --bs-btn-focus-shadow-rgb: 173, 173, 173;
+}
+.btn-primary {
+    --bs-btn-bg: #337ab7;
+    --bs-btn-border-color: #2e6da4;
+    --bs-btn-hover-bg: #286090;
+    --bs-btn-hover-border-color: #204d74;
+    --bs-btn-active-bg: #286090;
+    --bs-btn-active-border-color: #204d74;
+    --bs-btn-disabled-bg: #337ab7;
+    --bs-btn-disabled-border-color: #2e6da4;
+    --bs-btn-focus-shadow-rgb: 51, 122, 183;
+}
+.btn-success {
+    --bs-btn-bg: #5cb85c;
+    --bs-btn-border-color: #4cae4c;
+    --bs-btn-hover-bg: #449d44;
+    --bs-btn-hover-border-color: #398439;
+    --bs-btn-active-bg: #449d44;
+    --bs-btn-active-border-color: #398439;
+}
+.btn-info {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #5bc0de;
+    --bs-btn-border-color: #46b8da;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #31b0d5;
+    --bs-btn-hover-border-color: #269abc;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #31b0d5;
+    --bs-btn-active-border-color: #269abc;
+}
+.btn-warning {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #f0ad4e;
+    --bs-btn-border-color: #eea236;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #ec971f;
+    --bs-btn-hover-border-color: #d58512;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #ec971f;
+    --bs-btn-active-border-color: #d58512;
+}
+.btn-danger {
+    --bs-btn-bg: #d9534f;
+    --bs-btn-border-color: #d43f3a;
+    --bs-btn-hover-bg: #c9302c;
+    --bs-btn-hover-border-color: #ac2925;
+    --bs-btn-active-bg: #c9302c;
+    --bs-btn-active-border-color: #ac2925;
+}
+
+/* ---- Badges (Bootstrap 3 labels had white text in every colour) ------- */
+.text-bg-info,
+.text-bg-warning {
+    color: #fff !important;
+}
+
+/* ---- Navigation -------------------------------------------------------- */
+.navbar {
+    --bs-navbar-color: #777;
+    --bs-navbar-hover-color: #333;
+    --bs-navbar-active-color: #555;
+}
+.nav-pills {
+    --bs-nav-pills-link-active-bg: #337ab7;
+}
+.pagination {
+    --bs-pagination-active-bg: #337ab7;
+    --bs-pagination-active-border-color: #337ab7;
+}
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: #337ab7;
+}
+
+/* ---- Cards (were panels) ---------------------------------------------- */
+.card {
+    --bs-card-border-color: #ddd;
+    --bs-card-cap-bg: #f5f5f5;
+    --bs-card-cap-padding-y: 10px;
+    --bs-card-cap-padding-x: 15px;
+    --bs-card-spacer-y: 15px;
+    --bs-card-spacer-x: 15px;
+}
+/* Panel titles were 16px, and the links that expand a panel were plain text. */
+.card-header .card-title {
+    font-size: 16px !important;
+}
+.card-header a[data-bs-toggle="collapse"] {
+    color: inherit;
+}
+
+/* ---- Coloured table rows and list items -------------------------------- */
+.table-success {
+    --bs-table-bg: #dff0d8;
+}
+.table-info {
+    --bs-table-bg: #d9edf7;
+}
+.table-warning {
+    --bs-table-bg: #fcf8e3;
+}
+.table-danger {
+    --bs-table-bg: #f2dede;
+}
+.list-group-item-success {
+    --bs-list-group-bg: #dff0d8;
+    --bs-list-group-color: #3c763d;
+}
+.list-group-item-warning {
+    --bs-list-group-bg: #fcf8e3;
+    --bs-list-group-color: #8a6d3b;
+}
+.list-group-item-danger {
+    --bs-list-group-bg: #f2dede;
+    --bs-list-group-color: #a94442;
+}
+
+/* ==== End of Bootstrap 3 look ============================================= */
+
 html,
 body {
     height: 100%;

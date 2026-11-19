@@ -1,8 +1,8 @@
 {% extends "baselayout.html" %}
 {% load i18n %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load static %}
-{% block bootstrap3_title %}{% blocktrans %}Search Signs{% endblocktrans %} |
+{% block title %}{% blocktrans %}Search Signs{% endblocktrans %} |
 {% endblock %}
 {% block extrajs %}
   <script src='{% static "js/mark.min.js" %}'></script>
@@ -41,26 +41,26 @@
 {% endblock %}
 {% block content %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-lg-12">
       <h3>
         {% blocktrans %}Search signs{% endblocktrans %}
         <button
           class="btn btn-primary"
           type="button"
-          data-toggle="collapse"
-          data-target="#collapseHelp"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseHelp"
           aria-expanded="false"
           aria-controls="collapseHelp"
         >
           {% blocktrans %}Help{% endblocktrans %} <span
-            class="glyphicon glyphicon-question-sign"
+            class="bi bi-question-circle-fill"
             aria-hidden="true"
           ></span>
         </button>
       </h3>
 
       <div class="collapse" id="collapseHelp">
-        <div class="well well-sm">
+        <div class="card card-body bg-body-tertiary p-2 mb-3">
           <section>
             <header>
               <h4>
@@ -78,7 +78,7 @@
                 <img
                   src="{% if LANGUAGE_CODE == 'fi' %}{{ ins_small_fi }}{% else %}{{ ins_en }}{% endif %}"
                   alt="{% blocktrans %}Instructions for how to use the search page.{% endblocktrans %}"
-                  class="img-responsive img-thumbnail"
+                  class="img-fluid img-thumbnail"
                 />
               </a>
             </p>
@@ -86,11 +86,11 @@
         </div>
       </div>
       <strong>{% blocktrans %}Browse glosses:{% endblocktrans %}</strong>
-      <div class="btn-group" role="group" aria-label="Browse">
+      <div class="btn-group flex-wrap" role="group" aria-label="Browse">
         {% for letter in first_letters %}
           <a
             role="button"
-            class="btn btn-default"
+            class="btn btn-outline-secondary"
             href="?gloss={{ letter.0|urlencode }}{% if request.GET.lang %}&lang={{ request.GET.lang|urlencode }}{% endif %}{% if request.GET.dataset %}{% for ds in datasets %}&dataset={{ ds|urlencode }}{% endfor %}{% endif %}"
           >{{ letter.0 }}</a>
         {% empty %}
@@ -101,24 +101,16 @@
 
       {% if signlanguage_count and signlanguage_count > 1 %}
         <ul class="nav nav-pills" style="background-color: #fcfdff">
-          <li
-            role="presentation"
-            {% if 'lang' not in request.GET or request.GET.lang == '' %}
-              class="active"
-            {% endif %}
-          >
+          <li class="nav-item" role="presentation">
             <a
+              class="nav-link{% if 'lang' not in request.GET or request.GET.lang == '' %} active{% endif %}"
               href="?lang=&gloss={{ request.GET.gloss|urlencode }}&keyword={{ request.GET.keyword|urlencode }}"
             >{% blocktrans %}All sign languages{% endblocktrans %}</a>
           </li>
           {% for signlang in signlanguages %}
-            <li
-              role="presentation"
-              {% if request.GET.lang == signlang.language_code_3char %}
-                class="active"
-              {% endif %}
-            >
+            <li class="nav-item" role="presentation">
               <a
+                class="nav-link{% if request.GET.lang == signlang.language_code_3char %} active{% endif %}"
                 href="?lang={{ signlang.language_code_3char|urlencode }}&gloss={{ request.GET.gloss|urlencode }}&keyword={{ request.GET.keyword|urlencode }}"
               >{{ signlang.name }}</a>
             </li>
@@ -127,8 +119,8 @@
       {% endif %}
 
       {# Search form #}
-      <div class="panel panel-default">
-        <div class="panel-body">
+      <div class="card mb-3">
+        <div class="card-body">
           <form
             action="{% url 'dictionary:public_gloss_list' %}"
             method="get"
@@ -141,42 +133,39 @@
                 value="{{ request.GET.lang|urlencode }}"
               />
             {% endif %}
-            {% bootstrap_field searchform.gloss bound_css_class="not-bound" %}
-            {% bootstrap_field searchform.keyword bound_css_class="not-bound" %}
-            <div class="form-group">
-              {% bootstrap_label searchform.dataset.label label_for="id_dataset" label_class="control-label" %}
+            {% bootstrap_field searchform.gloss server_side_validation=False %}
+            {% bootstrap_field searchform.keyword server_side_validation=False %}
+            <div class="mb-3">
+              {% bootstrap_label searchform.dataset.label label_for="id_dataset" label_class="form-label" %}
               <div id="id_dataset">
                 {% for checkbox in searchform.dataset %}{# Doing this manually so that we can add 'span label'. #}
-                  <div
-                    class="checkbox"
-                    style="display: inline-block; margin-top: 0px"
-                  >
-                    <label for="{{ checkbox.id_for_label }}">
+                  <div class="d-inline-block me-2">
+                    <label class="fw-normal" for="{{ checkbox.id_for_label }}">
                       {{ checkbox.tag }} <span
-                        class="dataset-{{ checkbox.data.value }}-color label label-default"
+                        class="dataset-{{ checkbox.data.value }}-color badge badge-dataset"
                       >{{ checkbox.choice_label }}</span></label>
                   </div>
                 {% endfor %}
-                <div class="help-block hidden-xs" style="display: inline-block">
+                <div class="form-text d-none d-md-inline-block">
                   {{ searchform.dataset.help_text }}
                 </div>
                 <div style="display: inline-block">
                   <button
                     class="btn btn-primary"
                     type="button"
-                    data-toggle="collapse"
-                    data-target="#collapseHelpLexicon"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseHelpLexicon"
                     aria-expanded="false"
                     aria-controls="collapseHelpLexicon"
                   >
                     {% blocktrans %}Lexicons{% endblocktrans %} <span
-                      class="glyphicon glyphicon-question-sign"
+                      class="bi bi-question-circle-fill"
                       aria-hidden="true"
                     ></span>
                   </button>
                 </div>
                 <div class="collapse" id="collapseHelpLexicon">
-                  <div class="well well-sm">
+                  <div class="card card-body bg-body-tertiary p-2 mb-3">
                     <section>
                       <header>
                         <h4>
@@ -189,7 +178,7 @@
                           <header>
                             <h5>
                               <strong><span
-                                  class="dataset-{{ lexicon.id }}-color label label-default"
+                                  class="dataset-{{ lexicon.id }}-color badge badge-dataset"
                                 >{{ lexicon.public_name }}</span></strong>
                             </h5>
                           </header>
@@ -231,33 +220,33 @@
     </div>
   </div>
   <div class="container-fluid">
-    <div class="pagination">
+    <nav>
       {% include "dictionary/paginate.html" %}
-    </div>
+    </nav>
     <div class="row">
       {% for obj in object_list %}
-        <div class="col-md-3 col-sm-6 col-xs-12 col-public-list">
-          <div class="panel panel-default">
-            <div class="panel-heading">
+        <div class="col-lg-3 col-md-6 col-12 col-public-list">
+          <div class="card mb-3">
+            <div class="card-header">
               <div class="row">
-                <div class="col-md-12">
+                <div class="col-lg-12">
                   <a
-                    class="btn-block"
+                    class="d-block"
                     href="{{ obj.get_public_absolute_url }}"
                   ><h3
-                      class="panel-title gloss-idgloss"
+                      class="card-title fs-6 mb-0 gloss-idgloss"
                       style="text-align: center"
                     >
                       {{ obj }}
                     </h3>
                     <span style="color: black"><span
-                        class="glyphicon glyphicon-film"
+                        class="bi bi-film"
                         aria-hidden="true"
                         title='{% blocktrans context "videocount" %}Videos{% endblocktrans %}'
                       ></span>
                       {{ obj.glossvideo_set.count }}</span>
                     <span
-                      class="dataset-{{ obj.dataset.id }}-color label label-default"
+                      class="dataset-{{ obj.dataset.id }}-color badge badge-dataset"
                       style="float: right; margin-top: 2px"
                     >{{ obj.dataset.public_name }}</span>
                   </a>
@@ -265,7 +254,7 @@
               </div>
             </div>
             <div
-              class="panel-body embed-responsive embed-responsive-16by9"
+              class="card-body ratio ratio-16x9 p-0"
               {% if obj.glossvideo_set.all.count > 0 %}
                 style="background-color: rgb(33, 33, 33)"
               {% endif %}
@@ -293,7 +282,7 @@
                     <img
                       src="{{ glossvideo.get_absolute_url }}"
                       alt="{{ glossvideo.gloss.idgloss }}"
-                      class="img-responsive"
+                      class="object-fit-contain"
                     />
                   {% endif %}
                 {% else %}
@@ -301,7 +290,7 @@
                 {% endif %}
               {% endwith %}
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
               {% for glosstranslations in obj.glosstranslations_set.all %}
                 <h5>
                   <strong>{% blocktrans context "publicglosslist" %}Translation
@@ -318,19 +307,14 @@
             </div>
           </div>
         </div>
-        {# These are used to fox horizontal alignment for grid. #}
-        {% if forloop.counter|divisibleby:"4" %}<div class="clearfix visible-lg-block visible-md-block">
-          </div>{% endif %}
-        {% if forloop.counter|divisibleby:"2" %}<div class="clearfix visible-sm-block">
-          </div>{% endif %}
       {% empty %}
-        <div class="col-md-12">
+        <div class="col-lg-12">
           <p><em>{% blocktrans %}No results.{% endblocktrans %}</em></p>
         </div>
       {% endfor %}
     </div>
-    <div class="pagination">
+    <nav>
       {% include "dictionary/paginate.html" %}
-    </div>
+    </nav>
   </div>
 {% endblock %}

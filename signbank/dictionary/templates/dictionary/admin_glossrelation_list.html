@@ -1,10 +1,9 @@
 {% extends "baselayout.html" %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load i18n %}
 {% load static %}
 {# Translators: Title for GlossRelation search page #}
-{% block bootstrap3_title %}{% blocktrans %}Search Gloss
-    Relations{% endblocktrans %} |
+{% block title %}{% blocktrans %}Search Gloss Relations{% endblocktrans %} |
 {% endblock %}
 {% block extrahead %}
   <link
@@ -61,19 +60,19 @@
 {% block content %}
   {# Translators: admin_gloss_list header #}
   <h2>{% blocktrans %}Search Relations of Glosses{% endblocktrans %}</h2>
-  <div id="searchformwell" class="well well-sm">
+  <div id="searchformwell" class="card card-body p-2 mb-3">
     <form name="adminsearch" id="adminsearch">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-md-2 col-sm-6 searchinput">
+          <div class="col-lg-2 col-md-6 searchinput">
             {% bootstrap_label searchform.dataset.label %}
-            {% bootstrap_field searchform.dataset show_label=False bound_css_class="not-bound" %}
+            {% bootstrap_field searchform.dataset show_label=False wrapper_class="mb-0" server_side_validation=False %}
           </div>
-          <div class="col-md-5 col-sm-6 searchinput">
-            <div class="col-md-12 searchinput">
+          <div class="col-lg-5 col-md-6 searchinput">
+            <div class="col-lg-12 searchinput">
               <div class="input-group">
                 <label
-                  class="input-group-addon"
+                  class="input-group-text"
                   for="id_search"
                 >{{ searchform.search.label }}</label>
                 <input
@@ -88,10 +87,10 @@
               </div>
             </div>
 
-            <div class="col-md-12 searchinput">
+            <div class="col-lg-12 searchinput">
               <div class="input-group">
                 <label
-                  class="input-group-addon"
+                  class="input-group-text"
                   for="id_glossrelation_source"
                 >{{ searchform.source.label }}</label>
                 <input
@@ -105,10 +104,10 @@
                 />
               </div>
             </div>
-            <div class="col-md-12 searchinput">
+            <div class="col-lg-12 searchinput">
               <div class="input-group">
                 <label
-                  class="input-group-addon"
+                  class="input-group-text"
                   for="id_glossrelation_target"
                 >{{ searchform.target.label }}</label>
                 <input
@@ -123,14 +122,14 @@
               </div>
             </div>
           </div>
-          <div class="col-md-5 col-sm-6 searchinput">
-            <div class="col-md-12 searchinput">
+          <div class="col-lg-5 col-md-6 searchinput">
+            <div class="col-lg-12 searchinput">
               <div class="input-group">
                 <label
-                  class="input-group-addon"
+                  class="input-group-text"
                   for="id_tags"
                 >{{ searchform.tags.label }}</label>
-                {% bootstrap_field searchform.tags show_label=False bound_css_class="not-bound" %}
+                {% bootstrap_field searchform.tags show_label="skip" wrapper_class="flex-grow-1" server_side_validation=False %}
               </div>
             </div>
           </div>
@@ -145,18 +144,18 @@
           value='{% blocktrans context "search-button" %}Search{% endblocktrans %}'
         />
         <input
-          class="btn btn-default"
+          class="btn btn-outline-secondary"
           type="submit"
           onclick="clearForm(document.adminsearch)"
           value="{% blocktrans %}Reset{% endblocktrans %}"
         />
       </div>
 
-      <div class="form-group" id="paginate_by">
+      <div class="mb-3" id="paginate_by">
         {# Translators: How many results to fit per page  #}
         <label for="paginate_by">{% blocktrans %}Results per
             page{% endblocktrans %}</label>
-        <select class="form-control" name="paginate_by">
+        <select class="form-select" name="paginate_by">
           <option {% if paginator.per_page == 1000 %}selected{% endif %}>
             1000
           </option>
@@ -183,7 +182,7 @@
     <nav aria-label="{% blocktrans %}Page navigation top{% endblocktrans %}">
       {% include "dictionary/paginate.html" %}
     </nav>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <thead>
         <tr>
           <th>
@@ -191,7 +190,7 @@
               href="?search={{ request.GET.search|urlencode }}{% for key,values in request.GET.lists %}{% if not key  == 'search' and not key == 'order' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}{% if order == 'source' or request.GET.order == 'source' %}&order=-source{% else %}&order=source{% endif %}"
             >
               <span
-                class='{% if request.GET.order == "-source" %}glyphicon glyphicon-sort-by-alphabet{% else %}glyphicon glyphicon-sort-by-alphabet-alt{% endif %}'
+                class='{% if request.GET.order == "-source" %}bi bi-sort-alpha-down{% else %}bi bi-sort-alpha-down-alt{% endif %}'
                 aria-hidden="true"
               ></span></a>
           </th>
@@ -200,7 +199,7 @@
               href="?search={{ request.GET.search|urlencode }}{% for key,values in request.GET.lists %}{% if not key  == 'search' and not key == 'order' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}{% if order == 'target' or request.GET.order == 'target' %}&order=-target{% else %}&order=target{% endif %}"
             >
               <span
-                class='{% if request.GET.order == "-target" %}glyphicon glyphicon-sort-by-alphabet{% else %}glyphicon glyphicon-sort-by-alphabet-alt{% endif %}'
+                class='{% if request.GET.order == "-target" %}bi bi-sort-alpha-down{% else %}bi bi-sort-alpha-down-alt{% endif %}'
                 aria-hidden="true"
               ></span></a>
           </th>
@@ -213,7 +212,7 @@
           <tr>
             <td>
               <span
-                class="dataset-{{ glossrelation.source.dataset.id }}-color label label-default"
+                class="dataset-{{ glossrelation.source.dataset.id }}-color badge badge-dataset"
               >{{ glossrelation.source.dataset }}</span>
               <a
                 href="{% url 'dictionary:admin_gloss_view' pk=glossrelation.source.pk %}"
@@ -224,7 +223,7 @@
             </td>
             <td>
               <span
-                class="dataset-{{ glossrelation.target.dataset.id }}-color label label-default"
+                class="dataset-{{ glossrelation.target.dataset.id }}-color badge badge-dataset"
               >{{ glossrelation.target.dataset }}</span>
               <a
                 href="{% url 'dictionary:admin_gloss_view' pk=glossrelation.target.pk %}"

@@ -18,7 +18,7 @@ class GlossCreateForm(forms.ModelForm):
     """
     dataset = forms.ModelChoiceField(label=_('Dataset'), required=True, queryset=Dataset.objects.all(), empty_label=None)
     tag = forms.ModelChoiceField(queryset=tags_for_selection(Gloss), required=False, empty_label="---", to_field_name='name',
-                                 widget=forms.Select(attrs={'class': 'form-control'}))
+                                 widget=forms.Select(attrs={'class': 'form-select'}))
 
     def clean_idgloss(self):
         """Validates that idgloss is unique in Dataset."""
@@ -39,7 +39,7 @@ class GlossCreateForm(forms.ModelForm):
 class TagUpdateForm(forms.Form):
     """Form to add a new tag to a gloss"""
     tag = forms.ModelChoiceField(queryset=tags_for_selection(Gloss), empty_label=None, to_field_name='name',
-                                 widget=forms.Select(attrs={'class': 'form-control'}))
+                                 widget=forms.Select(attrs={'class': 'form-select'}))
 
 
 class TagDeleteForm(forms.Form):
@@ -54,6 +54,7 @@ class TagsAddForm(forms.Form):
 
 
 ATTRS_FOR_FORMS = {'class': 'form-control'}
+SELECT_ATTRS_FOR_FORMS = {'class': 'form-select'}
 
 
 def build_related_to_choices():
@@ -194,7 +195,7 @@ class GlossRelationForm(forms.Form):
     tag = forms.ModelChoiceField(label=_("Relation type:"),
                                  queryset=AllowedTags.objects.none(),
                                  required=True, to_field_name='name',
-                                 widget=forms.Select(attrs={'class': 'form-control'}))
+                                 widget=forms.Select(attrs={'class': 'form-select'}))
     delete = forms.IntegerField(required=False, widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
@@ -222,13 +223,13 @@ class RelationForm(forms.ModelForm):
     # Note that to_field_name has to be unique!
     role = forms.ModelChoiceField(label=_('Type'), queryset=FieldChoice.objects.filter(field='MorphologyType'),
                                   to_field_name='machine_value', empty_label=None,
-                                  widget=forms.Select(attrs=ATTRS_FOR_FORMS))
+                                  widget=forms.Select(attrs=SELECT_ATTRS_FOR_FORMS))
 
     class Meta:
         model = Relation
         fields = ['role']
         widgets = {
-            'role': forms.Select(attrs={'class': 'form-control'}),
+            'role': forms.Select(attrs={'class': 'form-select'}),
         }
 
 
@@ -256,7 +257,7 @@ class MorphologyForm(forms.ModelForm):
     # Note that to_field_name has to be unique!
     role = forms.ModelChoiceField(label=_('Type'), queryset=FieldChoice.objects.filter(field='MorphologyType'),
                                   to_field_name='machine_value', empty_label=None,
-                                  widget=forms.Select(attrs=ATTRS_FOR_FORMS))
+                                  widget=forms.Select(attrs=SELECT_ATTRS_FOR_FORMS))
 
     # role = forms.ChoiceField(label=_('Type'), widget=forms.Select(attrs=ATTRS_FOR_FORMS))
     # Translators: MorphologyForm label

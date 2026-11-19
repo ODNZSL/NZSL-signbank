@@ -7,16 +7,16 @@
     <button
       id="notifications-list"
       type="button"
-      class="btn btn-default {% if unread_count %} btn-danger{% endif %}"
-      data-toggle="dropdown"
+      class="btn {% if unread_count %}btn-danger{% else %}btn-light{% endif %}"
+      data-bs-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
     >
-      <span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
-      {% live_notify_badge badge_class="badge" %}
+      <span class="bi bi-bell-fill" aria-hidden="true"></span>
+      {% live_notify_badge badge_class="badge text-bg-secondary" %}
     </button>
     <div
-      class="dropdown-menu notifications pull-right"
+      class="dropdown-menu dropdown-menu-end notifications"
       aria-labelledby="notifications-list"
     >
       <div class="notifications-header">
@@ -25,16 +25,14 @@
         </h4>
         <a
           id="notifications_mark_all_read"
-          class="btn btn-default btn-sm"
+          class="btn btn-outline-secondary btn-sm"
           href="{% url 'notifications:mark_all_as_read' %}"
         >{% blocktrans %}Mark all as read{% endblocktrans %}</a>
         <button
           type="button"
-          class="close notifications-menu-close"
-          data-toggle="dropdown"
+          class="btn-close notifications-menu-close"
           aria-label="Close"
         >
-          <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <hr class="notifications-hr" />

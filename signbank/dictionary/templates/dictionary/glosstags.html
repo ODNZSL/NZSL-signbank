@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 <div id="tags" class="uploadvid">
   <fieldset>
     <legend>{% blocktrans %}Tags{% endblocktrans %}</legend>
@@ -35,7 +35,7 @@
         >
           {% csrf_token %}
           {# Translators: Submit button #}
-          {% bootstrap_field tagsaddform.tags show_label=False field_class='tagsaddgloss' %}
+          {% bootstrap_field tagsaddform.tags show_label=False wrapper_class="mb-3 tagsaddgloss" %}
           <input
             class="btn btn-primary"
             type="submit"

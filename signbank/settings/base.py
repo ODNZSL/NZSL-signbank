@@ -158,7 +158,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.staticfiles',
-    'bootstrap3',
+    'django_bootstrap5',
     'django_summernote',
     'signbank.dictionary',
     'django.contrib.flatpages',

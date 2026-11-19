@@ -1,9 +1,8 @@
 {% extends 'baselayout.html' %}
 {% load stylesheet %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load i18n %}
-{% block bootstrap3_title %}{% blocktrans %}Import NZSL Share
-    CSV{% endblocktrans %} |
+{% block title %}{% blocktrans %}Import NZSL Share CSV{% endblocktrans %} |
 {% endblock %}
 
 {% block content %}
@@ -40,8 +39,8 @@
         {% bootstrap_field import_csv_form.dataset %}
         {% bootstrap_field import_csv_form.file %}
         <h4>
-          <span class="label label-danger">{% blocktrans %}Make sure that you
-              selected the correct Dataset before
+          <span class="badge text-bg-danger text-wrap">{% blocktrans %}Make sure
+              that you selected the correct Dataset before
               submitting!{% endblocktrans %}</span>
         </h4>
         <br />
