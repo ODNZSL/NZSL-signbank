@@ -3,16 +3,21 @@
 from __future__ import unicode_literals
 
 import datetime
+import logging
 import mimetypes
 import os
 import uuid
 
+import boto3
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.db import models
+from django.utils.encoding import filepath_to_uri
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 from storages.backends.s3boto3 import S3Boto3Storage
+
+logger = logging.getLogger(__name__)
 
 
 class GlossVideoStorage(FileSystemStorage):
@@ -33,36 +38,116 @@ class GlossVideoStorage(FileSystemStorage):
         return os.path.join(self.base_url, name)
 
 
-class GlossVideoDynamicStorage(import_string(settings.GLOSS_VIDEO_FILE_STORAGE)):
+#: S3 object tag that mirrors GlossVideo.is_public. A CloudFront bucket policy can
+#: check this tag to decide which objects the CDN may serve, which still works
+#: once S3 ACLs are disabled.
+VISIBILITY_TAG_KEY = 'visibility'
+VISIBILITY_PUBLIC = 'public'
+VISIBILITY_PRIVATE = 'private'
+
+
+def visibility_tag_value(is_public):
+    return VISIBILITY_PUBLIC if is_public else VISIBILITY_PRIVATE
+
+
+class GlossVideoStorageMixin:
+    """S3 visibility and CloudFront helpers for GlossVideo storage.
+
+    All of these are no-ops (or fall back to plain storage behaviour) when the
+    storage is not S3, so local development and tests keep working.
+    """
+
+    def _is_s3(self):
+        return isinstance(self, S3Boto3Storage)
+
+    def cdn_url(self, name):
+        """Return the CloudFront URL for name, or None if no CloudFront domain is configured.
+
+        Only valid for objects that are publicly readable through the CDN.
+        """
+        domain = getattr(settings, 'CLOUDFRONT_MEDIA_DOMAIN', None)
+        if not domain or not name or not self._is_s3():
+            return None
+        return f'https://{domain}/{filepath_to_uri(name)}'
+
     def public_url(self, name):
-        """ Return the public URL to the object in S3 or local storage.
+        """ Return the public URL to the object in CloudFront, S3 or local storage.
         This is NOT a presigned URL, use #url for that.
         """
-        if isinstance(self, S3Boto3Storage):
+        if self._is_s3():
+            cdn_url = self.cdn_url(name)
+            if cdn_url:
+                return cdn_url
             bucket_name = self.bucket.name
             return f'https://{bucket_name}.s3.amazonaws.com/{name}'
         else:
             from django.contrib.sites.models import Site
             domain = Site.objects.get_current().domain
-            path = super(GlossVideoDynamicStorage, self).url(name)
+            path = super().url(name)
 
             return f'{domain}{path}'
 
     def set_public(self, name, is_public):
-        """ Set the object ACL on the object. This is only supported
-        for S3 storage, and is a no-op for local file storage
+        """ Set the object ACL and visibility tag on the object. This is only
+        supported for S3 storage, and is a no-op for local file storage
         """
-        if not isinstance(self, S3Boto3Storage):
+        if not self._is_s3():
             return
 
         if not name:
             return
 
-        self.bucket.meta.client.put_object_acl(
+        client = self.bucket.meta.client
+        client.put_object_acl(
             ACL='public-read' if is_public else 'private',
             Bucket=self.bucket.name,
             Key=name
         )
+        # put_object_tagging replaces the whole tag set on the object.
+        client.put_object_tagging(
+            Bucket=self.bucket.name,
+            Key=name,
+            Tagging={'TagSet': [
+                {'Key': VISIBILITY_TAG_KEY, 'Value': visibility_tag_value(is_public)},
+            ]},
+        )
+
+    def get_visibility(self, name):
+        """ Return the object's visibility tag value, or None if it has none
+        (or storage is not S3).
+        """
+        if not self._is_s3() or not name:
+            return None
+        response = self.bucket.meta.client.get_object_tagging(
+            Bucket=self.bucket.name, Key=name)
+        for tag in response.get('TagSet', []):
+            if tag['Key'] == VISIBILITY_TAG_KEY:
+                return tag['Value']
+        return None
+
+    def invalidate_cdn_cache(self, names):
+        """ Ask CloudFront to drop cached copies of the given objects. No-op unless
+        S3 storage and a CloudFront distribution id are configured. Errors are logged,
+        not raised, so a CloudFront outage can't block saving a video.
+        """
+        distribution_id = getattr(settings, 'CLOUDFRONT_MEDIA_DISTRIBUTION_ID', None)
+        paths = sorted({f'/{filepath_to_uri(name)}' for name in names if name})
+        if not distribution_id or not paths or not self._is_s3():
+            return
+        try:
+            boto3.client('cloudfront').create_invalidation(
+                DistributionId=distribution_id,
+                InvalidationBatch={
+                    'Paths': {'Quantity': len(paths), 'Items': paths},
+                    'CallerReference': uuid.uuid4().hex,
+                },
+            )
+        except Exception:
+            logger.exception('CloudFront invalidation failed for %s', paths)
+
+
+class GlossVideoDynamicStorage(GlossVideoStorageMixin, import_string(settings.GLOSS_VIDEO_FILE_STORAGE)):
+    pass
 
 
 def glossvideo_upload_to(instance, filename):
@@ -175,6 +260,11 @@ class GlossVideo(models.Model):
         if self._should_sync_s3_acl(creating, previous_is_public, previous_videofile_name):
             self._sync_s3_acl()
 
+        if not creating and previous_is_public and not self.is_public:
+            # The CDN may still hold a cached copy from when the video was public.
+            self.videofile.storage.invalidate_cdn_cache(
+                [previous_videofile_name, self.videofile.name])
+
     def delete(self, *args, **kwargs):
         if self.videofile and self.videofile.name:
             if self._other_rows_reference_videofile(self.videofile.name, exclude_pk=self.pk):
@@ -232,6 +322,12 @@ class GlossVideo(models.Model):
         return
 
     def get_absolute_url(self):
+        """URL to play the video: CloudFront for public videos when configured,
+        otherwise the storage URL (presigned for S3)."""
+        if self.is_public and self.videofile.name:
+            cdn_url = self.videofile.storage.cdn_url(self.videofile.name)
+            if cdn_url:
+                return cdn_url
         return self.videofile.url
 
     def rename_video(self):

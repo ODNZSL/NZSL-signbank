@@ -218,7 +218,7 @@
               <a
                 href="{% url 'dictionary:admin_gloss_view' pk=glossrelation.source.pk %}"
                 data-thumbnail-src="{% if glossrelation.source.glossvideo_set.all.0.posterfile %}{{ glossrelation.source.glossvideo_set.all.0.posterfile.url }}{% endif %}"
-                data-video-src="{% if glossrelation.source.glossvideo_set.all.0.videofile %}{{ glossrelation.source.glossvideo_set.all.0.videofile.url }}"
+                data-video-src="{% if glossrelation.source.glossvideo_set.all.0.videofile %}{{ glossrelation.source.glossvideo_set.all.0.get_absolute_url }}"
                 data-content-type="{{ glossrelation.source.glossvideo_set.all.0.get_content_type }}{% endif %}"
               >{{ glossrelation.source }}</a>
             </td>
@@ -229,7 +229,7 @@
               <a
                 href="{% url 'dictionary:admin_gloss_view' pk=glossrelation.target.pk %}"
                 data-thumbnail-src="{% if glossrelation.target.glossvideo_set.all.0.posterfile %}{{ glossrelation.target.glossvideo_set.all.0.posterfile.url }}{% endif %}"
-                data-video-src="{% if glossrelation.target.glossvideo_set.all.0.videofile %}{{ glossrelation.target.glossvideo_set.all.0.videofile.url }}"
+                data-video-src="{% if glossrelation.target.glossvideo_set.all.0.videofile %}{{ glossrelation.target.glossvideo_set.all.0.get_absolute_url }}"
                 data-content-type="{{ glossrelation.target.glossvideo_set.all.0.get_content_type }}{% endif %}"
               >{{ glossrelation.target }}</a>
             </td>

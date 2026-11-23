@@ -98,12 +98,12 @@
                   >
                     {% if video.get_extension == '.mp4' %}
                       <source
-                        src="{{ video.videofile.url }}"
+                        src="{{ video.get_absolute_url }}"
                         type="video/mp4"
                       />
                     {% elif video.get_extension == '.webm' %}
                       <source
-                        src="{{ video.videofile.url }}"
+                        src="{{ video.get_absolute_url }}"
                         type="video/webm"
                       />
                     {% endif %}
