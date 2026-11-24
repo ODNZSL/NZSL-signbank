@@ -450,7 +450,7 @@
               <a
                 href="{% url 'dictionary:admin_gloss_view' pk=gloss.pk %}"
                 data-thumbnail-src="{% if gloss.glossvideo_set.all.0.posterfile %}{{ gloss.glossvideo_set.all.0.posterfile.url }}{% endif %}"
-                data-video-src="{% if gloss.glossvideo_set.all.0.videofile %}{{ gloss.glossvideo_set.all.0.get_absolute_url }}"
+                data-video-src="{% if gloss.glossvideo_set.all.0.videofile %}{{ gloss.glossvideo_set.all.0.videofile.url }}"
                 data-content-type="{{ gloss.glossvideo_set.all.0.get_content_type }}{% endif %}"
               >{{ gloss.idgloss }}</a>
               {% if gloss.glossvideo_set.count > 1 %}<span

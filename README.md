@@ -121,16 +121,19 @@ By default, the normal filesystem-based file storage engine will be used. This i
 
 See [example.env](example.env) for more information about these variables. If you have set up infrastructure using the [Terraform config](https://github.com/odnzsl/nzsl-infrastructure), the output of applying a Terraform plan includes the bucket name and AWS keypair that are created by this configuration.
 
-Optionally, public videos can be served through a CloudFront distribution in front of the bucket by setting:
+Optionally, files can be served through CloudFront instead of S3:
 
-- CLOUDFRONT_MEDIA_DOMAIN - the distribution's domain; public videos use it instead of presigned S3 URLs
-- CLOUDFRONT_MEDIA_DISTRIBUTION_ID - used to invalidate cached copies when a video is made private
+- AWS_S3_CUSTOM_DOMAIN, AWS_CLOUDFRONT_KEY_ID, AWS_CLOUDFRONT_KEY - a CloudFront distribution that requires
+  signed URLs, and the key pair (ID and PEM private key) of one of its trusted key groups. Everywhere the
+  app currently presigns S3 URLs (`storage.url()`, `FieldFile.url`), it will sign CloudFront URLs instead.
+  All three must be set together.
+- CLOUDFRONT_PUBLIC_MEDIA_DOMAIN - an unsigned distribution used for the permanent public video URLs in the
+  `/video/csv` export consumed by [nzsl-dictionary-scripts](https://github.com/odnzsl/nzsl-dictionary-scripts).
+  Without it, those URLs point directly at the S3 bucket.
 
 Each video's visibility (`GlossVideo.is_public`) is mirrored onto its S3 object as both an ACL and a
-`visibility=public|private` object tag, so the bucket can later move to CloudFront origin access control
-with ACLs disabled. Run `bin/production.py sync_glossvideo_s3_acls` to backfill both onto existing objects,
-and `bin/production.py sync_glossvideo_s3_acls --verify` to check every object's tag matches the database.
-The app's IAM user needs `s3:PutObjectTagging` and `s3:GetObjectTagging` on the bucket objects.
+`visibility=public|private` object tag, so the unsigned distribution can be limited to public objects by
+bucket policy once ACLs are disabled. The app's IAM user needs `s3:PutObjectTagging` on the bucket objects.
 
 ## Secrets
 
