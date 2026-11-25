@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import json
 from base64 import b64decode
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -458,7 +459,7 @@ def export_glossvideos_csv(request):
     storage = GlossVideoDynamicStorage()
 
     field_serializers = {
-        'videofile': (lambda asset_filename: storage.public_url(asset_filename))
+        'videofile': (lambda asset_filename: settings.DICTIONARY_VIDEOS_HOST + asset_filename)
     }
 
     return render_to_csv_response(queryset=csv_queryset, field_header_map=fieldnames, field_serializer_map=field_serializers)
