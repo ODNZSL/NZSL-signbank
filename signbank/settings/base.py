@@ -254,6 +254,8 @@ if os.getenv('AWS_STORAGE_BUCKET_NAME'):
 else:
     GLOSS_VIDEO_FILE_STORAGE = 'signbank.video.models.GlossVideoStorage'
 
+MEDIA_EXPORT_URL = os.getenv('MEDIA_EXPORT_URL')
+
 NZSL_SHARE_HOSTNAME = os.getenv('NZSL_SHARE_HOSTNAME')
 NZSL_SHARE_BATCH_SIZE = 10
 
