@@ -1,12 +1,12 @@
 {% extends "baselayout.html" %}
 {% load i18n %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load static %}
-{% block bootstrap3_title %}{% blocktrans %}Manage lexicons{% endblocktrans %} |
+{% block title %}{% blocktrans %}Manage lexicons{% endblocktrans %} |
 {% endblock %}
 {% block content %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-lg-12">
       <h2>{% blocktrans %}Manage lexicons{% endblocktrans %}</h2>
       <p>
         {% blocktrans %}On this page you can see all the lexicons available on
@@ -18,26 +18,26 @@
           Lexicons{% endblocktrans %}
       </h3>
       {% for obj in has_permissions %}
-        <div class="panel panel-success">
-          <div class="panel-heading">
-            <h3 class="panel-title" style="display: inline">
+        <div class="card border-success-subtle mb-3">
+          <div class="card-header bg-success-subtle text-success-emphasis">
+            <h3 class="card-title fs-6 mb-0" style="display: inline">
               <span
-                class="dataset-{{ obj.id }}-color label label-default"
+                class="dataset-{{ obj.id }}-color badge badge-dataset"
               >{{ obj.public_name }}</span>
             </h3>
             {{ obj.signlanguage }} ({{ obj.signlanguage.language_code_3char }})
           </div>
-          <div class="panel-body">
-            <div class="well well-sm">
+          <div class="card-body">
+            <div class="card card-body bg-body-tertiary p-2 mb-3">
               <h4>
                 <span
-                  class="glyphicon glyphicon-ok text-success"
+                  class="bi bi-check-lg text-success"
                   aria-hidden="true"
                 ></span> {% blocktrans %}Permissions?{% endblocktrans %}
               </h4>
               <h4>
                 <span
-                  class="glyphicon glyphicon-{% if obj.is_public %}ok text-success{% else %}remove text-danger{% endif %}"
+                  class="bi bi-{% if obj.is_public %}check-lg text-success{% else %}x-lg text-danger{% endif %}"
                   aria-hidden="true"
                 ></span> {% blocktrans %}Public?{% endblocktrans %}
               </h4>
@@ -48,8 +48,9 @@
             <p>{{ obj.copyright }}</p>
             <h3>
               {% blocktrans %}ECV (externally controlled
-                vocabulary){% endblocktrans %} <small>{% blocktrans %}A
-                  vocabulary for ELAN{% endblocktrans %}</small>
+                vocabulary){% endblocktrans %} <small
+                class="text-body-secondary"
+              >{% blocktrans %}A vocabulary for ELAN{% endblocktrans %}</small>
             </h3>
             {% if obj.is_public %}<p>
                 {% blocktrans %}Public ECV{% endblocktrans %}: <a
@@ -100,26 +101,26 @@
           Lexicons{% endblocktrans %}
       </h3>
       {% for obj in no_permissions %}
-        <div class="panel panel-danger">
-          <div class="panel-heading">
-            <h3 class="panel-title" style="display: inline">
+        <div class="card border-danger-subtle mb-3">
+          <div class="card-header bg-danger-subtle text-danger-emphasis">
+            <h3 class="card-title fs-6 mb-0" style="display: inline">
               <span
-                class="dataset-{{ obj.id }}-color label label-default"
+                class="dataset-{{ obj.id }}-color badge badge-dataset"
               >{{ obj.public_name }}</span>
             </h3>
             {{ obj.signlanguage }} ({{ obj.signlanguage.language_code_3char }})
           </div>
-          <div class="panel-body">
-            <div class="well well-sm">
+          <div class="card-body">
+            <div class="card card-body bg-body-tertiary p-2 mb-3">
               <h4>
                 {% blocktrans %}Permissions?{% endblocktrans %} <span
-                  class="glyphicon glyphicon-remove text-danger"
+                  class="bi bi-x-lg text-danger"
                   aria-hidden="true"
                 ></span>
               </h4>
               <h4>
                 {% blocktrans %}Public?{% endblocktrans %} <span
-                  class="glyphicon glyphicon-{% if obj.is_public %}ok text-success{% else %}remove text-danger{% endif %}"
+                  class="bi bi-{% if obj.is_public %}check-lg text-success{% else %}x-lg text-danger{% endif %}"
                   aria-hidden="true"
                 ></span>
               </h4>
@@ -142,8 +143,10 @@
             {% if obj.is_public %}
               <h3>
                 {% blocktrans %}ECV (externally controlled
-                  vocabulary){% endblocktrans %} <small>{% blocktrans %}A
-                    vocabulary for ELAN{% endblocktrans %}</small>
+                  vocabulary){% endblocktrans %} <small
+                  class="text-body-secondary"
+                >{% blocktrans %}A vocabulary for
+                    ELAN{% endblocktrans %}</small>
               </h3>
               <p>
                 {% blocktrans %}Public ECV{% endblocktrans %}: <a

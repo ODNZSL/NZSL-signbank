@@ -1,8 +1,7 @@
 {% extends "baselayout.html" %}
 {% load i18n %}
 {% load static %}
-{% block bootstrap3_title %}{% blocktrans %}Manage Uploaded
-    Videos{% endblocktrans %} |
+{% block title %}{% blocktrans %}Manage Uploaded Videos{% endblocktrans %} |
 {% endblock %}
 {% block extrahead %}
   <link
@@ -11,18 +10,19 @@
   />
 {% endblock %}
 {% block content %}
-  <div class="page-header">
+  <div class="border-bottom pb-2 mb-4">
     <h2>
       {% blocktrans %}Manage Uploaded Videos{% endblocktrans %} <small
+        class="text-body-secondary"
       >{% blocktrans %}Connect Glossvideos to Glosses{% endblocktrans %}</small>
     </h2>
   </div>
-  <div id="dataset" class="panel panel-default">
-    <div class="panel-body">
+  <div id="dataset" class="card mb-3">
+    <div class="card-body">
       <form id="dataset-select">
         <h3>
-          <span class="label label-danger">{% blocktrans %}Select the dataset
-              you want to work with!{% endblocktrans %}</span>
+          <span class="badge text-bg-danger text-wrap">{% blocktrans %}Select
+              the dataset you want to work with!{% endblocktrans %}</span>
         </h3>
         <label for="id_dataset"><strong
           >{% blocktrans %}Dataset{% endblocktrans %}:</strong></label>
@@ -35,27 +35,30 @@
       </form>
     </div>
   </div>
-  <div class="pagination">
-    <span class="step-links">
-      <ul class="pagination pagination-sm">
+  <nav>
+    <div class="step-links">
+      <ul class="pagination pagination-sm flex-wrap">
         {% if page_obj.has_previous %}{# Insert dataset from request #}
-          <li>
+          <li class="page-item">
             <a
+              class="page-link"
               href="?page={{ page_obj.previous_page_number }}&dataset={{ request.GET.dataset }}"
             >&laquo;
               {% blocktrans %}previous{% endblocktrans %}</a>
           </li>
         {% endif %}
         {% for curpage in page_obj.paginator.page_range %}
-          <li {% if curpage == page_obj.number %}class="active"{% endif %}>
+          <li class="page-item{% if curpage == page_obj.number %} active{% endif %}">
             <a
+              class="page-link"
               href="?page={{ curpage }}&dataset={{ request.GET.dataset }}"
             >{{ curpage }}</a>
           </li>
         {% endfor %}
         {% if page_obj.has_next %}
-          <li>
+          <li class="page-item">
             <a
+              class="page-link"
               href="?page={{ page_obj.next_page_number }}&dataset={{ request.GET.dataset }}"
             >{% blocktrans %}next{% endblocktrans %} &raquo;</a>
           </li>
@@ -66,14 +69,14 @@
         {{ page_obj.paginator.count }}
         {% blocktrans %}videos{% endblocktrans %}.
       </p>
-    </span>
-  </div>
+    </div>
+  </nav>
   <div id="glossvideos" class="row">
     {% for video in videos %}
-      <div class="col-md-6">
-        <div class="panel panel-default">
-          <div class="panel-heading">{{ video.videofile }}</div>
-          <div class="panel-body">
+      <div class="col-lg-6">
+        <div class="card mb-3">
+          <div class="card-header">{{ video.videofile }}</div>
+          <div class="card-body">
             <form
               id="glossvideo{{ video.pk }}"
               class="video-form"

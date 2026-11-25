@@ -1,5 +1,5 @@
 {% load stylesheet %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load i18n %}
 {% load static %}
 {% load comments %}
@@ -9,16 +9,20 @@
 
 {% if perms.dictionary.view_advanced_properties %}
   <div id="advanced-properties">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="panel-title">
+    <div class="card mb-2">
+      <div class="card-header">
+        <div class="card-title fs-6 mb-0">
           {# Translators: #}
-          <a data-toggle="collapse" data-parent="#definition" href="#phonology">
+          <a
+            role="button"
+            data-bs-toggle="collapse"
+            href="#phonology"
+          >
             {% blocktrans %}Phonology{% endblocktrans %}</a>
         </div>
       </div>
-      <div id="phonology" class="panel-collapse collapse">
-        <table class="table table-condensed">
+      <div id="phonology" class="collapse">
+        <table class="table table-sm">
           {% for value,name,label,kind in phonology_fields %}
             <tr>
               <th>{{ label }}</th>
@@ -31,20 +35,20 @@
       </div>
     </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="panel-title">
+    <div class="card mb-2">
+      <div class="card-header">
+        <div class="card-title fs-6 mb-0">
           {# Translators: #}
           <a
-            data-toggle="collapse"
-            data-parent="#morphologydefinition"
+            role="button"
+            data-bs-toggle="collapse"
             href="#morphology"
           >
             {% blocktrans %}Morphology{% endblocktrans %}</a>
         </div>
       </div>
       <div id="morphology" class="collapse">
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <tr>
             <th style="width: 2em"></th>
             {# Translators: #}
@@ -58,9 +62,10 @@
             <tr>
               <td>
                 <span
-                  class="glyphicon glyphicon-trash morphology-definition-delete"
-                  data-toggle="modal"
-                  data-target="#delete_morphology-definition_modal_{{ morphdef.id }}"
+                  class="bi bi-trash-fill morphology-definition-delete"
+                  role="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#delete_morphology-definition_modal_{{ morphdef.id }}"
                 ></span>
 
                 <div
@@ -102,8 +107,8 @@
                           {# Translators: Button #}
                           <button
                             type="button"
-                            class="btn btn-default"
-                            data-dismiss="modal"
+                            class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal"
                           >
                             {% blocktrans %}Cancel{% endblocktrans %}
                           </button>
@@ -147,7 +152,7 @@
             action="{% url 'dictionary:add_morphologydefinition' %}"
           >
             {% csrf_token %}
-            <table class="table table-condensed">
+            <table class="table table-sm">
               <tr>
                 <td style="width: 2em"></td>
                 <td style="width: 12em">{{ morphologyform.role }}</td>
@@ -170,7 +175,7 @@
               </tr>
             </table>
           </form>
-          <table class="table table-condensed">
+          <table class="table table-sm">
             {% for value,name,label,kind in morphology_fields %}
               <tr>
                 <th>{{ label }}</th>
@@ -184,16 +189,20 @@
       </div>
     </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="panel-title">
+    <div class="card mb-2">
+      <div class="card-header">
+        <div class="card-title fs-6 mb-0">
           {# Translators: #}
-          <a data-toggle="collapse" data-parent="#definition" href="#semantics">
+          <a
+            role="button"
+            data-bs-toggle="collapse"
+            href="#semantics"
+          >
             {% blocktrans %}Semantics{% endblocktrans %}</a>
         </div>
       </div>
-      <div id="semantics" class="panel-collapse collapse">
-        <table class="table table-condensed">
+      <div id="semantics" class="collapse">
+        <table class="table table-sm">
           <tr>
             <th>Semantic Fields</th>
             <td class="edit edit_list_check" id="semantic_field">
@@ -201,7 +210,7 @@
             </td>
           </tr>
         </table>
-        <table class="table table-condensed">
+        <table class="table table-sm">
           {% for value,name,label,kind in semantics_fields %}
             <tr>
               <th>{{ label }}</th>
@@ -214,20 +223,20 @@
       </div>
     </div>
 
-    <div id="gloss-relations" class="panel panel-default">
-      <div class="panel-heading">
-        <div class="panel-title">
+    <div id="gloss-relations" class="card mb-2">
+      <div class="card-header">
+        <div class="card-title fs-6 mb-0">
           {# Translators: #}
           <a
-            data-toggle="collapse"
-            data-parent="#definition"
+            role="button"
+            data-bs-toggle="collapse"
             href="#glossrelationslist"
           >
             {% blocktrans %}Relations{% endblocktrans %}</a>
         </div>
       </div>
-      <div id="glossrelationslist" class="panel-collapse collapse">
-        <ul class="list-group gloss-relations">
+      <div id="glossrelationslist" class="collapse">
+        <ul class="list-group list-group-flush gloss-relations">
           {% for gr in glossrelations %}
             <li class="list-group-item list-group-item-relation">
               <a
@@ -236,10 +245,12 @@
                 data-video-src="{% if gr.target.glossvideo_set.all.0.videofile %}{{ gr.target.glossvideo_set.all.0.videofile.url }}"
                 data-content-type="{{ gr.target.glossvideo_set.all.0.get_content_type }}{% endif %}"
               >
-                <span class="glyphicon glyphicon-circle-arrow-right"></span>
+                <span class="bi bi-arrow-right-circle-fill"></span>
                 {{ gr }}</a>
               {% for tag in gr.tags.all %}
-                <span class="badge" style="float: inherit">{{ tag }}</span>
+                <span
+                  class="badge rounded-pill text-bg-secondary"
+                >{{ tag }}</span>
               {% endfor %}
               <form
                 class="update_glossrelation"
@@ -251,7 +262,7 @@
                 <input type="hidden" name="delete" value="{{ gr.id }}" />
                 <button type="submit" class="btn btn-link">
                   <span
-                    class="glyphicon glyphicon-trash"
+                    class="bi bi-trash-fill"
                     style="color: red"
                   ></span>
                 </button>
@@ -265,20 +276,20 @@
         </ul>
         <div class="update_glossrelation" style="display: none">
           <form
-            class="form-inline"
+            class="d-flex flex-wrap align-items-end gap-2 p-2"
             method="POST"
             action="{% url 'dictionary:add_glossrelation' %}"
           >
             {% csrf_token %}
             <input type="hidden" name="source" value="{{ gloss.id }}" />
-            {% bootstrap_field glossrelationform.target show_label=False %}
-            {% bootstrap_field glossrelationform.tag %}
+            {% bootstrap_field glossrelationform.target show_label=False wrapper_class="mb-0" %}
+            {% bootstrap_field glossrelationform.tag wrapper_class="mb-0" %}
             <button class="btn btn-primary btn-sm" type="submit">
               {% blocktrans %}Add relation{% endblocktrans %}
             </button>
           </form>
         </div>
-        <ul class="list-group gloss-relations-reverse">
+        <ul class="list-group list-group-flush border-top gloss-relations-reverse">
           {% for gr in glossrelations_reverse %}
             <li class="list-group-item">
               <a
@@ -287,10 +298,12 @@
                 data-video-src="{% if gr.source.glossvideo_set.all.0.videofile %}{{ gr.source.glossvideo_set.all.0.videofile.url }}"
                 data-content-type="{{ gr.source.glossvideo_set.all.0.get_content_type }}{% endif %}"
               >
-                <span class="glyphicon glyphicon-circle-arrow-left"></span>
+                <span class="bi bi-arrow-left-circle-fill"></span>
                 {{ gr.source }}</a>
               {% for tag in gr.tags.all %}
-                <span class="badge" style="float: inherit">{{ tag }}</span>
+                <span
+                  class="badge rounded-pill text-bg-secondary"
+                >{{ tag }}</span>
               {% endfor %}
             </li>
           {% empty %}
@@ -302,20 +315,20 @@
       </div>
     </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="panel-title">
+    <div class="card mb-2">
+      <div class="card-header">
+        <div class="card-title fs-6 mb-0">
           {# Translators: #}
           <a
-            data-toggle="collapse"
-            data-parent="#definition"
+            role="button"
+            data-bs-toggle="collapse"
             href="#relationsforeign"
           >
             {% blocktrans %}Relations to Foreign Signs{% endblocktrans %}</a>
         </div>
       </div>
       <div id="relationsforeign" class="collapse">
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <tr>
             <th style="width: 1em"></th>
             {# Translators: Loan from another language(?) #}
@@ -334,9 +347,10 @@
             <tr>
               <td>
                 <span
-                  class="glyphicon glyphicon-trash relation_delete"
-                  data-toggle="modal"
-                  data-target="#delete_relation_modal_{{ rel.id }}"
+                  class="bi bi-trash-fill relation_delete"
+                  role="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#delete_relation_modal_{{ rel.id }}"
                 ></span>
 
                 <div
@@ -378,8 +392,8 @@
                           {# Translators: Button #}
                           <button
                             type="button"
-                            class="btn btn-default"
-                            data-dismiss="modal"
+                            class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal"
                           >
                             {% blocktrans %}Cancel{% endblocktrans %}
                           </button>
@@ -426,9 +440,11 @@
           >
             {% csrf_token %}
             <input type="hidden" name="sourceid" value="{{ gloss.pk }}" />
-            <table class="table table-condensed">
+            <table class="table table-sm">
               <tr>
-                <td><input class="checkbox" name="loan" type="checkbox" /></td>
+                <td>
+                  <input class="form-check-input" name="loan" type="checkbox" />
+                </td>
                 {# Translators: #}
                 <td>
                   <input
@@ -462,19 +478,19 @@
       </div>
     </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="panel-title">
+    <div class="card mb-2">
+      <div class="card-header">
+        <div class="card-title fs-6 mb-0">
           <a
-            data-toggle="collapse"
-            data-parent="#definition"
+            role="button"
+            data-bs-toggle="collapse"
             href="#usage_variation"
           >
             {% blocktrans %}Usage and Variation{% endblocktrans %}</a>
         </div>
       </div>
-      <div id="usage_variation" class="panel-collapse collapse">
-        <table class="table table-condensed">
+      <div id="usage_variation" class="collapse">
+        <table class="table table-sm">
           <tr>
             <th>Usage</th>
             <td class="edit edit_list_check" id="usage">
@@ -490,7 +506,7 @@
             {% endfor %}
           </tr>
         </table>
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <tr>
             <th>Age variation</th>
             <td class="edit edit_list edit_list_optional" id="age_variation">
@@ -501,15 +517,19 @@
       </div>
     </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="panel-title">
-          <a data-toggle="collapse" data-parent="#definition" href="#examples">
+    <div class="card mb-2">
+      <div class="card-header">
+        <div class="card-title fs-6 mb-0">
+          <a
+            role="button"
+            data-bs-toggle="collapse"
+            href="#examples"
+          >
             {% blocktrans %}Examples{% endblocktrans %}</a>
         </div>
       </div>
-      <div id="examples" class="panel-collapse collapse">
-        <table class="table table-condensed">
+      <div id="examples" class="collapse">
+        <table class="table table-sm">
           {% for value,name,label,kind in examples_fields %}
             <tr>
               <th>{{ label }}</th>
@@ -520,16 +540,20 @@
       </div>
     </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="panel-title">
+    <div class="card mb-2">
+      <div class="card-header">
+        <div class="card-title fs-6 mb-0">
           {# Translators: #}
-          <a data-toggle="collapse" data-parent="#definition" href="#frequency">
+          <a
+            role="button"
+            data-bs-toggle="collapse"
+            href="#frequency"
+          >
             {% blocktrans %}Frequency{% endblocktrans %}</a>
         </div>
       </div>
-      <div id="frequency" class="panel-collapse collapse">
-        <table class="table table-condensed">
+      <div id="frequency" class="collapse">
+        <table class="table table-sm">
           {% for value,name,label,kind in frequency_fields %}
             <tr>
               <th>{{ label }}</th>
@@ -546,8 +570,8 @@
       {% get_comment_form for gloss as formcomment %}
       <form action="{% comment_form_target %}" method="POST">
         {% csrf_token %}
-        <div class="form-group">
-          <label class="control-label" for="id_comment">{% blocktrans %}Add
+        <div class="mb-3">
+          <label class="form-label" for="id_comment">{% blocktrans %}Add
               comment{% endblocktrans %}</label>
           <textarea
             name="comment"
@@ -576,7 +600,11 @@
           name="next"
           value="{% url 'dictionary:admin_gloss_view' gloss.id %}"
         />
-        <button type="submit" class="btn btn-default" id="id_submit_comm">
+        <button
+          type="submit"
+          class="btn btn-outline-secondary"
+          id="id_submit_comm"
+        >
           {% blocktrans %}Add comment{% endblocktrans %}
         </button>
       </form>

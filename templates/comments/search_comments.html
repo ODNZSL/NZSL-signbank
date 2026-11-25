@@ -1,9 +1,9 @@
 {% extends "baselayout.html" %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load i18n %}
 {% load static %}
 {# Translators: Title for comments search page #}
-{% block bootstrap3_title %}{% blocktrans %}Search Comments{% endblocktrans %} |
+{% block title %}{% blocktrans %}Search Comments{% endblocktrans %} |
 {% endblock %}
 {% block content %}
   <div class="search_comments">
@@ -11,14 +11,20 @@
       <a href="{% url 'search_comments' %}">{% blocktrans %}Search
           comments{% endblocktrans %}</a>
     </h2>
-    <form class="form-inline" method="GET" action="">
+    <form
+      class="row row-cols-lg-auto g-3 align-items-center"
+      method="GET"
+      action=""
+    >
       {% bootstrap_form form layout='inline' %}
-      {% bootstrap_form tag_form %}
-      <input
-        class="btn btn-default"
-        type="submit"
-        value="{% blocktrans %}Search{% endblocktrans %}"
-      />
+      {% bootstrap_form tag_form layout='inline' %}
+      <div class="col-12">
+        <input
+          class="btn btn-outline-secondary"
+          type="submit"
+          value="{% blocktrans %}Search{% endblocktrans %}"
+        />
+      </div>
     </form>
     <hr />
     {% for comment in object_list %}
@@ -31,20 +37,20 @@
               >{{ comment.content_object }}</strong>
               {% if comment.content_object.dataset %}{# if we some day use this elsewhere, don't want this to break #}
                 <span
-                  class="dataset-{{ comment.content_object.dataset.id }}-color label label-default"
+                  class="dataset-{{ comment.content_object.dataset.id }}-color badge badge-dataset"
                   style="display: inline-block; padding-bottom: 0.2em; margin-bottom: 2px"
                 >
                   {{ comment.content_object.dataset }}</span> -
               {% endif %}
-              <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+              <span class="bi bi-clock" aria-hidden="true"></span>
               <em>{{ comment.submit_date }}</em> -
-              <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+              <span class="bi bi-person-fill" aria-hidden="true"></span>
               {{ comment.user }}</a>
             {% if tag_list %}
               {% for tag in tag_list %}
                 <div class="comment-tags" style="display: inline">
                   <span
-                    class="label label-info"
+                    class="badge text-bg-info"
                     style="font-size: 60%"
                   >{{ tag }}</span>
                 </div>
@@ -52,34 +58,37 @@
             {% endif %}
           </h4>
         </header>
-        <div class="panel panel-default">
-          <div class="panel-body">
+        <div class="card mb-3">
+          <div class="card-body">
             <p>{{ comment.comment }}</p>
           </div>
         </div>
       </article>
     {% endfor %}
   </div>
-  <div class="pagination">
-    <span class="step-links">
-      <ul class="pagination pagination-sm">
+  <nav>
+    <div class="step-links">
+      <ul class="pagination pagination-sm flex-wrap">
         {% if page_obj.has_previous %}{# Insert dataset from request #}
-          <li>
+          <li class="page-item">
             <a
+              class="page-link"
               href="?page={{ page_obj.previous_page_number }}{% for key,values in request.GET.lists %}{% if not key == 'page' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}"
             >&laquo; {% blocktrans %}previous{% endblocktrans %}</a>
           </li>
         {% endif %}
         {% for curpage in page_obj.paginator.page_range %}
-          <li {% if curpage == page_obj.number %}class="active"{% endif %}>
+          <li class="page-item{% if curpage == page_obj.number %} active{% endif %}">
             <a
+              class="page-link"
               href="?page={{ curpage }}{% for key,values in request.GET.lists %}{% if not key == 'page' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}"
             >{{ curpage }}</a>
           </li>
         {% endfor %}
         {% if page_obj.has_next %}
-          <li>
+          <li class="page-item">
             <a
+              class="page-link"
               href="?page={{ page_obj.next_page_number }}{% for key,values in request.GET.lists %}{% if not key == 'page' %}{% for value in values %}&{{ key }}={{ value|urlencode }}{% endfor %}{% endif %}{% endfor %}"
             >{% blocktrans %}next{% endblocktrans %} &raquo;</a>
           </li>
@@ -90,6 +99,6 @@
         {{ page_obj.paginator.count }}
         {% blocktrans context 'count' %}comments{% endblocktrans %}.
       </p>
-    </span>
-  </div>
+    </div>
+  </nav>
 {% endblock %}

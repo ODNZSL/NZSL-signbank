@@ -1,9 +1,9 @@
 {% extends 'baselayout.html' %}
 {% load stylesheet %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load i18n %}
 {% load static %}
-{% block bootstrap3_title %}{{ gloss }} [{{ gloss.dataset }}] | {% endblock %}
+{% block title %}{{ gloss }} [{{ gloss.dataset }}] | {% endblock %}
 {% block extrahead %}
   <link
     rel="stylesheet"
@@ -43,12 +43,14 @@
   <script type="text/javascript">
     $(document).ready(function () {
         // Delete modal for comment deletion.
-        $('#delete_comment_modal').on('show.bs.modal', function (event) {
+        $('#delete_comment_modal').each(function () {
+          this.addEventListener('show.bs.modal', function (event) {
           var button = $(event.relatedTarget); // Button that triggered the modal
           var recipient = button.data('comment-id');
           var modal = $(this);
           modal.find('.modal-body form input[name="comment_id"]').val(recipient);
           modal.find('.modal-body form').attr('action', '/comments/delete/'+recipient+'/');
+          });
         });
     });
   </script>
@@ -59,9 +61,11 @@
     var save_button_text = "{% blocktrans %}Save{% endblocktrans %}";
     var cancel_button_text = "{% blocktrans %}Cancel{% endblocktrans %}";
 
-    // Initialize bootstrap3 tooltips
+    // Initialize Bootstrap tooltips
     $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+            new bootstrap.Tooltip(el);
+        });
     })
 
     // This script gets and inserts the users last searched items on the gloss page
@@ -75,7 +79,7 @@
         for (var key in json_data) {
             if (json_data.hasOwnProperty(key)) {
                 var a = document.createElement("a");
-                a.setAttribute("class", "btn btn-default");
+                a.setAttribute("class", "btn btn-outline-secondary");
                 a.style["float"] = "none";
                 a.href = "/dictionary/advanced/gloss/" + json_data[key].id;
                 a.id = json_data[key].id;
@@ -185,11 +189,14 @@
   </div>
 
   {# div not indented to ease code diffing #}
-  <div id="signinfo" class="navbar navbar-default navbar-collapse">
-    <div id="datasetname" class="pull-left">
-      <h4>
+  <div
+    id="signinfo"
+    class="d-flex flex-wrap align-items-center border px-3 py-2"
+  >
+    <div id="datasetname">
+      <h4 class="mb-0">
         {% blocktrans %}Dataset{% endblocktrans %}: <span
-          class="dataset-{{ gloss.dataset.id }}-color label label-default"
+          class="dataset-{{ gloss.dataset.id }}-color badge badge-dataset"
         >{{ dataset }}</span>
       </h4>
     </div>
@@ -197,26 +204,26 @@
       {% if not gloss.published %}{# Don't allow recording webcam videos for published Glosses. #}
         <button
           type="button"
-          class="btn btn-info navbar-btn"
+          class="btn btn-info"
           id="btn-record-video"
-          data-toggle="modal"
-          data-target="#record-video-Modal"
-          style="float: left; margin-left: 20px; display: none"
+          data-bs-toggle="modal"
+          data-bs-target="#record-video-Modal"
+          style="margin-left: 20px; display: none"
         >
           <span
-            class="glyphicon glyphicon-facetime-video"
+            class="bi bi-camera-video-fill"
             aria-hidden="true"
             style="color: black"
           ></span>
           {% blocktrans %}Record a video{% endblocktrans %}
         </button>
       {% endif %}
-      <div class="pull-right">
+      <div class="ms-auto">
         {# Translators: Text that appears when editing is on #}
         <span id="edit_message" style="display: none">{% blocktrans %}Click on
             red text to edit{% endblocktrans %}&nbsp;</span>
         {# Translators: Button #}
-        <button id="enable_edit" class="btn btn-default navbar-btn">
+        <button id="enable_edit" class="btn btn-primary">
           {% blocktrans %}Enable Edit{% endblocktrans %}
         </button>
       </div>
@@ -225,19 +232,40 @@
 
   {# Tabs nav bar #}
   <ul class="nav nav-tabs" role="tablist">
-    <li class="active">
-      <a href="#gloss_main_edit_tab" role="tab" data-toggle="tab">Edit</a>
+    <li class="nav-item" role="presentation">
+      <a
+        class="nav-link active"
+        href="#gloss_main_edit_tab"
+        role="tab"
+        data-bs-toggle="tab"
+        aria-selected="true"
+      >Edit</a>
     </li>
-    <li>
-      <a href="#gloss_public_dictionary_tab" role="tab" data-toggle="tab"
+    <li class="nav-item" role="presentation">
+      <a
+        class="nav-link"
+        href="#gloss_public_dictionary_tab"
+        role="tab"
+        data-bs-toggle="tab"
+        aria-selected="false"
       >Public View</a>
     </li>
-    <li>
-      <a href="#gloss_revision_history_tab" role="tab" data-toggle="tab"
+    <li class="nav-item" role="presentation">
+      <a
+        class="nav-link"
+        href="#gloss_revision_history_tab"
+        role="tab"
+        data-bs-toggle="tab"
+        aria-selected="false"
       >Revision History</a>
     </li>
-    <li>
-      <a href="#gloss_validation_results_tab" role="tab" data-toggle="tab"
+    <li class="nav-item" role="presentation">
+      <a
+        class="nav-link"
+        href="#gloss_validation_results_tab"
+        role="tab"
+        data-bs-toggle="tab"
+        aria-selected="false"
       >Validation Results</a>
     </li>
   </ul>
@@ -249,11 +277,11 @@
       {# div not indented to ease code diffing #}
       <div class="container-fluid">
         <div id="definitionblock" class="row">
-          <div id="leftblock" class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
+          <div id="leftblock" class="col-xl-5 col-lg-6 col-md-12 col-12">
             <div id="videocontainer">
               {% if gloss.glossvideo_set.exists %}
                 {% for glossvideo in gloss.glossvideo_set.all %}
-                  <div class="player well well-sm{% if glossvideo.is_public %} video-is-public{% else %} video-not-public{% endif %}">
+                  <div class="player card card-body p-2 mb-3{% if glossvideo.is_public %} video-is-public{% else %} video-not-public{% endif %}">
                     <div class="video-title">
                       <h4
                         class="edit edit_text"
@@ -263,10 +291,9 @@
                       </h4>
                     </div>
                     {% if glossvideo.is_video %}
-                      <div class="embed-responsive embed-responsive-16by9">
+                      <div class="ratio ratio-16x9">
                         <video
                           id="glossvideo-{{ glossvideo.pk }}"
-                          class="embed-responsive-item"
                           width="450"
                           preload="metadata"
                           controls
@@ -287,7 +314,7 @@
                       <img
                         src="{{ glossvideo.get_absolute_url }}"
                         alt="{{ glossvideo.title }} - {{ glossvideo.video_type }}"
-                        class="img-responsive center-block"
+                        class="img-fluid d-block mx-auto"
                       />
                     {% endif %}
                     <div class="video_edit" style="display: none">
@@ -299,23 +326,23 @@
                           {% csrf_token %}
                           <button
                             type="submit"
-                            class="btn btn-default"
+                            class="btn btn-outline-secondary"
                             name="direction"
                             value="up"
                           >
                             <span
-                              class="glyphicon glyphicon-chevron-up"
+                              class="bi bi-chevron-up"
                               aria-hidden="true"
                             ></span>
                           </button>
                           <button
                             type="submit"
-                            class="btn btn-default"
+                            class="btn btn-outline-secondary"
                             name="direction"
                             value="down"
                           >
                             <span
-                              class="glyphicon glyphicon-chevron-down"
+                              class="bi bi-chevron-down"
                               aria-hidden="true"
                             ></span>
                           </button>
@@ -333,8 +360,8 @@
                             class="btn btn-success"
                             id="vidbtn-{{ glossvideo.pk }}"
                             onclick="grabScreenshot({{ glossvideo.pk }})"
-                            data-toggle="modal"
-                            data-target="#glossvideo{{ glossvideo.pk }}-Modal"
+                            data-bs-toggle="modal"
+                            data-bs-target="#glossvideo{{ glossvideo.pk }}-Modal"
                           >
                             {% blocktrans %}Capture new poster
                               image{% endblocktrans %}
@@ -396,7 +423,10 @@
                               name="is_public"
                               value="False"
                             />
-                            <button type="submit" class="btn btn-default">
+                            <button
+                              type="submit"
+                              class="btn btn-outline-secondary"
+                            >
                               {% blocktrans %}Set private{% endblocktrans %}
                             </button>
                           {% else %}
@@ -405,7 +435,10 @@
                               name="is_public"
                               value="True"
                             />
-                            <button type="submit" class="btn btn-default">
+                            <button
+                              type="submit"
+                              class="btn btn-outline-secondary"
+                            >
                               {% blocktrans %}Set public{% endblocktrans %}
                             </button>
                           {% endif %}
@@ -424,14 +457,6 @@
                       <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                           <div class="modal-header">
-                            <button
-                              type="button"
-                              class="close"
-                              data-dismiss="modal"
-                              aria-label="Close"
-                            >
-                              <span aria-hidden="true">&times;</span>
-                            </button>
                             <h4
                               class="modal-title"
                               id="glossvideo{{ glossvideo.pk }}-ModalLabel"
@@ -440,11 +465,18 @@
                                 video{% endblocktrans %}
                               {{ glossvideo.videofile }}
                             </h4>
+                            <button
+                              type="button"
+                              class="btn-close"
+                              data-bs-dismiss="modal"
+                              aria-label="Close"
+                            >
+                            </button>
                           </div>
                           <div class="modal-body">
                             <canvas
                               id="vidcanvas-{{ glossvideo.pk }}"
-                              class="img-responsive"
+                              class="img-fluid"
                             >Your browser does not support the HTML5 canvas
                               tag.</canvas>
                           </div>
@@ -468,8 +500,8 @@
                               />
                               <button
                                 type="button"
-                                class="btn btn-default"
-                                data-dismiss="modal"
+                                class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal"
                               >
                                 {% blocktrans %}Close{% endblocktrans %}
                               </button>
@@ -513,7 +545,7 @@
             </div>
 
             <div>
-              <div id="editvideodata" class="panel panel-default">
+              <div id="editvideodata" class="card mb-3">
                 {% if perms.dictionary.change_gloss and perms.dictionary.update_video %}
                   <div class="editform" style="display: none">
                     <div class="uploadvid">
@@ -560,12 +592,12 @@
           </div>
 
           <div
-            class="panel-group col-lg-7 col-md-6 col-sm-12 col-xs-12"
+            class="col-xl-7 col-lg-6 col-md-12 col-12"
             id="definition"
           >
-            <table class="table table-condensed">
+            <table class="table table-sm">
               {# Translators: Information about a Gloss #}
-              <tr {% if gloss.published %}class="success"{% endif %}>
+              <tr {% if gloss.published %}class="table-success"{% endif %}>
                 <th>{% blocktrans %}Gloss:{% endblocktrans %}</th>
                 <td class="edit edit_text" id="idgloss">
                   {% value gloss.idgloss %}
@@ -585,10 +617,10 @@
                     {% blocktrans %}Translations in
                     {% endblocktrans %}{{ translation_language.name }}
                     <span
-                      class="glyphicon glyphicon-question-sign color-flatblue"
+                      class="bi bi-question-circle-fill color-flatblue"
                       aria-hidden="true"
-                      data-toggle="tooltip"
-                      data-placement="top"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
                       title="{% blocktrans %}After each translation enter a comma (,) or a semicolon (;).
                                Usage of numbers that end with a dot (.) is allowed (e.g. 11.) and they will not be part
                                of translations.{% endblocktrans %}"
@@ -694,7 +726,7 @@
                         style="display: none"
                       >
                         <span
-                          class="glyphicon glyphicon-remove"
+                          class="bi bi-x-lg"
                           aria-hidden="true"
                         ></span>
                       </a>
@@ -736,7 +768,7 @@
 
             <br />
 
-            <table class="table table-condensed">
+            <table class="table table-sm">
               {# Translators: Information about a Gloss #}
               <tr>
                 <th>{% blocktrans %}Sign number:{% endblocktrans %}</th>

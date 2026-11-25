@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load stylesheet %}
 {% load i18n %}
 {% load static %}
@@ -7,7 +7,7 @@
 <html lang="{{ LANGUAGE_CODE|default:'en' }}">
   <head>
     <title>
-      {% block bootstrap3_title %}{% endblock %}
+      {% block title %}{% endblock %}
       {% blocktrans %}NZSL Signbank{% endblocktrans %}
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -62,6 +62,10 @@
       rel="stylesheet"
       media="screen"
       href="{% static 'bootstrap/css/bootstrap.min.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      href="{% static 'bootstrap-icons/bootstrap-icons.min.css' %}"
     />
     <link
       rel="stylesheet"
@@ -161,7 +165,8 @@
     {% endif %}
     {% block extrahead %}{% endblock %}
   </head>
-  <body>
+  {# data-bs-no-jquery: Bootstrap must not register jQuery plugins, jQuery UI owns $.fn.tooltip / $.fn.button #}
+  <body data-bs-no-jquery>
     <div id="wrap">
       <div class="container">
         <div id="leftcontentborder"></div>
@@ -200,10 +205,10 @@
       </div>
     </footer>
     <script src="{% static 'js/jquery.min.js' %}"></script>
-    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
     <script>
-      $('a.close').on('click', function(event){
+      $('a.notification-close').on('click', function(event){
           event.preventDefault();
           event.stopPropagation();
           var parent = $(this).parent();
@@ -213,7 +218,7 @@
               var val = parseInt(badge.text())
               badge.text(val - 1);
               if (val - 1 <= 0) {
-                  $('button#notifications-list').removeClass('btn-danger');
+                  $('button#notifications-list').removeClass('btn-danger').addClass('btn-light');
               }
           });
       });
@@ -224,7 +229,7 @@
               $('div.notification').remove();
               var badge = $('#live_notify_badge');
               badge.text("0");
-              $('button#notifications-list').removeClass('btn-danger');
+              $('button#notifications-list').removeClass('btn-danger').addClass('btn-light');
           });
       });
     </script>

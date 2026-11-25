@@ -1,8 +1,8 @@
 {% extends 'baselayout.html' %}
 {% load stylesheet %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load i18n %}
-{% block bootstrap3_title %}{% blocktrans %}Confirm Import NZSL Share
+{% block title %}{% blocktrans %}Confirm Import NZSL Share
     CSV{% endblocktrans %} |
 {% endblock %}
 
@@ -11,7 +11,7 @@
     {% if glosses_new %}
       <h3>
         {% blocktrans %}Glosses to be added to{% endblocktrans %} <span
-          class="label label-default"
+          class="badge text-bg-secondary"
         >{{ dataset }}</span>
       </h3>
       <form
@@ -87,7 +87,7 @@
     {% if glosses_added %}
       <h3>
         {% blocktrans %}The following glosses were added to{% endblocktrans %}
-        <span class="label label-default">{{ dataset }}</span>
+        <span class="badge text-bg-secondary">{{ dataset }}</span>
       </h3>
       <p>
         {% blocktrans %}GlossTranslations and Comments for the glosses have been

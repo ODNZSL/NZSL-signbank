@@ -48,9 +48,6 @@ section p {
     background-color: #ffffff;
     margin-bottom: 0px;
 }
-#signinfo .navbar-text {
-    color: #FFFFFF;
-}
 #signinfo #editbutton {
     margin-right: 15px;
 }
@@ -73,6 +70,7 @@ section p {
 #videocontainer .player {
     margin-bottom: 5px;
     padding: 5px;
+    background-color: var(--bs-tertiary-bg);
 }
 #videocontainer .video-is-public {
 }
@@ -133,7 +131,7 @@ section p {
 {
 	margin-bottom: 5px;
 }
-#adminsearch .table-condensed .table-condensed
+#adminsearch .table-sm .table-sm
 {
 	margin-bottom: 0px;
 }
@@ -367,13 +365,6 @@ span.gloss-keywords mark {
     background-color: #efcccc;
 }
 
-div.btn-default > a.dropdown-toggle {
-    color: #333;
-}
-div.btn-default > a.dropdown-toggle:hover {
-    text-decoration: none;
-}
-
 .normal-font {
     font-weight: normal;
 }
@@ -384,4 +375,18 @@ div.btn-default > a.dropdown-toggle:hover {
 
 .bottom-margin-100 {
     margin-bottom: 100px;
+}
+
+/* Dataset badges: neutral fallback colour, overridden by the .dataset-N-color
+   classes in dataset.css (which is loaded after this file). */
+.badge-dataset {
+    background-color: var(--bs-secondary);
+}
+
+/* Fields rendered by {% bootstrap_field %} inside an .input-group sit in a
+   wrapper div, so Bootstrap's own corner-joining rules don't reach them. */
+.input-group > div > .form-control,
+.input-group > div > .form-select {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }

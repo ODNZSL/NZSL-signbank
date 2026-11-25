@@ -18,8 +18,8 @@
         name="language"
         value="{{ language.code }}"
         class="btn btn-primary{% if language.code == LANGUAGE_CODE %} active{% endif %}"
-        data-toggle="tooltip"
-        data-placement="bottom"
+        data-bs-toggle="tooltip"
+        data-bs-placement="bottom"
         title="{{ language.name_local }}"
       >
         {{ language.code }}

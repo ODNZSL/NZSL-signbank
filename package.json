@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "collectjs": "cp -f ./node_modules/*/dist/*min.js ./signbank/static/js && cp -f ./node_modules/recordrtc/RecordRTC.min.js ./signbank/static/js && cp -f ./node_modules/at.js/dist/js/jquery.atwho.min.js ./signbank/static/js && cp -f ./node_modules/cookieconsent/build/cookieconsent.min.js ./signbank/static/js && cp -f ./node_modules/sigma/build/sigma.min.js ./signbank/static/js && cp -f ./node_modules/sigma/build/plugins/sigma.layout.forceAtlas2.min.js ./signbank/static/js",
-    "collectcss": "cp -f ./node_modules/at.js/dist/css/jquery.atwho.min.css ./signbank/static/css && cp -rf ./node_modules/bootstrap/dist/* ./signbank/static/bootstrap/ && cp -f ./node_modules/cookieconsent/build/cookieconsent.min.css ./signbank/static/css"
+    "collectcss": "cp -f ./node_modules/at.js/dist/css/jquery.atwho.min.css ./signbank/static/css && mkdir -p ./signbank/static/bootstrap/css ./signbank/static/bootstrap/js ./signbank/static/bootstrap-icons/fonts && cp -f ./node_modules/bootstrap/dist/css/bootstrap.min.css ./node_modules/bootstrap/dist/css/bootstrap.min.css.map ./signbank/static/bootstrap/css/ && cp -f ./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js ./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js.map ./signbank/static/bootstrap/js/ && cp -f ./node_modules/bootstrap-icons/font/bootstrap-icons.min.css ./signbank/static/bootstrap-icons/ && cp -f ./node_modules/bootstrap-icons/font/fonts/* ./signbank/static/bootstrap-icons/fonts/ && cp -f ./node_modules/cookieconsent/build/cookieconsent.min.css ./signbank/static/css"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,8 @@
   "homepage": "https://github.com/Signbank/FinSL-signbank#readme",
   "devDependencies": {
     "at.js": "^1.5.4",
-    "bootstrap": "^3.4.1",
+    "bootstrap": "^5.3.9",
+    "bootstrap-icons": "^1.13.2",
     "cookieconsent": "^3.1.1",
     "jquery": "^3.4.0",
     "jquery.caret": "^0.3.1",

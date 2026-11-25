@@ -1,19 +1,18 @@
 {% load i18n %}
 <div class="alert alert-{{ notice.level }} notification" role="alert">
   <a
-    class="close"
+    class="btn-close notification-close float-end"
     aria-label="Close"
     href="{% url 'notifications:mark_as_read' notice.slug %}"
-  ><span aria-hidden="true">&times;</span>
-  </a>
+  ></a>
 
   <h4>
     <a href="{{ notice.action_object.get_absolute_url }}">
-      <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+      <span class="bi bi-person-fill" aria-hidden="true"></span>
       {{ notice.actor }}
       {{ notice.verb }}
     </a><span
-      class="dataset-{{ notice.action_object.content_object.dataset.id }}-color label label-default"
+      class="dataset-{{ notice.action_object.content_object.dataset.id }}-color badge badge-dataset"
       style="font-size: 0.6em"
     >{{ notice.action_object.content_object.dataset }}</span>
   </h4>
