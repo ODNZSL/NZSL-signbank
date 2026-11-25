@@ -10,7 +10,6 @@ import uuid
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.db import models
-from django.utils.encoding import filepath_to_uri
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 from storages.backends.s3boto3 import S3Boto3Storage
@@ -34,75 +33,38 @@ class GlossVideoStorage(FileSystemStorage):
         return os.path.join(self.base_url, name)
 
 
-#: S3 object tag that mirrors GlossVideo.is_public. A bucket policy can check this
-#: tag to decide which objects an unsigned CloudFront distribution may serve, which
-#: still works once S3 ACLs are disabled.
-VISIBILITY_TAG_KEY = 'visibility'
-VISIBILITY_PUBLIC = 'public'
-VISIBILITY_PRIVATE = 'private'
-
-
-def visibility_tag_value(is_public):
-    return VISIBILITY_PUBLIC if is_public else VISIBILITY_PRIVATE
-
-
-class GlossVideoStorageMixin:
-    """S3 visibility helpers for GlossVideo storage.
-
-    Signed URLs come from the storage's own url(): with AWS_S3_CUSTOM_DOMAIN and the
-    AWS_CLOUDFRONT_KEY* settings, django-storages signs them with CloudFront instead
-    of S3. Everything here is a no-op (or falls back to plain storage behaviour) when
-    the storage is not S3, so local development and tests keep working.
-    """
-
-    def _is_s3(self):
-        return isinstance(self, S3Boto3Storage)
-
-    def public_url(self, name):
-        """ Return the public URL to the object in CloudFront, S3 or local storage.
-        This is NOT a signed URL and never expires, use #url for that.
-        """
-        if self._is_s3():
-            domain = getattr(settings, 'CLOUDFRONT_PUBLIC_MEDIA_DOMAIN', None)
-            if domain:
-                return f'https://{domain}/{filepath_to_uri(name)}'
-            bucket_name = self.bucket.name
-            return f'https://{bucket_name}.s3.amazonaws.com/{name}'
-        else:
-            from django.contrib.sites.models import Site
-            domain = Site.objects.get_current().domain
-            path = super().url(name)
-
-            return f'{domain}{path}'
-
+class GlossVideoDynamicStorage(import_string(settings.GLOSS_VIDEO_FILE_STORAGE)):
     def set_public(self, name, is_public):
-        """ Set the object ACL and visibility tag on the object. This is only
-        supported for S3 storage, and is a no-op for local file storage
+        """ Set the object ACL on the object. This is only supported
+        for S3 storage, and is a no-op for local file storage
         """
-        if not self._is_s3():
+        if not isinstance(self, S3Boto3Storage):
             return
 
         if not name:
             return
 
-        client = self.bucket.meta.client
-        client.put_object_acl(
+        self.bucket.meta.client.put_object_acl(
             ACL='public-read' if is_public else 'private',
             Bucket=self.bucket.name,
             Key=name
         )
-        # put_object_tagging replaces the whole tag set on the object.
-        client.put_object_tagging(
-            Bucket=self.bucket.name,
-            Key=name,
-            Tagging={'TagSet': [
-                {'Key': VISIBILITY_TAG_KEY, 'Value': visibility_tag_value(is_public)},
-            ]},
-        )
 
 
-class GlossVideoDynamicStorage(GlossVideoStorageMixin, import_string(settings.GLOSS_VIDEO_FILE_STORAGE)):
-    pass
+def export_media_url(name):
+    """ Return the permanent, unsigned URL for name, for exports consumed outside
+    Signbank (the /video/csv export used by the dictionary scripts).
+
+    This is deliberately separate from the storage's url(), which is Signbank's own
+    (signed) media access. The two currently point at the same bucket, but are
+    configured independently so the export can later move to its own distribution.
+    """
+    if settings.EXPORT_MEDIA_BASE_URL:
+        return f'{settings.EXPORT_MEDIA_BASE_URL}/{name}'
+
+    from django.contrib.sites.models import Site
+    domain = Site.objects.get_current().domain
+    return f'{domain}{GlossVideoDynamicStorage().url(name)}'
 
 
 def glossvideo_upload_to(instance, filename):

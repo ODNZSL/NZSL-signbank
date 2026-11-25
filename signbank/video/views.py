@@ -22,7 +22,7 @@ from ..dictionary.models import Dataset, FieldChoice, Gloss
 from .forms import (GlossVideoForGlossForm, GlossVideoForm,
                     GlossVideoPosterForm, GlossVideoUpdateForm,
                     MultipleVideoUploadForm)
-from .models import GlossVideo, GlossVideoDynamicStorage, GlossVideoToken
+from .models import GlossVideo, GlossVideoToken, export_media_url
 
 
 def get_signed_video_url_from_glossvideotoken(request, token, videoid):
@@ -455,10 +455,8 @@ def export_glossvideos_csv(request):
         'video_type_id__english_name': 'Video_type'
     }
 
-    storage = GlossVideoDynamicStorage()
-
     field_serializers = {
-        'videofile': (lambda asset_filename: storage.public_url(asset_filename))
+        'videofile': export_media_url
     }
 
     return render_to_csv_response(queryset=csv_queryset, field_header_map=fieldnames, field_serializer_map=field_serializers)

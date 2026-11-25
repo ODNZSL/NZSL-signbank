@@ -253,8 +253,9 @@ if os.getenv('AWS_STORAGE_BUCKET_NAME'):
     GLOSS_VIDEO_FILE_STORAGE = DEFAULT_FILE_STORAGE
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 
-    # Serve signed file URLs from CloudFront instead of presigned S3 URLs.
-    # django-storages signs storage.url() with this key pair when all three are set.
+    # Serve signed file URLs from a Signbank-only CloudFront distribution instead of
+    # presigned S3 URLs. django-storages signs storage.url() with this key pair when all
+    # three are set. This is Signbank's own media access only; see EXPORT_MEDIA_BASE_URL.
     AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
     AWS_CLOUDFRONT_KEY_ID = os.getenv('AWS_CLOUDFRONT_KEY_ID')
     # PEM private key; literal "\n" sequences are accepted so it fits on one env line.
@@ -267,10 +268,15 @@ if os.getenv('AWS_STORAGE_BUCKET_NAME'):
 else:
     GLOSS_VIDEO_FILE_STORAGE = 'signbank.video.models.GlossVideoStorage'
 
-# Optional unsigned CloudFront domain for public_url(), used by the video CSV export
-# that the dictionary scripts consume. Those URLs are stored long-term, so they must
-# never be signed. Falls back to the S3 bucket URL.
-CLOUDFRONT_PUBLIC_MEDIA_DOMAIN = os.getenv('CLOUDFRONT_PUBLIC_MEDIA_DOMAIN')
+# Base URL for media links in exports consumed outside Signbank (the /video/csv export used
+# by nzsl-dictionary-scripts). Those links are stored long-term, so they must be permanent
+# and unsigned. Kept separate from Signbank's own media access (AWS_S3_CUSTOM_DOMAIN) so the
+# export can later point at its own distribution. Defaults to the S3 bucket, or to this
+# site's domain when using local file storage.
+EXPORT_MEDIA_BASE_URL = (
+    os.getenv('EXPORT_MEDIA_BASE_URL')
+    or (f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com' if os.getenv('AWS_STORAGE_BUCKET_NAME') else '')
+).rstrip('/')
 
 NZSL_SHARE_HOSTNAME = os.getenv('NZSL_SHARE_HOSTNAME')
 NZSL_SHARE_BATCH_SIZE = 10
