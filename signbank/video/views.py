@@ -459,7 +459,7 @@ def export_glossvideos_csv(request):
     storage = GlossVideoDynamicStorage()
 
     field_serializers = {
-        'videofile': (lambda asset_filename: settings.MEDIA_EXPORT_URL + asset_filename)
+        'videofile': (lambda asset_filename: settings.DICTIONARY_VIDEOS_HOST + asset_filename)
     }
 
     return render_to_csv_response(queryset=csv_queryset, field_header_map=fieldnames, field_serializer_map=field_serializers)
