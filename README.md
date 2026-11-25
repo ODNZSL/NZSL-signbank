@@ -121,7 +121,19 @@ By default, the normal filesystem-based file storage engine will be used. This i
 
 See [example.env](example.env) for more information about these variables. If you have set up infrastructure using the [Terraform config](https://github.com/odnzsl/nzsl-infrastructure), the output of applying a Terraform plan includes the bucket name and AWS keypair that are created by this configuration.
 
-At this stage, S3 is the only AWS service used by this application.
+Optionally, Signbank can serve its files through its own CloudFront distribution instead of presigned S3 URLs
+by setting all three of:
+
+- AWS_S3_CUSTOM_DOMAIN - the domain of a distribution that requires signed URLs
+- AWS_CLOUDFRONT_KEY_ID - the ID of a public key in one of the distribution's trusted key groups
+- AWS_CLOUDFRONT_KEY - the matching PEM private key
+
+Everywhere the app presigns URLs (`storage.url()`, `FieldFile.url`) will then sign CloudFront URLs instead.
+
+This is separate from the media URLs in exports consumed outside Signbank, such as the `/video/csv` export used by
+[nzsl-dictionary-scripts](https://github.com/odnzsl/nzsl-dictionary-scripts). Those are stored long-term, so they
+are permanent and unsigned, built from EXPORT_MEDIA_BASE_URL. It defaults to the S3 bucket
+(`https://<AWS_STORAGE_BUCKET_NAME>.s3.amazonaws.com`) and can later point at a separate distribution.
 
 ## Secrets
 

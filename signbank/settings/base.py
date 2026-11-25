@@ -8,6 +8,7 @@ import pathlib
 import sys
 
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import gettext_lazy as _
 
 sentry_dsn = os.environ.get('SENTRY_DSN', '')
@@ -251,8 +252,31 @@ if os.getenv('AWS_STORAGE_BUCKET_NAME'):
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     GLOSS_VIDEO_FILE_STORAGE = DEFAULT_FILE_STORAGE
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+
+    # Serve signed file URLs from a Signbank-only CloudFront distribution instead of
+    # presigned S3 URLs. django-storages signs storage.url() with this key pair when all
+    # three are set. This is Signbank's own media access only; see EXPORT_MEDIA_BASE_URL.
+    AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
+    AWS_CLOUDFRONT_KEY_ID = os.getenv('AWS_CLOUDFRONT_KEY_ID')
+    # PEM private key; literal "\n" sequences are accepted so it fits on one env line.
+    AWS_CLOUDFRONT_KEY = os.getenv('AWS_CLOUDFRONT_KEY', '').replace('\\n', '\n') or None
+    if AWS_S3_CUSTOM_DOMAIN and not (AWS_CLOUDFRONT_KEY_ID and AWS_CLOUDFRONT_KEY):
+        # Without a signer, django-storages returns plain unsigned URLs, which
+        # would expose private videos.
+        raise ImproperlyConfigured(
+            'AWS_S3_CUSTOM_DOMAIN requires AWS_CLOUDFRONT_KEY_ID and AWS_CLOUDFRONT_KEY.')
 else:
     GLOSS_VIDEO_FILE_STORAGE = 'signbank.video.models.GlossVideoStorage'
+
+# Base URL for media links in exports consumed outside Signbank (the /video/csv export used
+# by nzsl-dictionary-scripts). Those links are stored long-term, so they must be permanent
+# and unsigned. Kept separate from Signbank's own media access (AWS_S3_CUSTOM_DOMAIN) so the
+# export can later point at its own distribution. Defaults to the S3 bucket, or to this
+# site's domain when using local file storage.
+EXPORT_MEDIA_BASE_URL = (
+    os.getenv('EXPORT_MEDIA_BASE_URL')
+    or (f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com' if os.getenv('AWS_STORAGE_BUCKET_NAME') else '')
+).rstrip('/')
 
 NZSL_SHARE_HOSTNAME = os.getenv('NZSL_SHARE_HOSTNAME')
 NZSL_SHARE_BATCH_SIZE = 10

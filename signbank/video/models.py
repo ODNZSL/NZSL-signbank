@@ -34,20 +34,6 @@ class GlossVideoStorage(FileSystemStorage):
 
 
 class GlossVideoDynamicStorage(import_string(settings.GLOSS_VIDEO_FILE_STORAGE)):
-    def public_url(self, name):
-        """ Return the public URL to the object in S3 or local storage.
-        This is NOT a presigned URL, use #url for that.
-        """
-        if isinstance(self, S3Boto3Storage):
-            bucket_name = self.bucket.name
-            return f'https://{bucket_name}.s3.amazonaws.com/{name}'
-        else:
-            from django.contrib.sites.models import Site
-            domain = Site.objects.get_current().domain
-            path = super(GlossVideoDynamicStorage, self).url(name)
-
-            return f'{domain}{path}'
-
     def set_public(self, name, is_public):
         """ Set the object ACL on the object. This is only supported
         for S3 storage, and is a no-op for local file storage
@@ -63,6 +49,22 @@ class GlossVideoDynamicStorage(import_string(settings.GLOSS_VIDEO_FILE_STORAGE))
             Bucket=self.bucket.name,
             Key=name
         )
+
+
+def export_media_url(name):
+    """ Return the permanent, unsigned URL for name, for exports consumed outside
+    Signbank (the /video/csv export used by the dictionary scripts).
+
+    This is deliberately separate from the storage's url(), which is Signbank's own
+    (signed) media access. The two currently point at the same bucket, but are
+    configured independently so the export can later move to its own distribution.
+    """
+    if settings.EXPORT_MEDIA_BASE_URL:
+        return f'{settings.EXPORT_MEDIA_BASE_URL}/{name}'
+
+    from django.contrib.sites.models import Site
+    domain = Site.objects.get_current().domain
+    return f'{domain}{GlossVideoDynamicStorage().url(name)}'
 
 
 def glossvideo_upload_to(instance, filename):
