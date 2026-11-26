@@ -3,7 +3,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
       - production
 jobs:
   check-dependencies:
@@ -49,7 +49,7 @@ jobs:
         run: poetry run djangofmt . --check
   deploy_to_uat:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs:
       - check-dependencies
       - tests
