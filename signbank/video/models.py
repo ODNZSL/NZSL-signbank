@@ -14,8 +14,6 @@ from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 from storages.backends.s3boto3 import S3Boto3Storage
 
-from signbank.tagging.utils import add_tag, remove_tag
-
 
 class GlossVideoStorage(FileSystemStorage):
     """Video storage, handles saving to directories based on filenames first two characters."""
@@ -60,11 +58,28 @@ class GlossVideoDynamicStorage(import_string(settings.GLOSS_VIDEO_FILE_STORAGE))
         if not name:
             return
 
-        self.bucket.meta.client.put_object_acl(
+        client = self.bucket.meta.client
+        client.put_object_acl(
             ACL='public-read' if is_public else 'private',
             Bucket=self.bucket.name,
             Key=name
         )
+        self.sync_visibility(name, is_public)
+
+    def sync_visibility(self, name, is_public):
+        """Add or remove the public visibility tag."""
+        if not isinstance(self, S3Boto3Storage) or not name:
+            return
+
+        client = self.bucket.meta.client
+        object_args = {'Bucket': self.bucket.name, 'Key': name}
+        if is_public:
+            client.put_object_tagging(
+                **object_args,
+                Tagging={'TagSet': [{'Key': 'visibility', 'Value': 'public'}]},
+            )
+            return
+        client.delete_object_tagging(**object_args)
 
 
 def glossvideo_upload_to(instance, filename):
@@ -176,10 +191,6 @@ class GlossVideo(models.Model):
 
         if self._should_sync_s3_acl(creating, previous_is_public, previous_videofile_name):
             self._sync_s3_acl()
-            if self.is_public:
-                add_tag(self, 'visibility=public')
-            else:
-                remove_tag(self, 'visibility=public')
 
     def delete(self, *args, **kwargs):
         if self.videofile and self.videofile.name:
