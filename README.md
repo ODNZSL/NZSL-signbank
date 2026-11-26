@@ -5,7 +5,7 @@
 NZSL-signbank is a web based database for sign language lexicons and
 corpora. The original Signbank (for Auslan) was developed by Steve Cassidy [https://github.com/Signbank/Auslan-signbank][auslan-signbank] and subsequently built upon by other projects, now gathered at [https://github.com/Signbank].
 
-NZSL-Signbank is most closely based on[FinSL-Signbank](https://github.com/Signbank/FinSL-signbank). The main differences between FinSL-Signbank and NZSL-Signbank are documented in this ReadMe.
+NZSL-Signbank is most closely based on [FinSL-Signbank](https://github.com/Signbank/FinSL-signbank). The main differences between FinSL-Signbank and NZSL-Signbank are documented in this ReadMe.
 
 Unlike other Signbanks, NZSL-Signbank is not intended as a public lexicon or dictionary. Instead, the application is used to enable the Deaf Studies Research Unit (DSRU) of Victoria University of Wellington, NZ to manage NZSL language data for use in the [NZSL Dictionary](https://nzsl.nz), NZSL Dictionary apps, NZSL learning resources, and for research purposes.
 
@@ -36,25 +36,22 @@ All deployments should be performed by CI unless there are specific deployment p
 
 | **Git branch name** | **Deploys to environment** | **Typically deployed by** |
 | ------------------- | -------------------------- | ------------------------- |
-| master              | UAT                        | CI                        |
+| main                | UAT                        | CI                        |
 | production          | Production                 | CI                        |
 
-#### master
-
-> Note: Convention is to use `main` as the primary branch name. This project has stuck with `master`
-> to match the FinSL upstream primary branch name for now.
+#### main
 
 - The default branch features are merged into.
-- master should always have a green build.
+- `main` should always have a green build.
 - Should always deploy to UAT environment if one exists.
 - feature/ and bugfix/ work will be branched from, and merged back into, main.
 
 #### production
 
 - This will point to the production environment.
-- Only the master branch will be merged.
+- Only the main branch will be merged.
 - Merges should be squash merges so the release can be tagged if necessary from the commit.
-- Merges should be via pull request from `master` to `production` for review and signoff.
+- Merges should be via pull request from `main` to `production` for review and signoff.
 
 #### feature/xxx-yyy
 
@@ -72,7 +69,7 @@ Support ticket related changes or fixes should happen in support branches. Branc
 
 | **Environment** | **URL**                      | **Hosting Platform** | **Git Branch** | **Exception monitoring URL** | **Logs available at**              | **Asset storage**                                             |
 | --------------- | ---------------------------- | -------------------- | -------------- | ---------------------------- | ---------------------------------- | ------------------------------------------------------------- |
-| UAT             | https://signbank-uat.nzsl.nz | Heroku (free tier)   | master         | Sentry                       | `heroku logs -a nzsl-signbank-uat` | S3 (nzsl-signbank-media-uat) owned by NZSL AWS account        |
+| UAT             | https://signbank-uat.nzsl.nz | Heroku (free tier)   | main           | Sentry                       | `heroku logs -a nzsl-signbank-uat` | S3 (nzsl-signbank-media-uat) owned by NZSL AWS account        |
 | Production      | https://signbank.nzsl.nz     | Heroku (paid tier)   | production     | Sentry                       | `heroku logs -a nzsl-signbank`     | S3 (nzsl-signbank-media-production) owned by NZSL AWS account |
 
 Both environments are managed by Terraform. The Terraform configurations are also open-sourced and [available on Github](https://github.com/ODNZSL/nzsl-infrastructure).
@@ -341,7 +338,7 @@ and proper version pinning, but otherwise doesn't have much value.
   convenience since we don't have a lot of in-house Python capability.
 
 The above is a summary of differences between FinSL and NZSL Signbank. For a more up-to-date
-and comprehensive view, Github provides a diff between the two repositories at https://github.com/Signbank/FinSL-signbank/compare/master...ODNZSL:master.
+and comprehensive view, Github provides a diff between the two repositories at https://github.com/Signbank/FinSL-signbank/compare/master...ODNZSL:main.
 
 ## Running in production
 
