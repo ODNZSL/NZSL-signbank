@@ -52,17 +52,21 @@ class GlossVideoDynamicStorage(import_string(settings.GLOSS_VIDEO_FILE_STORAGE))
         """ Set the object ACL on the object. This is only supported
         for S3 storage, and is a no-op for local file storage
         """
-        if not isinstance(self, S3Boto3Storage):
+        if not isinstance(self, S3Boto3Storage) or not name:
             return
 
-        if not name:
-            return
+        client = self.bucket.meta.client
+        object_args = {'Bucket': self.bucket.name, 'Key': name}
 
-        self.bucket.meta.client.put_object_acl(
-            ACL='public-read' if is_public else 'private',
-            Bucket=self.bucket.name,
-            Key=name
-        )
+        client.put_object_acl(**object_args, ACL='public-read' if is_public else 'private')
+
+        current = client.get_object_tagging(**object_args)['TagSet']
+        tag_set = [tag for tag in current if tag['Key'] != 'visibility']
+        if is_public:
+            tag_set.append({'Key': 'visibility', 'Value': 'public'})
+
+        if tag_set != current:
+            client.put_object_tagging(**object_args, Tagging={'TagSet': tag_set})
 
 
 def glossvideo_upload_to(instance, filename):
