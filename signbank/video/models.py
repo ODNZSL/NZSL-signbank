@@ -73,11 +73,15 @@ class GlossVideoDynamicStorage(import_string(settings.GLOSS_VIDEO_FILE_STORAGE))
 
         client = self.bucket.meta.client
         object_args = {'Bucket': self.bucket.name, 'Key': name}
+        tag_set = [
+            tag for tag in client.get_object_tagging(**object_args)['TagSet']
+            if tag['Key'] != 'visibility'
+        ]
         if is_public:
-            client.put_object_tagging(
-                **object_args,
-                Tagging={'TagSet': [{'Key': 'visibility', 'Value': 'public'}]},
-            )
+            tag_set.append({'Key': 'visibility', 'Value': 'public'})
+
+        if tag_set:
+            client.put_object_tagging(**object_args, Tagging={'TagSet': tag_set})
             return
         client.delete_object_tagging(**object_args)
 
