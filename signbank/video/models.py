@@ -48,42 +48,25 @@ class GlossVideoDynamicStorage(import_string(settings.GLOSS_VIDEO_FILE_STORAGE))
 
             return f'{domain}{path}'
 
-    def set_public(self, name, is_public):
-        """ Set the object ACL on the object. This is only supported
-        for S3 storage, and is a no-op for local file storage
-        """
-        if not isinstance(self, S3Boto3Storage):
-            return
+def set_public(self, name, is_public):
+    """ Set the object ACL on the object. This is only supported
+    for S3 storage, and is a no-op for local file storage
+    """
+    if not isinstance(self, S3Boto3Storage) or not name:
+        return
 
-        if not name:
-            return
+    client = self.bucket.meta.client
+    object_args = {'Bucket': self.bucket.name, 'Key': name}
 
-        client = self.bucket.meta.client
-        client.put_object_acl(
-            ACL='public-read' if is_public else 'private',
-            Bucket=self.bucket.name,
-            Key=name
-        )
-        self.sync_visibility(name, is_public)
+    client.put_object_acl(**object_args, ACL='public-read' if is_public else 'private')
 
-    def sync_visibility(self, name, is_public):
-        """Add or remove the public visibility tag."""
-        if not isinstance(self, S3Boto3Storage) or not name:
-            return
+    current = client.get_object_tagging(**object_args)['TagSet']
+    tag_set = [tag for tag in current if tag['Key'] != 'visibility']
+    if is_public:
+        tag_set.append({'Key': 'visibility', 'Value': 'public'})
 
-        client = self.bucket.meta.client
-        object_args = {'Bucket': self.bucket.name, 'Key': name}
-        tag_set = [
-            tag for tag in client.get_object_tagging(**object_args)['TagSet']
-            if tag['Key'] != 'visibility'
-        ]
-        if is_public:
-            tag_set.append({'Key': 'visibility', 'Value': 'public'})
-
-        if tag_set:
-            client.put_object_tagging(**object_args, Tagging={'TagSet': tag_set})
-            return
-        client.delete_object_tagging(**object_args)
+    if tag_set != current:
+        client.put_object_tagging(**object_args, Tagging={'TagSet': tag_set})
 
 
 def glossvideo_upload_to(instance, filename):
